@@ -1,27 +1,44 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
+
 module.exports = (sequelize, DataTypes) => {
   class PersonalRecord extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      PersonalRecord.belongsTo(models.User, { foreignKey: "user_id", onDelete: "CASCADE" });
     }
   }
-  PersonalRecord.init({
-    user_id: DataTypes.INTEGER,
-    activity_type: DataTypes.STRING,
-    distance: DataTypes.DECIMAL,
-    best_time: DataTypes.INTEGER,
-    record_date: DataTypes.DATE
-  }, {
-    sequelize,
-    modelName: 'PersonalRecord',
-  });
+
+  PersonalRecord.init(
+    {
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      activity_type: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      distance: {
+        type: DataTypes.DECIMAL,
+        allowNull: false,
+      },
+      best_time: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      record_date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+    },
+    {
+      sequelize,
+      modelName: "PersonalRecord",
+      tableName: "PersonalRecords",
+      timestamps: true, // ✅ Enables automatic timestamps
+      underscored: true, // ✅ Uses snake_case instead of camelCase
+    }
+  );
+
   return PersonalRecord;
 };

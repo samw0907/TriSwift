@@ -5,7 +5,7 @@ module.exports = {
   async up(queryInterface) {
     await queryInterface.bulkInsert("Users", [
       {
-        name: "Fast Man"
+        name: "Fast Man",
         email: "fastman@example.com",
         password_hash: "hashedpassword123", // Hash later for security
         created_at: new Date(),

@@ -1,26 +1,40 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
+
 module.exports = (sequelize, DataTypes) => {
   class Progress extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      Progress.belongsTo(models.User, { foreignKey: "user_id", onDelete: "CASCADE" });
     }
   }
-  Progress.init({
-    user_id: DataTypes.INTEGER,
-    activity_type: DataTypes.STRING,
-    achieved_value: DataTypes.DECIMAL,
-    date: DataTypes.DATE
-  }, {
-    sequelize,
-    modelName: 'Progress',
-  });
+
+  Progress.init(
+    {
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      activity_type: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      achieved_value: {
+        type: DataTypes.DECIMAL,
+        allowNull: false,
+      },
+      date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+    },
+    {
+      sequelize,
+      modelName: "Progress",
+      tableName: "Progresses", // ✅ Explicitly setting the table name
+      timestamps: true, // ✅ Enables automatic timestamps
+      underscored: true, // ✅ Uses snake_case for consistency
+    }
+  );
+
   return Progress;
 };

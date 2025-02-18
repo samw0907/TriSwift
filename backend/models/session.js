@@ -1,30 +1,64 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
+
 module.exports = (sequelize, DataTypes) => {
   class Session extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      Session.belongsTo(models.User, { foreignKey: "user_id", onDelete: "CASCADE" });
     }
   }
-  Session.init({
-    user_id: DataTypes.INTEGER,
-    session_type: DataTypes.STRING,
-    date: DataTypes.DATE,
-    total_duration: DataTypes.INTEGER,
-    total_distance: DataTypes.DECIMAL,
-    weather_temp: DataTypes.DECIMAL,
-    weather_humidity: DataTypes.INTEGER,
-    weather_wind_speed: DataTypes.DECIMAL
-  }, {
-    sequelize,
-    modelName: 'Session',
-  });
+
+  Session.init(
+    {
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      session_type: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      total_duration: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      total_distance: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+      },
+      weather_temp: {
+        type: DataTypes.DECIMAL(5, 2),
+      },
+      weather_humidity: {
+        type: DataTypes.INTEGER,
+        validate: { min: 0, max: 100 },
+      },
+      weather_wind_speed: {
+        type: DataTypes.DECIMAL(5, 2),
+      },
+      created_at: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
+      },
+      updated_at: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
+      },
+    },
+    {
+      sequelize,
+      modelName: "Session",
+      tableName: "Sessions",
+      timestamps: true,
+      underscored: true,
+    }
+  );
+
   return Session;
 };

@@ -1,52 +1,61 @@
-'use strict';
+"use strict";
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('SessionActivities', {
+    await queryInterface.createTable("SessionActivities", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       session_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: { model: "Sessions", key: "id" },
+        onDelete: "CASCADE",
       },
       sport_type: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
       },
       duration: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false,
       },
       distance: {
-        type: Sequelize.DECIMAL
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: false,
       },
       heart_rate_min: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       heart_rate_max: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       heart_rate_avg: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       cadence: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       power: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      },
     });
   },
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('SessionActivities');
-  }
+
+  async down(queryInterface) {
+    await queryInterface.dropTable("SessionActivities");
+  },
 };

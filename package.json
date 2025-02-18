@@ -1,0 +1,18 @@
+{
+  "devDependencies": {
+    "@eslint/js": "^9.20.0",
+    "eslint": "^9.20.1",
+    "eslint-plugin-react": "^7.37.4",
+    "globals": "^15.15.0",
+    "prettier": "^3.5.1",
+    "typescript-eslint": "^8.24.1"
+  },
+  "scripts": {
+    "format": "prettier --write .",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}

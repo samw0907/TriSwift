@@ -1,2 +1,4 @@
 Date            Hours        Topic
-18.02.2025      3            Planning, setting up Github Repo, README, installing dependencies              
+18.02.2025      5            Planning & Designing, setting up Github Repo, README, installing dependencies              
+                2            Database Schema design work
+19.02.2025      

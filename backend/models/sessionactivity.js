@@ -1,55 +1,64 @@
-"use strict";
-const { Model } = require("sequelize");
+const { Model, DataTypes } = require('sequelize');
+const { sequelize } = require('../util/db');
 
-module.exports = (sequelize, DataTypes) => {
-  class SessionActivity extends Model {
-    static associate(models) {
-      SessionActivity.belongsTo(models.Session, { foreignKey: "session_id", onDelete: "CASCADE" });
-    }
-  }
+class SessionActivity extends Model {}
 
-  SessionActivity.init(
-    {
-      session_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      sport_type: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      duration: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      distance: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false,
-      },
-      heart_rate_min: DataTypes.INTEGER,
-      heart_rate_max: DataTypes.INTEGER,
-      heart_rate_avg: DataTypes.INTEGER,
-      cadence: DataTypes.INTEGER,
-      power: DataTypes.INTEGER,
-      created_at: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
-      },
-      updated_at: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
-      },
+SessionActivity.init({
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  session_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Sessions',
+      key: 'id'
     },
-    {
-      sequelize,
-      modelName: "SessionActivity",
-      tableName: "SessionActivities",
-      timestamps: true,
-      underscored: true,
-    }
-  );
+    onDelete: 'CASCADE'
+  },
+  sport_type: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  duration: {
+    type: DataTypes.STRING
+  },
+  distance: {
+    type: DataTypes.DECIMAL
+  },
+  heart_rate_min: {
+    type: DataTypes.INTEGER
+  },
+  heart_rate_max: {
+    type: DataTypes.INTEGER
+  },
+  heart_rate_avg: {
+    type: DataTypes.INTEGER
+  },
+  cadence: {
+    type: DataTypes.INTEGER
+  },
+  power: {
+    type: DataTypes.INTEGER
+  },
+  created_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
+  },
+  updated_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
+  }
+}, {
+  sequelize,
+  modelName: 'SessionActivity',
+  tableName: 'SessionActivities',
+  timestamps: true,
+  underscored: true
+});
 
-  return SessionActivity;
-};
+module.exports = SessionActivity;

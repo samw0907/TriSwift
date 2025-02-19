@@ -1,52 +1,53 @@
-'use strict';
-const { Model } = require("sequelize");
-  
-  module.exports = (sequelize, DataTypes) => {
-    class Transition extends Model {
-      static associate(models) {
-        Transition.belongsTo(models.Session, { foreignKey: "session_id", onDelete: "CASCADE" });
-      }
-    }
-  
-    Transition.init(
-      {
-        session_id: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-        },
-        previous_sport: {
-          type: DataTypes.STRING,
-          allowNull: false,
-        },
-        next_sport: {
-          type: DataTypes.STRING,
-          allowNull: false,
-        },
-        transition_time: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-        },
-        comments: DataTypes.TEXT,
-        created_at: {
-          type: DataTypes.DATE,
-          allowNull: false,
-          defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
-        },
-        updated_at: {
-          type: DataTypes.DATE,
-          allowNull: false,
-          defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
-        },
-      },
-      {
-        sequelize,
-        modelName: "Transition",
-        tableName: "Transitions",
-        timestamps: true,
-        underscored: true,
-      }
-    );
-  
-    return Transition;
-  };
-  
+const { Model, DataTypes } = require('sequelize');
+const { sequelize } = require('../util/db');
+
+class Transition extends Model {}
+
+Transition.init({
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  session_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Sessions',
+      key: 'id'
+    },
+    onDelete: 'CASCADE'
+  },
+  previous_sport: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  next_sport: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  transition_time: {
+    type: DataTypes.STRING
+  },
+  comments: {
+    type: DataTypes.TEXT
+  },
+  created_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
+  },
+  updated_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
+  }
+}, {
+  sequelize,
+  modelName: 'Transition',
+  tableName: 'Transitions',
+  timestamps: true,
+  underscored: true
+});
+
+module.exports = Transition;

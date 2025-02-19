@@ -1,44 +1,52 @@
-"use strict";
-const { Model } = require("sequelize");
+const { Model, DataTypes } = require('sequelize');
+const { sequelize } = require('../util/db');
 
-module.exports = (sequelize, DataTypes) => {
-  class PersonalRecord extends Model {
-    static associate(models) {
-      PersonalRecord.belongsTo(models.User, { foreignKey: "user_id", onDelete: "CASCADE" });
-    }
-  }
+class PersonalRecord extends Model {}
 
-  PersonalRecord.init(
-    {
-      user_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      activity_type: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      distance: {
-        type: DataTypes.DECIMAL,
-        allowNull: false,
-      },
-      best_time: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      record_date: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
+PersonalRecord.init({
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  user_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Users',
+      key: 'id'
     },
-    {
-      sequelize,
-      modelName: "PersonalRecord",
-      tableName: "PersonalRecords",
-      timestamps: true,
-      underscored: true,
-    }
-  );
+    onDelete: 'CASCADE'
+  },
+  activity_type: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  distance: {
+    type: DataTypes.DECIMAL
+  },
+  best_time: {
+    type: DataTypes.STRING
+  },
+  record_date: {
+    type: DataTypes.DATE
+  },
+  created_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
+  },
+  updated_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
+  }
+}, {
+  sequelize,
+  modelName: 'PersonalRecord',
+  tableName: 'PersonalRecords',
+  timestamps: true,
+  underscored: true
+});
 
-  return PersonalRecord;
-};
+module.exports = PersonalRecord;

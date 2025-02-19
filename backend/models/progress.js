@@ -1,40 +1,51 @@
-"use strict";
-const { Model } = require("sequelize");
+const { Model, DataTypes } = require('sequelize');
+const { sequelize } = require('../util/db');
 
-module.exports = (sequelize, DataTypes) => {
-  class Progress extends Model {
-    static associate(models) {
-      Progress.belongsTo(models.User, { foreignKey: "user_id", onDelete: "CASCADE" });
-    }
-  }
+class Progress extends Model {}
 
-  Progress.init(
-    {
-      user_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      activity_type: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      achieved_value: {
-        type: DataTypes.DECIMAL,
-        allowNull: false,
-      },
-      date: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
+Progress.init({
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  user_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Users',
+      key: 'id'
     },
-    {
-      sequelize,
-      modelName: "Progress",
-      tableName: "Progresses",
-      timestamps: true,
-      underscored: true,
-    }
-  );
+    onDelete: 'CASCADE'
+  },
+  activity_type: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  achieved_value: {
+    type: DataTypes.DECIMAL,
+    allowNull: false
+  },
+  date: {
+    type: DataTypes.DATE,
+    allowNull: false
+  },
+  created_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
+  },
+  updated_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
+  }
+}, {
+  sequelize,
+  modelName: 'Progress',
+  tableName: 'Progresses',
+  timestamps: true,
+  underscored: true
+});
 
-  return Progress;
-};
+module.exports = Progress;

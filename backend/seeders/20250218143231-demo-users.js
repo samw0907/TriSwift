@@ -1,27 +1,23 @@
-'use strict';
+const { User } = require('../models');
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface) {
-    await queryInterface.bulkInsert("Users", [
+  up: async () => {
+    await User.bulkCreate([
       {
-        name: "Fast Man",
-        email: "fastman@example.com",
-        password_hash: "hashedpassword123", // Hash later for security
-        created_at: new Date(),
-        updated_at: new Date(),
+        name: 'Fast Man',
+        email: 'fastman@example.com',
+        password_hash: 'hashedpassword123',
       },
       {
-        name: "Fast Woman",
-        email: "fastwoman@example.com",
-        password_hash: "hashedpassword123",
-        created_at: new Date(),
-        updated_at: new Date(),
+        name: 'Fast Woman',
+        email: 'fastwoman@example.com',
+        password_hash: 'hashedpassword123',
       }
     ]);
   },
 
-  async down(queryInterface) {
-    await queryInterface.bulkDelete("Users", null, {});
-  },
+  down: async () => {
+    await User.destroy({ where: {} });
+  }
 };
+

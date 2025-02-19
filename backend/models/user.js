@@ -1,46 +1,51 @@
-"use strict";
-const { Model } = require("sequelize");
+const { Model, DataTypes } = require('sequelize');
+const bcrypt = require('bcrypt');
+const { sequelize } = require('../util/db');
 
-module.exports = (sequelize, DataTypes) => {
-  class User extends Model {
-    static associate(models) {
+class User extends Model {}
+
+User.init({
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  email: {
+    type: DataTypes.STRING,
+    unique: true,
+    allowNull: false
+  },
+  password_hash: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  created_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
+  },
+  updated_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
+  }
+}, {
+  sequelize,
+  modelName: 'User',
+  tableName: 'Users',
+  timestamps: true,
+  underscored: true,
+  hooks: {
+    beforeCreate: async (user) => {
+      if (user.password_hash) {
+        user.password_hash = await bcrypt.hash(user.password_hash, 10);
+      }
     }
   }
+});
 
-  User.init(
-    {
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      password_hash: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      created_at: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
-      },
-      updated_at: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
-      },
-    },
-    {
-      sequelize,
-      modelName: "User",
-      tableName: "Users",
-      timestamps: true,
-      underscored: true,
-    }
-  );
-
-  return User;
-};
+module.exports = User;

@@ -1,64 +1,62 @@
-"use strict";
-const { Model } = require("sequelize");
+const { Model, DataTypes } = require('sequelize');
+const { sequelize } = require('../util/db');
 
-module.exports = (sequelize, DataTypes) => {
-  class Session extends Model {
-    static associate(models) {
-      Session.belongsTo(models.User, { foreignKey: "user_id", onDelete: "CASCADE" });
-    }
-  }
+class Session extends Model {}
 
-  Session.init(
-    {
-      user_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      session_type: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      date: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
-      total_duration: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      total_distance: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false,
-      },
-      weather_temp: {
-        type: DataTypes.DECIMAL(5, 2),
-      },
-      weather_humidity: {
-        type: DataTypes.INTEGER,
-        validate: { min: 0, max: 100 },
-      },
-      weather_wind_speed: {
-        type: DataTypes.DECIMAL(5, 2),
-      },
-      created_at: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
-      },
-      updated_at: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
-      },
+Session.init({
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  user_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Users',
+      key: 'id'
     },
-    {
-      sequelize,
-      modelName: "Session",
-      tableName: "Sessions",
-      timestamps: true,
-      underscored: true,
-    }
-  );
+    onDelete: 'CASCADE'
+  },
+  session_type: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  date: {
+    type: DataTypes.DATE,
+    allowNull: false
+  },
+  total_duration: {
+    type: DataTypes.STRING
+  },
+  total_distance: {
+    type: DataTypes.DECIMAL
+  },
+  weather_temp: {
+    type: DataTypes.DECIMAL
+  },
+  weather_humidity: {
+    type: DataTypes.INTEGER
+  },
+  weather_wind_speed: {
+    type: DataTypes.DECIMAL
+  },
+  created_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
+  },
+  updated_at: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
+  }
+}, {
+  sequelize,
+  modelName: 'Session',
+  tableName: 'Sessions',
+  timestamps: true,
+  underscored: true
+});
 
-  return Session;
-};
+module.exports = Session;

@@ -1,21 +1,19 @@
-"use strict";
+const { Transition } = require('../models');
 
 module.exports = {
-  async up(queryInterface) {
-    await queryInterface.bulkInsert("Transitions", [
+  up: async () => {
+    await Transition.bulkCreate([
       {
-        session_id: 2, // Fast Woman's multi-sport session
-        previous_sport: "swim",
-        next_sport: "bike",
-        transition_time: 120, // 2 minutes
-        comments: "Struggled getting wetsuit off",
-        created_at: new Date(),
-        updated_at: new Date(),
-      },
+        session_id: 2,
+        previous_sport: 'swim',
+        next_sport: 'bike',
+        transition_time: '0h 2m 0s',
+        comments: 'Struggled getting wetsuit off',
+      }
     ]);
   },
 
-  async down(queryInterface) {
-    await queryInterface.bulkDelete("Transitions", null, {});
-  },
+  down: async () => {
+    await Transition.destroy({ where: {} });
+  }
 };

@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const { PORT } = require("./util/config");
 const { connectToDatabase } = require("./util/db");
+const setupApolloServer = require("./graphql");
 
 const sessionRoutes = require("./routes/sessions");
 const authRoutes = require("./routes/auth");
@@ -25,6 +26,7 @@ app.use((err, req, res, next) => {
 
 const start = async () => {
   await connectToDatabase();
+  await setupApolloServer(app);
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });

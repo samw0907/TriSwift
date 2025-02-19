@@ -50,8 +50,8 @@ const typeDefs = gql`
     date: String!
   }
 
-  # Input Types for Mutations
-  input sessionInput {
+  # Input Types for Mutations (FIXED PascalCase)
+  input SessionInput {
     userId: ID!
     sessionType: String!
     date: String!
@@ -62,7 +62,7 @@ const typeDefs = gql`
     weatherWindSpeed: Float
   }
 
-  input sessionActivityInput {
+  input SessionActivityInput {
     sessionId: ID!
     sportType: String!
     duration: String
@@ -74,14 +74,14 @@ const typeDefs = gql`
     power: Int
   }
 
-  input personalRecordInput {
+  input PersonalRecordInput {
     userId: ID!
     sportType: String!
     bestTime: Int
     maxPower: Int
   }
 
-  input progressInput {
+  input ProgressInput {
     userId: ID!
     activityType: String!
     achievedValue: Float
@@ -100,10 +100,10 @@ const typeDefs = gql`
 
   # Mutations
   type Mutation {
-    createSession(input: sessionInput!): Session
-    createSessionActivity(input: sessionActivityInput!): SessionActivity
-    createPersonalRecord(input: personalRecordInput!): PersonalRecord
-    createProgress(input: progressInput!): Progress
+    createSession(input: SessionInput!): Session
+    createSessionActivity(input: SessionActivityInput!): SessionActivity
+    createPersonalRecord(input: PersonalRecordInput!): PersonalRecord
+    createProgress(input: ProgressInput!): Progress
   }
 `;
 

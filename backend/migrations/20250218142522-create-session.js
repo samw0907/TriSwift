@@ -1,60 +1,58 @@
-"use strict";
+const { DataTypes } = require('sequelize');
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Sessions", {
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable('Sessions', {
       id: {
-        allowNull: false,
-        autoIncrement: true,
+        type: DataTypes.INTEGER,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        autoIncrement: true,
       },
       user_id: {
-        type: Sequelize.INTEGER,
-        references: { model: "Users", key: "id" },
-        onDelete: "CASCADE",
+        type: DataTypes.INTEGER,
+        references: {
+          model: 'Users',
+          key: 'id',
+        },
+        onDelete: 'CASCADE'
       },
       session_type: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
       },
       date: {
-        type: Sequelize.DATE,
+        type: DataTypes.DATE,
         allowNull: false,
       },
       total_duration: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
+        type: DataTypes.STRING,
       },
       total_distance: {
-        type: Sequelize.DECIMAL(10, 2),
-        allowNull: false,
+        type: DataTypes.DECIMAL,
       },
       weather_temp: {
-        type: Sequelize.DECIMAL(5, 2),
+        type: DataTypes.DECIMAL,
       },
       weather_humidity: {
-        type: Sequelize.INTEGER,
-        validate: { min: 0, max: 100 },
+        type: DataTypes.INTEGER,
       },
       weather_wind_speed: {
-        type: Sequelize.DECIMAL(5, 2),
+        type: DataTypes.DECIMAL,
       },
       created_at: {
+        type: DataTypes.DATE,
         allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        defaultValue: Sequelize.NOW,
       },
       updated_at: {
+        type: DataTypes.DATE,
         allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        defaultValue: Sequelize.NOW,
       },
     });
   },
 
-  async down(queryInterface) {
-    await queryInterface.dropTable("Sessions");
+  down: async (queryInterface) => {
+    await queryInterface.dropTable('Sessions');
   },
 };

@@ -1,50 +1,48 @@
-"use strict";
+const { DataTypes } = require('sequelize');
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("PersonalRecords", {
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable('PersonalRecords', {
       id: {
-        allowNull: false,
-        autoIncrement: true,
+        type: DataTypes.INTEGER,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        autoIncrement: true,
       },
       user_id: {
-        type: Sequelize.INTEGER,
-        references: { model: "Users", key: "id" },
-        onDelete: "CASCADE",
+        type: DataTypes.INTEGER,
+        references: {
+          model: 'Users',
+          key: 'id',
+        },
+        onDelete: 'CASCADE'
       },
       activity_type: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
       },
       distance: {
-        type: Sequelize.DECIMAL,
-        allowNull: false,
+        type: DataTypes.DECIMAL,
       },
       best_time: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
+        type: DataTypes.STRING,
       },
       record_date: {
-        type: Sequelize.DATE,
-        allowNull: false,
+        type: DataTypes.DATE,
       },
       created_at: {
+        type: DataTypes.DATE,
         allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        defaultValue: Sequelize.NOW,
       },
       updated_at: {
+        type: DataTypes.DATE,
         allowNull: false,
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+        defaultValue: Sequelize.NOW,
       },
     });
   },
 
-  async down(queryInterface) {
-    await queryInterface.dropTable("PersonalRecords");
+  down: async (queryInterface) => {
+    await queryInterface.dropTable('PersonalRecords');
   },
 };

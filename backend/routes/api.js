@@ -3,7 +3,6 @@ const { User, Session, SessionActivity, Transition, PersonalRecord, Progress } =
 
 const router = express.Router();
 
-// ✅ Get all sessions
 router.get("/sessions", async (req, res) => {
   try {
     const sessions = await Session.findAll({ include: SessionActivity });
@@ -13,7 +12,6 @@ router.get("/sessions", async (req, res) => {
   }
 });
 
-// ✅ Add a new session
 router.post("/sessions", async (req, res) => {
   try {
     const session = await Session.create(req.body);
@@ -23,7 +21,6 @@ router.post("/sessions", async (req, res) => {
   }
 });
 
-// ✅ Get all activities
 router.get("/activities", async (req, res) => {
   try {
     const activities = await SessionActivity.findAll();
@@ -33,7 +30,6 @@ router.get("/activities", async (req, res) => {
   }
 });
 
-// ✅ Add a new activity
 router.post("/activities", async (req, res) => {
   try {
     const activity = await SessionActivity.create(req.body);
@@ -43,7 +39,6 @@ router.post("/activities", async (req, res) => {
   }
 });
 
-// ✅ Fetch personal records
 router.get("/personal-records/:userId", async (req, res) => {
   try {
     const records = await PersonalRecord.findAll({ where: { user_id: req.params.userId } });
@@ -53,7 +48,6 @@ router.get("/personal-records/:userId", async (req, res) => {
   }
 });
 
-// ✅ Fetch user progress
 router.get("/progress/:userId", async (req, res) => {
   try {
     const progress = await Progress.findAll({ where: { user_id: req.params.userId } });

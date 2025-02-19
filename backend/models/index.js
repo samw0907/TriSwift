@@ -1,43 +1,30 @@
-'use strict';
+const User = require("./user");
+const Session = require("./session");
+const SessionActivity = require("./sessionActivity");
+const Transition = require("./transition");
+const PersonalRecord = require("./personalrRecord");
+const Progress = require("./progress");
 
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
-const process = require('process');
-const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
-const db = {};
+User.hasMany(Session, { foreignKey: "user_id", onDelete: "CASCADE" });
+Session.belongsTo(User, { foreignKey: "user_id" });
 
-let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
+Session.hasMany(SessionActivity, { foreignKey: "session_id", onDelete: "CASCADE" });
+SessionActivity.belongsTo(Session, { foreignKey: "session_id" });
 
-fs
-  .readdirSync(__dirname)
-  .filter(file => {
-    return (
-      file.indexOf('.') !== 0 &&
-      file !== basename &&
-      file.slice(-3) === '.js' &&
-      file.indexOf('.test.js') === -1
-    );
-  })
-  .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
-  });
+Session.hasMany(Transition, { foreignKey: "session_id", onDelete: "CASCADE" });
+Transition.belongsTo(Session, { foreignKey: "session_id" });
 
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
-});
+User.hasMany(PersonalRecord, { foreignKey: "user_id", onDelete: "CASCADE" });
+PersonalRecord.belongsTo(User, { foreignKey: "user_id" });
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
+User.hasMany(Progress, { foreignKey: "user_id", onDelete: "CASCADE" });
+Progress.belongsTo(User, { foreignKey: "user_id" });
 
-module.exports = db;
+module.exports = {
+  User,
+  Session,
+  SessionActivity,
+  Transition,
+  PersonalRecord,
+  Progress,
+};

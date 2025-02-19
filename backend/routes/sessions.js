@@ -1,15 +1,27 @@
 const express = require("express");
-const { Session } = require("../models"); // Ensure this matches your Sequelize models path
+const { Session, SessionActivity } = require("../models");
+const authMiddleware = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-router.get("/sessions", async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
-    const sessions = await Session.findAll();
+    const sessions = await Session.findAll({
+      include: SessionActivity,
+      where: { user_id: req.user.id },
+    });
     res.json(sessions);
   } catch (error) {
-    console.error("Error fetching sessions:", error);
     res.status(500).json({ error: "Failed to fetch sessions" });
+  }
+});
+
+router.post("/", authMiddleware, async (req, res) => {
+  try {
+    const session = await Session.create({ ...req.body, user_id: req.user.id });
+    res.status(201).json(session);
+  } catch (error) {
+    res.status(400).json({ error: "Failed to create session" });
   }
 });
 

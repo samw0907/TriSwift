@@ -34,13 +34,14 @@ const typeDefs = gql`
     power: Int
   }
 
-  type PersonalRecord {
-    id: ID!
-    userId: ID!
-    sportType: String!
-    bestTime: Int
-    maxPower: Int
-  }
+type PersonalRecord {
+  id: ID!
+  userId: ID!
+  activityType: String!
+  distance: Float
+  bestTime: Int
+  recordDate: String!
+}
 
   type Progress {
     id: ID!

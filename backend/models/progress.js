@@ -29,23 +29,13 @@ Progress.init({
   date: {
     type: DataTypes.DATE,
     allowNull: false
-  },
-  created_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW
   }
 }, {
   sequelize,
   modelName: 'Progress',
-  tableName: 'Progresses',
+  tableName: 'Progress',
   timestamps: true,
-  underscored: true
+  underscored: false 
 });
 
 module.exports = Progress;

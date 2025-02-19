@@ -2,7 +2,7 @@ const User = require("./user");
 const Session = require("./session");
 const SessionActivity = require("./sessionActivity");
 const Transition = require("./transition");
-const PersonalRecord = require("./personalrRecord");
+const PersonalRecord = require("./personalRecord");
 const Progress = require("./progress");
 
 User.hasMany(Session, { foreignKey: "user_id", onDelete: "CASCADE" });

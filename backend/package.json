@@ -7,7 +7,9 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "lint": "eslint . --ext .js",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "migration:up": "npx sequelize-cli db:migrate",
+    "migration:down": "npx sequelize-cli db:migrate:undo"
   },
   "keywords": [],
   "author": "",

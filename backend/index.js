@@ -2,16 +2,14 @@ require('dotenv').config();
 
 const express = require('express')
 const cors = require('cors')
-const { Sequelize } = require('sequelize');
+const { sequelize } = require("./models"); 
 
 const app = express()
 app.use(cors())
 app.use(express.json())
 
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: 'postgres',
-  logging: console.log, // Logs SQL queries (useful for debugging)
-});
+const apiRoutes = require("./routes/api");
+app.use("/api", apiRoutes);
 
 sequelize
   .authenticate()
@@ -24,6 +22,7 @@ app.get('/', (req, res) => {
 })
 
 const PORT = process.env.PORT || 3001
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
+
+sequelize.sync().then(() => {
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}).catch(err => console.error("Database connection error:", err));

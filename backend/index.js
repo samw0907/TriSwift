@@ -3,7 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const { PORT } = require("./util/config");
 const { connectToDatabase } = require("./util/db");
-const setupApolloServer = require("./graphql");
+const { setupApolloServer } = require("./graphql");
 
 const sessionRoutes = require("./routes/sessions");
 const authRoutes = require("./routes/auth");

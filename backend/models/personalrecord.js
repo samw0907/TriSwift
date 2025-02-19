@@ -35,8 +35,8 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "PersonalRecord",
       tableName: "PersonalRecords",
-      timestamps: true, // ✅ Enables automatic timestamps
-      underscored: true, // ✅ Uses snake_case instead of camelCase
+      timestamps: true,
+      underscored: true,
     }
   );
 

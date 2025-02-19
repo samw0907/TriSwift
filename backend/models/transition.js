@@ -1,8 +1,5 @@
 'use strict';
-const {
-  Model
-  "use strict";
-  const { Model } = require("sequelize");
+const { Model } = require("sequelize");
   
   module.exports = (sequelize, DataTypes) => {
     class Transition extends Model {
@@ -45,8 +42,8 @@ const {
         sequelize,
         modelName: "Transition",
         tableName: "Transitions",
-        timestamps: true, // ✅ Enables automatic timestamps
-        underscored: true, // ✅ Uses snake_case instead of camelCase
+        timestamps: true,
+        underscored: true,
       }
     );
   

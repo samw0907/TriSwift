@@ -30,9 +30,9 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Progress",
-      tableName: "Progresses", // ✅ Explicitly setting the table name
-      timestamps: true, // ✅ Enables automatic timestamps
-      underscored: true, // ✅ Uses snake_case for consistency
+      tableName: "Progresses",
+      timestamps: true,
+      underscored: true,
     }
   );
 

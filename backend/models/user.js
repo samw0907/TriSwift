@@ -4,7 +4,6 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
-      // Define associations here if needed
     }
   }
 
@@ -37,9 +36,9 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "User",
-      tableName: "Users", // Ensures table name matches exactly
-      timestamps: true, // ✅ Enables Sequelize's automatic timestamps
-      underscored: true, // ✅ Uses snake_case instead of camelCase
+      tableName: "Users",
+      timestamps: true,
+      underscored: true,
     }
   );
 

@@ -148,7 +148,8 @@ const resolvers = {
           console.error("Fetch Personal Records Error:", error);
           throw new Error("Failed to fetch personal records: " + error.message);
         }
-      },
+      }
+    },
 
   Mutation: {
     createSession: async (_, { input }) => {
@@ -440,7 +441,6 @@ const resolvers = {
       }
     },
   }
- }
 }
 
 module.exports = resolvers;

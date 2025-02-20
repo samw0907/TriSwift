@@ -158,7 +158,6 @@ const typeDefs = gql`
     session(id: ID!): Session
     sessionActivities(sessionId: ID!): [SessionActivity]
     personalRecords(userId: ID!): [PersonalRecord]
-    progress(userId: ID!): [Progress]
     transitions(sessionId: ID!): [Transition]
   }
 
@@ -168,7 +167,6 @@ const typeDefs = gql`
     createSessionActivity(input: SessionActivityInput!): SessionActivity
     createTransition(input: TransitionInput!): Transition
     createPersonalRecord(input: PersonalRecordInput!): PersonalRecord
-    createProgress(input: ProgressInput!): Progress
     createUser(input: CreateUserInput!): User
 
     updateSession(id: ID!, input: UpdateSessionInput!): Session
@@ -182,7 +180,7 @@ const typeDefs = gql`
     deleteTransition(id: ID!): MessageResponse
     deletePersonalRecord(id: ID!): MessageResponse
     deleteUser(id: ID!): MessageResponse
-    }
+  }
 
   type MessageResponse {
     message: String!

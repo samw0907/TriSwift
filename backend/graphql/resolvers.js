@@ -205,19 +205,27 @@ const resolvers = {
     },
 
     createProgress: async (_, { input }) => {
-      try {
-        return await Progress.create({
-          user_id: input.userId, 
-          activity_type: input.activityType,
-          achieved_value: input.achievedValue,
-          date: new Date(input.date),
-        });
-      } catch (error) {
-        console.error("Create Progress Error:", error);
-        throw new Error("Failed to create progress entry: " + error.message);
-      }
-    },
-  },
+        try {
+          const progress = await Progress.create({
+            user_id: input.userId,
+            activity_type: input.activityType,
+            achieved_value: input.achievedValue,
+            date: new Date(input.date),
+          });
+    
+          return {
+            id: progress.id,
+            userId: progress.user_id,
+            activityType: progress.activity_type,
+            achievedValue: progress.achieved_value,
+            date: progress.date.toISOString(),
+          };
+        } catch (error) {
+          console.error("Create Progress Error:", error);
+          throw new Error("Failed to create progress: " + error.message);
+        }
+      },
+    }
 };
 
 module.exports = resolvers;

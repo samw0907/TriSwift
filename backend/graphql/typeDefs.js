@@ -64,6 +64,8 @@ const typeDefs = gql`
     activityType: String!
     achievedValue: Float
     date: String!
+    created_at: String!
+    updated_at: String!
   }
 
   # Input Types for Mutations (FIXED PascalCase)

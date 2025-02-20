@@ -22,9 +22,9 @@ const resolvers = {
             return transitions.map(t => ({
               id: t.id,
               sessionId: t.session_id,
-              previousSport: t.previousSport,
-              nextSport: t.nextSport,
-              transitionTime: t.transitionTime,
+              previousSport: t.previous_sport,
+              nextSport: t.next_sport,
+              transitionTime: t.transition_time,
               comments: t.comments,
               created_at: t.created_at.toISOString(),
               updated_at: t.updated_at.toISOString(),
@@ -154,8 +154,8 @@ const resolvers = {
             activityType: entry.activity_type,
             achievedValue: entry.achieved_value,
             date: entry.date ? entry.date.toISOString() : null,
-            created_at: entry.createdAt ? entry.created_at.toISOString() : null,
-            updated_at: entry.updatedAt ? entry.updated_at.toISOString() : null,
+            created_at: entry.created_at ? entry.created_at.toISOString() : null,
+            updated_at: entry.updated_at ? entry.updated_at.toISOString() : null,
           }));
         } catch (error) {
           console.error("Fetch Progress Error:", error);
@@ -334,6 +334,8 @@ const resolvers = {
             activityType: progress.activity_type,
             achievedValue: progress.achieved_value,
             date: progress.date.toISOString(),
+            created_at: progress.created_at.toISOString(),
+            updated_at: progress.updated_at.toISOString()
           };
         } catch (error) {
           console.error("Create Progress Error:", error);

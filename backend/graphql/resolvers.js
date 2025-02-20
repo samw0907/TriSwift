@@ -222,8 +222,8 @@ const resolvers = {
           id: user.id,
           name: user.name,
           email: user.email,
-          createdAt: user.created_at.toISOString(),
-          updatedAt: user.updated_at.toISOString(),
+          created_at: user.created_at.toISOString(),
+          updated_at: user.updated_at.toISOString(),
         };
       } catch (error) {
         console.error("Create User Error:", error);
@@ -235,18 +235,18 @@ const resolvers = {
       try {
         const transition = await Transition.create({
           session_id: input.sessionId,
-          previousSport: input.previousSport,
-          nextSport: input.nextSport,
-          transitionTime: input.transitionTime,
+          previous_sport: input.previousSport,
+          next_sport: input.nextSport,
+          transition_time: input.transitionTime,
           comments: input.comments,
         });
-
+    
         return {
           id: transition.id,
           sessionId: transition.session_id,
-          previousSport: transition.previousSport,
-          nextSport: transition.nextSport,
-          transitionTime: transition.transitionTime,
+          previousSport: transition.previous_sport,
+          nextSport: transition.next_sport,
+          transitionTime: transition.transition_time,
           comments: transition.comments,
           created_at: transition.created_at.toISOString(),
           updated_at: transition.updated_at.toISOString(),
@@ -256,6 +256,7 @@ const resolvers = {
         throw new Error("Failed to create transition: " + error.message);
       }
     },
+    
 
     createSessionActivity: async (_, { input }) => {
         try {

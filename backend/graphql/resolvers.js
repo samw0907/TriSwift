@@ -172,23 +172,36 @@ const resolvers = {
     },
 
     createSessionActivity: async (_, { input }) => {
-      try {
-        return await SessionActivity.create({
-          session_id: input.sessionId,
-          sport_type: input.sportType,
-          duration: input.duration,
-          distance: input.distance,
-          heart_rate_min: input.heartRateMin,
-          heart_rate_max: input.heartRateMax,
-          heart_rate_avg: input.heartRateAvg,
-          cadence: input.cadence,
-          power: input.power,
-        });
-      } catch (error) {
-        console.error("Create Session Activity Error:", error);
-        throw new Error("Failed to create session activity: " + error.message);
-      }
-    },
+        try {
+          const activity = await SessionActivity.create({
+            session_id: input.sessionId, // ✅ Ensure it matches DB column
+            sport_type: input.sportType,
+            duration: input.duration,
+            distance: input.distance,
+            heart_rate_min: input.heartRateMin,
+            heart_rate_max: input.heartRateMax,
+            heart_rate_avg: input.heartRateAvg,
+            cadence: input.cadence,
+            power: input.power,
+          });
+      
+          return {
+            id: activity.id,
+            sessionId: activity.session_id,
+            sportType: activity.sport_type,
+            duration: activity.duration,
+            distance: activity.distance,
+            heartRateMin: activity.heart_rate_min,
+            heartRateMax: activity.heart_rate_max,
+            heartRateAvg: activity.heart_rate_avg,
+            cadence: activity.cadence,
+            power: activity.power,
+          };
+        } catch (error) {
+          console.error("Create Session Activity Error:", error);
+          throw new Error("Failed to create session activity: " + error.message);
+        }
+      },
 
     createPersonalRecord: async (_, { input }) => {
       try {

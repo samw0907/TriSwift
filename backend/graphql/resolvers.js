@@ -1,6 +1,4 @@
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { SECRET } = require("../util/config");
 const { User, Session, SessionActivity, PersonalRecord, Progress, Transition } = require("../models");
 
 const resolvers = {
@@ -143,6 +141,8 @@ const resolvers = {
             distance: record.distance,
             bestTime: record.best_time,
             recordDate: record.record_date ? record.record_date.toISOString() : null,
+            created_at: record.created_at ? record.created_at.toISOString() : null,
+            updated_at: record.updated_at ? record.updated_at.toISOString() : null
           }));
         } catch (error) {
           console.error("Fetch Personal Records Error:", error);
@@ -242,19 +242,19 @@ const resolvers = {
     createTransition: async (_, { input }) => {
       try {
         const transition = await Transition.create({
-          session_id: input.sessionId,
-          previous_sport: input.previousSport,
-          next_sport: input.nextSport,
-          transition_time: input.transitionTime,
+          session_id: input.session_id,
+          previous_sport: input.previous_sport,
+          next_sport: input.next_sport,
+          transition_time: input.transition_time,
           comments: input.comments,
         });
     
         return {
           id: transition.id,
-          sessionId: transition.session_id,
-          previousSport: transition.previous_sport,
-          nextSport: transition.next_sport,
-          transitionTime: transition.transition_time,
+          session_id: transition.session_id,
+          previous_sport: transition.previous_sport,
+          next_sport: transition.next_sport,
+          transition_time: transition.transition_time,
           comments: transition.comments,
           created_at: transition.created_at.toISOString(),
           updated_at: transition.updated_at.toISOString(),
@@ -265,7 +265,6 @@ const resolvers = {
       }
     },
     
-
     createSessionActivity: async (_, { input }) => {
         try {
           const activity = await SessionActivity.create({
@@ -322,6 +321,8 @@ const resolvers = {
                 distance: record.distance,
                 bestTime: record.best_time,
                 recordDate: record.record_date ? record.record_date.toISOString() : null,
+                created_at: record.created_at ? record.created_at.toISOString() : null,
+                updated_at: record.updated_at ? record.updated_at.toISOString() : null
             };
         } catch (error) {
             console.error("Create Personal Record Error:", error);

@@ -42,14 +42,14 @@ const typeDefs = gql`
 
   type Transition {
     id: ID!
-    sessionId: ID!
-    previousSport: String!
-    nextSport: String!
-    transitionTime: Int!
+    session_id: ID!
+    previous_sport: String!
+    next_sport: String!
+    transition_time: Int!
     comments: String
     created_at: String!
     updated_at: String!
-  }
+}
 
   type PersonalRecord {
     id: ID!
@@ -97,10 +97,10 @@ const typeDefs = gql`
   }
   
   input TransitionInput {
-    sessionId: ID!
-    previousSport: String!
-    nextSport: String!
-    transitionTime: Int!
+    session_id: ID!
+    previous_sport: String!
+    next_sport: String!
+    transition_time: Int!
     comments: String
   }
 

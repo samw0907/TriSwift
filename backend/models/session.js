@@ -48,7 +48,9 @@ Session.init({
   modelName: 'Session',
   tableName: 'Sessions',
   timestamps: true,
-  underscored: true
+  underscored: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
 });
 
 module.exports = Session;

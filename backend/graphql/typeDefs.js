@@ -21,6 +21,8 @@ const typeDefs = gql`
     weatherHumidity: Int
     weatherWindSpeed: Float
     activities: [SessionActivity]
+    created_at: String!
+    updated_at: String!
   }
 
   type SessionActivity {
@@ -34,6 +36,8 @@ const typeDefs = gql`
     heartRateAvg: Int
     cadence: Int
     power: Int
+    created_at: String!
+    updated_at: String!
   }
 
   type Transition {

@@ -50,6 +50,8 @@ const resolvers = {
               weatherTemp: session.weather_temp,
               weatherHumidity: session.weather_humidity,
               weatherWindSpeed: session.weather_wind_speed,
+              created_at: session.created_at.toISOString(),
+              updated_at: session.updated_at.toISOString(),
               activities: session.SessionActivities.map(activity => ({
                 id: activity.id,
                 sessionId: activity.session_id,
@@ -85,6 +87,8 @@ const resolvers = {
             weatherTemp: session.weather_temp,
             weatherHumidity: session.weather_humidity,
             weatherWindSpeed: session.weather_wind_speed,
+            created_at: session.created_at.toISOString(),
+            updated_at: session.updated_at.toISOString(),
             activities: session.SessionActivities.map(activity => ({
               id: activity.id,
               sessionId: activity.session_id,
@@ -119,6 +123,8 @@ const resolvers = {
             heartRateAvg: activity.heart_rate_avg,
             cadence: activity.cadence,
             power: activity.power,
+            created_at: activity.created_at.toISOString(),
+            updated_at: activity.updated_at.toISOString(),
           }));
         } catch (error) {
           console.error("Fetch Session Activities Error:", error);
@@ -193,6 +199,8 @@ const resolvers = {
           weatherTemp: session.weather_temp,
           weatherHumidity: session.weather_humidity,
           weatherWindSpeed: session.weather_wind_speed,
+          created_at: session.created_at ? session.created_at.toISOString() : null,
+          updated_at: session.updated_at ? session.updated_at.toISOString() : null,
         };
       } catch (error) {
         console.error("Create Session Error:", error);
@@ -283,6 +291,8 @@ const resolvers = {
             heartRateAvg: activity.heart_rate_avg,
             cadence: activity.cadence,
             power: activity.power,
+            created_at: activity.created_at.toISOString(),
+            updated_at: activity.updated_at.toISOString()
           };
         } catch (error) {
           console.error("Create Session Activity Error:", error);

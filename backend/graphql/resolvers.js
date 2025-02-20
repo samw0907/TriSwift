@@ -18,10 +18,12 @@ const resolvers = {
         }
       },
   
-      sessions: async () => {
+      sessions: async (_, { userId }) => {
         try {
-          const sessions = await Session.findAll({ include: SessionActivity });
-  
+          const sessions = userId 
+            ? await Session.findAll({ where: { user_id: userId }, include: SessionActivity })
+            : await Session.findAll({ include: SessionActivity });
+    
           return sessions.map(session => ({
             id: session.id,
             userId: session.user_id,

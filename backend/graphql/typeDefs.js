@@ -93,7 +93,7 @@ type PersonalRecord {
   type Query {
     users: [User]
     user(id: ID!): User 
-    sessions: [Session]
+    sessions(userId: ID): [Session!]! 
     session(id: ID!): Session
     sessionActivities(sessionId: ID!): [SessionActivity]
     personalRecords(userId: ID!): [PersonalRecord]

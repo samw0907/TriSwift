@@ -62,16 +62,6 @@ const typeDefs = gql`
     updated_at: String!
   }
 
-  type Progress {
-    id: ID!
-    userId: ID!
-    activityType: String!
-    achievedValue: Float
-    date: String!
-    created_at: String!
-    updated_at: String!
-  }
-
   # Input Types for Mutations (FIXED PascalCase)
   input SessionInput {
     userId: ID!
@@ -110,13 +100,6 @@ const typeDefs = gql`
     distance: Float
     bestTime: Int!
     maxPower: Int
-  }
-
-  input ProgressInput {
-    userId: ID!
-    activityType: String!
-    achievedValue: Float
-    date: String!
   }
 
   # Input for User Creation

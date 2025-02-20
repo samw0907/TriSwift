@@ -3,7 +3,6 @@ const Session = require("./session");
 const SessionActivity = require("./sessionActivity");
 const Transition = require("./transition");
 const PersonalRecord = require("./personalRecord");
-const Progress = require("./progress");
 
 User.hasMany(Session, { foreignKey: "user_id", onDelete: "CASCADE" });
 Session.belongsTo(User, { foreignKey: "user_id" });
@@ -17,14 +16,10 @@ Transition.belongsTo(Session, { foreignKey: "session_id" });
 User.hasMany(PersonalRecord, { foreignKey: "user_id", onDelete: "CASCADE" });
 PersonalRecord.belongsTo(User, { foreignKey: "user_id" });
 
-User.hasMany(Progress, { foreignKey: "user_id", onDelete: "CASCADE" });
-Progress.belongsTo(User, { foreignKey: "user_id" });
-
 module.exports = {
   User,
   Session,
   SessionActivity,
   Transition,
   PersonalRecord,
-  Progress,
 };

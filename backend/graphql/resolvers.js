@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const { User, Session, SessionActivity, PersonalRecord, Progress, Transition } = require("../models");
+const { User, Session, SessionActivity, PersonalRecord, Transition } = require("../models");
 
 const resolvers = {
     Query: {
@@ -149,26 +149,6 @@ const resolvers = {
           throw new Error("Failed to fetch personal records: " + error.message);
         }
       },
-      
-      progress: async (_, { userId }) => {
-        try {
-          const progressEntries = await Progress.findAll({ where: { user_id: userId } });
-      
-          return progressEntries.map(entry => ({
-            id: entry.id,
-            userId: entry.user_id,
-            activityType: entry.activity_type,
-            achievedValue: entry.achieved_value,
-            date: entry.date ? entry.date.toISOString() : null,
-            created_at: entry.created_at ? entry.created_at.toISOString() : null,
-            updated_at: entry.updated_at ? entry.updated_at.toISOString() : null,
-          }));
-        } catch (error) {
-          console.error("Fetch Progress Error:", error);
-          throw new Error("Failed to fetch progress: " + error.message);
-        }
-      },
-    },  
 
   Mutation: {
     createSession: async (_, { input }) => {
@@ -328,32 +308,9 @@ const resolvers = {
             console.error("Create Personal Record Error:", error);
             throw new Error("Failed to create personal record: " + error.message);
         }
-    },
-
-    createProgress: async (_, { input }) => {
-        try {
-          const progress = await Progress.create({
-            user_id: input.userId,
-            activity_type: input.activityType,
-            achieved_value: input.achievedValue,
-            date: new Date(input.date),
-          });
-    
-          return {
-            id: progress.id,
-            userId: progress.user_id,
-            activityType: progress.activity_type,
-            achievedValue: progress.achieved_value,
-            date: progress.date.toISOString(),
-            created_at: progress.created_at.toISOString(),
-            updated_at: progress.updated_at.toISOString()
-          };
-        } catch (error) {
-          console.error("Create Progress Error:", error);
-          throw new Error("Failed to create progress: " + error.message);
-        }
-      },
     }
-};
+  }
+}
+}
 
 module.exports = resolvers;

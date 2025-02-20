@@ -6,6 +6,17 @@ const { User, Session, SessionActivity, PersonalRecord, Progress } = require("..
 const resolvers = {
     Query: {
       users: async () => await User.findAll(),
+
+      user: async (_, { id }) => {
+        try {
+          const user = await User.findByPk(id, { include: Session });
+          if (!user) throw new Error("User not found");
+          return user;
+        } catch (error) {
+          console.error("Fetch User Error:", error);
+          throw new Error("Failed to fetch user: " + error.message);
+        }
+      },
   
       sessions: async () => {
         try {
@@ -146,7 +157,7 @@ const resolvers = {
         const session = await Session.create({
           user_id: userId,
           session_type: sessionType,
-          date: new Date(date), // Ensure date format is correct
+          date: new Date(date),
           total_duration: totalDuration,
           total_distance: totalDistance,
           weather_temp: weatherTemp,
@@ -174,7 +185,7 @@ const resolvers = {
     createSessionActivity: async (_, { input }) => {
         try {
           const activity = await SessionActivity.create({
-            session_id: input.sessionId, // ✅ Ensure it matches DB column
+            session_id: input.sessionId,
             sport_type: input.sportType,
             duration: input.duration,
             distance: input.distance,

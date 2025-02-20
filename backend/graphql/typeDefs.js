@@ -36,6 +36,17 @@ const typeDefs = gql`
     power: Int
   }
 
+  type Transition {
+    id: ID!
+    sessionId: ID!
+    previousSport: String!
+    nextSport: String!
+    transitionTime: Int!
+    comments: String
+    created_at: String!
+    updated_at: String!
+  }
+
   type PersonalRecord {
     id: ID!
     userId: ID!
@@ -76,6 +87,14 @@ const typeDefs = gql`
     cadence: Int
     power: Int
   }
+  
+  input TransitionInput {
+    sessionId: ID!
+    previousSport: String!
+    nextSport: String!
+    transitionTime: Int!
+    comments: String
+  }
 
   input PersonalRecordInput {
     userId: ID!
@@ -108,12 +127,14 @@ const typeDefs = gql`
     sessionActivities(sessionId: ID!): [SessionActivity]
     personalRecords(userId: ID!): [PersonalRecord]
     progress(userId: ID!): [Progress]
+    transitions(sessionId: ID!): [Transition]
   }
 
   # Mutations
   type Mutation {
     createSession(input: SessionInput!): Session
     createSessionActivity(input: SessionActivityInput!): SessionActivity
+    createTransition(input: TransitionInput!): Transition
     createPersonalRecord(input: PersonalRecordInput!): PersonalRecord
     createProgress(input: ProgressInput!): Progress
     createUser(input: CreateUserInput!): User  # New Mutation for creating users

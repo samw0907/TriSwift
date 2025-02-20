@@ -34,14 +34,14 @@ const typeDefs = gql`
     power: Int
   }
 
-type PersonalRecord {
-  id: ID!
-  userId: ID!
-  activityType: String!
-  distance: Float
-  bestTime: Int
-  recordDate: String!
-}
+  type PersonalRecord {
+    id: ID!
+    userId: ID!
+    activityType: String!
+    distance: Float
+    bestTime: Int
+    recordDate: String!
+  }
 
   type Progress {
     id: ID!
@@ -66,7 +66,7 @@ type PersonalRecord {
   input SessionActivityInput {
     sessionId: ID!
     sportType: String!
-    duration: String
+    duration: Int
     distance: Float
     heartRateMin: Int
     heartRateMax: Int
@@ -89,6 +89,13 @@ type PersonalRecord {
     date: String!
   }
 
+  # Input for User Creation
+  input CreateUserInput {
+    name: String!
+    email: String!
+    password: String!
+  }
+
   # Queries
   type Query {
     users: [User]
@@ -106,6 +113,7 @@ type PersonalRecord {
     createSessionActivity(input: SessionActivityInput!): SessionActivity
     createPersonalRecord(input: PersonalRecordInput!): PersonalRecord
     createProgress(input: ProgressInput!): Progress
+    createUser(input: CreateUserInput!): User  # New Mutation for creating users
   }
 `;
 

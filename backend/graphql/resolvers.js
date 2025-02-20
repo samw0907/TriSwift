@@ -5,53 +5,51 @@ const { User, Session, SessionActivity, PersonalRecord, Progress } = require("..
 
 const resolvers = {
     Query: {
-      users: async () => await User.findAll(),
-
-      user: async (_, { id }) => {
-        try {
-          const user = await User.findByPk(id, { include: Session });
-          if (!user) throw new Error("User not found");
-          return user;
-        } catch (error) {
-          console.error("Fetch User Error:", error);
-          throw new Error("Failed to fetch user: " + error.message);
-        }
-      },
-  
-      sessions: async (_, { userId }) => {
-        try {
-          const sessions = userId 
-            ? await Session.findAll({ where: { user_id: userId }, include: SessionActivity })
-            : await Session.findAll({ include: SessionActivity });
-    
-          return sessions.map(session => ({
-            id: session.id,
-            userId: session.user_id,
-            sessionType: session.session_type,
-            date: session.date ? session.date.toISOString() : null,
-            totalDuration: session.total_duration,
-            totalDistance: session.total_distance,
-            weatherTemp: session.weather_temp,
-            weatherHumidity: session.weather_humidity,
-            weatherWindSpeed: session.weather_wind_speed,
-            activities: session.SessionActivities.map(activity => ({
-              id: activity.id,
-              sessionId: activity.session_id,
-              sportType: activity.sport_type,
-              duration: activity.duration,
-              distance: activity.distance,
-              heartRateMin: activity.heart_rate_min,
-              heartRateMax: activity.heart_rate_max,
-              heartRateAvg: activity.heart_rate_avg,
-              cadence: activity.cadence,
-              power: activity.power,
-            })) || [],
-          }));
-        } catch (error) {
-          console.error("Fetch Sessions Error:", error);
-          throw new Error("Failed to fetch sessions: " + error.message);
-        }
-      },
+        users: async () => await User.findAll(),
+        user: async (_, { id }) => {
+          try {
+            const user = await User.findByPk(id, { include: Session });
+            if (!user) throw new Error("User not found");
+            return user;
+          } catch (error) {
+            console.error("Fetch User Error:", error);
+            throw new Error("Failed to fetch user: " + error.message);
+          }
+        },
+        sessions: async (_, { userId }) => {
+          try {
+            const sessions = userId 
+              ? await Session.findAll({ where: { user_id: userId }, include: SessionActivity })
+              : await Session.findAll({ include: SessionActivity });
+        
+            return sessions.map(session => ({
+              id: session.id,
+              userId: session.user_id,
+              sessionType: session.session_type,
+              date: session.date ? session.date.toISOString() : null,
+              totalDuration: session.total_duration,
+              totalDistance: session.total_distance,
+              weatherTemp: session.weather_temp,
+              weatherHumidity: session.weather_humidity,
+              weatherWindSpeed: session.weather_wind_speed,
+              activities: session.SessionActivities.map(activity => ({
+                id: activity.id,
+                sessionId: activity.session_id,
+                sportType: activity.sport_type,
+                duration: activity.duration,
+                distance: activity.distance,
+                heartRateMin: activity.heart_rate_min,
+                heartRateMax: activity.heart_rate_max,
+                heartRateAvg: activity.heart_rate_avg,
+                cadence: activity.cadence,
+                power: activity.power,
+              })) || [],
+            }));
+          } catch (error) {
+            console.error("Fetch Sessions Error:", error);
+            throw new Error("Failed to fetch sessions: " + error.message);
+          }
+        },
   
       session: async (_, { id }) => {
         try {
@@ -183,6 +181,26 @@ const resolvers = {
         throw new Error("Failed to create session: " + error.message);
       }
     },
+
+    createUser: async (_, { input }) => {
+        try {
+          const hashedPassword = await bcrypt.hash(input.password, 10);
+          const user = await User.create({
+            name: input.name,
+            email: input.email,
+            password_hash: hashedPassword,
+          });
+  
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+          };
+        } catch (error) {
+          console.error("Failed to create user:", error);
+          throw new Error("Failed to create user: " + error.message);
+        }
+      },
 
     createSessionActivity: async (_, { input }) => {
         try {

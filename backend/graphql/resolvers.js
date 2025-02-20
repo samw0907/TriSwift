@@ -183,24 +183,32 @@ const resolvers = {
     },
 
     createUser: async (_, { input }) => {
-        try {
-          const hashedPassword = await bcrypt.hash(input.password, 10);
+      try {
+          if (!input.name || !input.email || !input.password) {
+              throw new Error('All fields (name, email, password) are required');
+          }
+          const existingUser = await User.findOne({ where: { email: input.email } });
+          if (existingUser) {
+              throw new Error('Email is already in use');
+          }
           const user = await User.create({
-            name: input.name,
-            email: input.email,
-            password_hash: hashedPassword,
+              name: input.name,
+              email: input.email,
+              password: input.password,
           });
   
           return {
-            id: user.id,
-            name: user.name,
-            email: user.email,
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              createdAt: user.created_at,
+              updatedAt: user.updated_at,
           };
-        } catch (error) {
-          console.error("Failed to create user:", error);
-          throw new Error("Failed to create user: " + error.message);
-        }
-      },
+      } catch (error) {
+          console.error('Create User Error:', error);
+          throw new Error('Failed to create user: ' + error.message);
+      }
+  },
 
     createSessionActivity: async (_, { input }) => {
         try {
@@ -234,18 +242,33 @@ const resolvers = {
         }
       },
 
-    createPersonalRecord: async (_, { input }) => {
-      try {
-        return await PersonalRecord.create({
-          user_id: input.userId,
-          sport_type: input.sportType,
-          best_time: input.bestTime,
-          max_power: input.maxPower,
-        });
-      } catch (error) {
-        console.error("Create Personal Record Error:", error);
-        throw new Error("Failed to create personal record: " + error.message);
-      }
+      createPersonalRecord: async (_, { input }) => {
+        try {
+            if (!input.userId || !input.activityType || !input.bestTime) {
+                throw new Error('User ID, Activity Type, and Best Time are required.');
+            }
+    
+            const record = await PersonalRecord.create({
+                user_id: input.userId,
+                activity_type: input.activityType,
+                distance: input.distance,
+                best_time: input.bestTime,
+                max_power: input.maxPower,
+                record_date: input.recordDate || new Date(),
+            });
+    
+            return {
+                id: record.id,
+                userId: record.user_id,
+                activityType: record.activity_type,
+                distance: record.distance,
+                bestTime: record.best_time,
+                recordDate: record.record_date ? record.record_date.toISOString() : null,
+            };
+        } catch (error) {
+            console.error("Create Personal Record Error:", error);
+            throw new Error("Failed to create personal record: " + error.message);
+        }
     },
 
     createProgress: async (_, { input }) => {

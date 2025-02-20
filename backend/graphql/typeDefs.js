@@ -77,8 +77,9 @@ const typeDefs = gql`
 
   input PersonalRecordInput {
     userId: ID!
-    sportType: String!
-    bestTime: Int
+    activityType: String!  
+    distance: Float
+    bestTime: Int!
     maxPower: Int
   }
 

@@ -193,9 +193,35 @@ const resolvers = {
       try {
         const session = await Session.findByPk(id);
         if (!session) throw new Error("Session not found");
-  
-        await session.update(input);
-        return session;
+    
+        // Update only provided fields
+        const updatedValues = {};
+        if (input.sessionType !== undefined) updatedValues.session_type = input.sessionType;
+        if (input.date !== undefined) updatedValues.date = input.date;
+        if (input.totalDuration !== undefined) updatedValues.total_duration = input.totalDuration;
+        if (input.totalDistance !== undefined) updatedValues.total_distance = input.totalDistance;
+        if (input.weatherTemp !== undefined) updatedValues.weather_temp = input.weatherTemp;
+        if (input.weatherHumidity !== undefined) updatedValues.weather_humidity = input.weatherHumidity;
+        if (input.weatherWindSpeed !== undefined) updatedValues.weather_wind_speed = input.weatherWindSpeed;
+    
+        await session.update(updatedValues);
+    
+        // ✅ Fetch the updated session again to ensure correct formatting
+        const updatedSession = await Session.findByPk(id);
+    
+        return {
+          id: updatedSession.id,
+          userId: updatedSession.user_id,
+          sessionType: updatedSession.session_type,
+          date: updatedSession.date.toISOString(),
+          totalDuration: updatedSession.total_duration,
+          totalDistance: updatedSession.total_distance,
+          weatherTemp: updatedSession.weather_temp,
+          weatherHumidity: updatedSession.weather_humidity,
+          weatherWindSpeed: updatedSession.weather_wind_speed,
+          created_at: updatedSession.created_at.toISOString(),
+          updated_at: updatedSession.updated_at.toISOString(),
+        };
       } catch (error) {
         console.error("Update Session Error:", error);
         throw new Error("Failed to update session: " + error.message);

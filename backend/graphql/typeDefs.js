@@ -54,6 +54,8 @@ const typeDefs = gql`
     distance: Float
     bestTime: Int
     recordDate: String!
+    created_at: String!
+    updated_at: String!
   }
 
   type Progress {

@@ -328,9 +328,25 @@ const resolvers = {
       try {
         const transition = await Transition.findByPk(id);
         if (!transition) throw new Error("Transition not found");
-  
-        await transition.update(input);
-        return transition;
+    
+        const updatedValues = {
+          previous_sport: input.previousSport ?? transition.previous_sport,
+          next_sport: input.nextSport ?? transition.next_sport,
+          transition_time: input.transitionTime ?? transition.transition_time,
+          comments: input.comments ?? transition.comments,
+        };
+    
+        await transition.update(updatedValues);
+        return {
+          id: transition.id,
+          session_id: transition.session_id,
+          previous_sport: transition.previous_sport,
+          next_sport: transition.next_sport,
+          transition_time: transition.transition_time,
+          comments: transition.comments,
+          created_at: transition.created_at.toISOString(),
+          updated_at: transition.updated_at.toISOString(),
+        };
       } catch (error) {
         console.error("Update Transition Error:", error);
         throw new Error("Failed to update transition: " + error.message);
@@ -445,9 +461,26 @@ const resolvers = {
       try {
         const record = await PersonalRecord.findByPk(id);
         if (!record) throw new Error("Personal Record not found");
+    
+        await record.update({
+          activity_type: input.activityType ?? record.activity_type,
+          distance: input.distance ?? record.distance,
+          best_time: input.bestTime ?? record.best_time,
+          record_date: input.recordDate ?? record.record_date
+        });
   
-        await record.update(input);
-        return record;
+        const updatedRecord = await PersonalRecord.findByPk(id);
+    
+        return {
+          id: updatedRecord.id,
+          userId: updatedRecord.user_id,
+          activityType: updatedRecord.activity_type,
+          distance: updatedRecord.distance,
+          bestTime: updatedRecord.best_time,
+          recordDate: updatedRecord.record_date ? updatedRecord.record_date.toISOString() : null,
+          created_at: updatedRecord.created_at.toISOString(),
+          updated_at: updatedRecord.updated_at.toISOString()
+        };
       } catch (error) {
         console.error("Update Personal Record Error:", error);
         throw new Error("Failed to update personal record: " + error.message);

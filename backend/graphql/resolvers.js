@@ -188,6 +188,32 @@ const resolvers = {
       }
     },
 
+    updateSession: async (_, { id, input }) => {
+      try {
+        const session = await Session.findByPk(id);
+        if (!session) throw new Error("Session not found");
+  
+        await session.update(input);
+        return session;
+      } catch (error) {
+        console.error("Update Session Error:", error);
+        throw new Error("Failed to update session: " + error.message);
+      }
+    },
+
+    deleteSession: async (_, { id }) => {
+      try {
+        const session = await Session.findByPk(id);
+        if (!session) throw new Error("Session not found");
+  
+        await session.destroy();
+        return { message: "Session deleted successfully" };
+      } catch (error) {
+        console.error("Delete Session Error:", error);
+        throw new Error("Failed to delete session: " + error.message);
+      }
+    },
+
     createUser: async (_, { input }) => {
       try {
         if (!input.name || !input.email || !input.password) {
@@ -218,6 +244,32 @@ const resolvers = {
         throw new Error("Failed to create user: " + error.message);
       }
     },
+    
+    updateUser: async (_, { id, input }) => {
+      try {
+        const user = await User.findByPk(id);
+        if (!user) throw new Error("User not found");
+  
+        await user.update(input);
+        return user;
+      } catch (error) {
+        console.error("Update User Error:", error);
+        throw new Error("Failed to update user: " + error.message);
+      }
+    },
+
+    deleteUser: async (_, { id }) => {
+      try {
+        const user = await User.findByPk(id);
+        if (!user) throw new Error("User not found");
+  
+        await user.destroy();
+        return { message: "User deleted successfully" };
+      } catch (error) {
+        console.error("Delete User Error:", error);
+        throw new Error("Failed to delete user: " + error.message);
+      }
+    },
 
     createTransition: async (_, { input }) => {
       try {
@@ -242,6 +294,32 @@ const resolvers = {
       } catch (error) {
         console.error("Create Transition Error:", error);
         throw new Error("Failed to create transition: " + error.message);
+      }
+    },
+
+    updateTransition: async (_, { id, input }) => {
+      try {
+        const transition = await Transition.findByPk(id);
+        if (!transition) throw new Error("Transition not found");
+  
+        await transition.update(input);
+        return transition;
+      } catch (error) {
+        console.error("Update Transition Error:", error);
+        throw new Error("Failed to update transition: " + error.message);
+      }
+    },
+
+    deleteTransition: async (_, { id }) => {
+      try {
+        const transition = await Transition.findByPk(id);
+        if (!transition) throw new Error("Transition not found");
+  
+        await transition.destroy();
+        return { message: "Transition deleted successfully" };
+      } catch (error) {
+        console.error("Delete Transition Error:", error);
+        throw new Error("Failed to delete transition: " + error.message);
       }
     },
     
@@ -279,6 +357,32 @@ const resolvers = {
         }
       },
 
+      updateSessionActivity: async (_, { id, input }) => {
+        try {
+          const activity = await SessionActivity.findByPk(id);
+          if (!activity) throw new Error("Session Activity not found");
+    
+          await activity.update(input);
+          return activity;
+        } catch (error) {
+          console.error("Update Session Activity Error:", error);
+          throw new Error("Failed to update session activity: " + error.message);
+        }
+      },
+
+      deleteSessionActivity: async (_, { id }) => {
+        try {
+          const activity = await SessionActivity.findByPk(id);
+          if (!activity) throw new Error("Session Activity not found");
+    
+          await activity.destroy();
+          return { message: "Session Activity deleted successfully" };
+        } catch (error) {
+          console.error("Delete Session Activity Error:", error);
+          throw new Error("Failed to delete session activity: " + error.message);
+        }
+      },
+
       createPersonalRecord: async (_, { input }) => {
         try {
             if (!input.userId || !input.activityType || !input.bestTime) {
@@ -308,9 +412,35 @@ const resolvers = {
             console.error("Create Personal Record Error:", error);
             throw new Error("Failed to create personal record: " + error.message);
         }
-    }
+    },
+
+    updatePersonalRecord: async (_, { id, input }) => {
+      try {
+        const record = await PersonalRecord.findByPk(id);
+        if (!record) throw new Error("Personal Record not found");
+  
+        await record.update(input);
+        return record;
+      } catch (error) {
+        console.error("Update Personal Record Error:", error);
+        throw new Error("Failed to update personal record: " + error.message);
+      }
+    },
+
+    deletePersonalRecord: async (_, { id }) => {
+      try {
+        const record = await PersonalRecord.findByPk(id);
+        if (!record) throw new Error("Personal Record not found");
+  
+        await record.destroy();
+        return { message: "Personal Record deleted successfully" };
+      } catch (error) {
+        console.error("Delete Personal Record Error:", error);
+        throw new Error("Failed to delete personal record: " + error.message);
+      }
+    },
   }
-}
+ }
 }
 
 module.exports = resolvers;

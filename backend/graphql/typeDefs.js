@@ -74,9 +74,30 @@ const typeDefs = gql`
     weatherWindSpeed: Float
   }
 
+  input UpdateSessionInput {
+    sessionType: String
+    date: String
+    totalDuration: Int
+    totalDistance: Float
+    weatherTemp: Float
+    weatherHumidity: Int
+    weatherWindSpeed: Float
+  }
+
   input SessionActivityInput {
     sessionId: ID!
     sportType: String!
+    duration: Int
+    distance: Float
+    heartRateMin: Int
+    heartRateMax: Int
+    heartRateAvg: Int
+    cadence: Int
+    power: Int
+  }
+
+  input UpdateSessionActivityInput {
+    sportType: String
     duration: Int
     distance: Float
     heartRateMin: Int
@@ -94,6 +115,13 @@ const typeDefs = gql`
     comments: String
   }
 
+  input UpdateTransitionInput {
+    previousSport: String
+    nextSport: String
+    transitionTime: Int
+    comments: String
+  }
+
   input PersonalRecordInput {
     userId: ID!
     activityType: String!  
@@ -102,12 +130,25 @@ const typeDefs = gql`
     maxPower: Int
   }
 
-  # Input for User Creation
+  input UpdatePersonalRecordInput {
+    activityType: String
+    distance: Float
+    bestTime: Int
+    recordDate: String
+  }
+
   input CreateUserInput {
     name: String!
     email: String!
     password: String!
   }
+  
+  input UpdateUserInput {
+    name: String
+    email: String
+    password: String
+  }
+
 
   # Queries
   type Query {
@@ -128,7 +169,23 @@ const typeDefs = gql`
     createTransition(input: TransitionInput!): Transition
     createPersonalRecord(input: PersonalRecordInput!): PersonalRecord
     createProgress(input: ProgressInput!): Progress
-    createUser(input: CreateUserInput!): User  # New Mutation for creating users
+    createUser(input: CreateUserInput!): User
+
+    updateSession(id: ID!, input: UpdateSessionInput!): Session
+    updateSessionActivity(id: ID!, input: UpdateSessionActivityInput!): SessionActivity
+    updateTransition(id: ID!, input: UpdateTransitionInput!): Transition
+    updatePersonalRecord(id: ID!, input: UpdatePersonalRecordInput!): PersonalRecord
+    updateUser(id: ID!, input: UpdateUserInput!): User
+
+    deleteSession(id: ID!): MessageResponse
+    deleteSessionActivity(id: ID!): MessageResponse
+    deleteTransition(id: ID!): MessageResponse
+    deletePersonalRecord(id: ID!): MessageResponse
+    deleteUser(id: ID!): MessageResponse
+    }
+
+  type MessageResponse {
+    message: String!
   }
 `;
 

@@ -23,10 +23,12 @@ SessionActivity.init({
     allowNull: false
   },
   duration: {
-    type: DataTypes.STRING
+    type: DataTypes.INTEGER,
+    allowNull: false
   },
   distance: {
-    type: DataTypes.DECIMAL
+    type: DataTypes.DECIMAL,
+    allowNull: false
   },
   heart_rate_min: {
     type: DataTypes.INTEGER
@@ -42,16 +44,6 @@ SessionActivity.init({
   },
   power: {
     type: DataTypes.INTEGER
-  },
-  created_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW
   }
 }, {
   sequelize,

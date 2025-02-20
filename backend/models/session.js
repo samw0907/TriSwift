@@ -27,10 +27,12 @@ Session.init({
     allowNull: false
   },
   total_duration: {
-    type: DataTypes.STRING
+    type: DataTypes.INTEGER,
+    allowNull: false
   },
   total_distance: {
-    type: DataTypes.DECIMAL
+    type: DataTypes.DECIMAL,
+    allowNull: false
   },
   weather_temp: {
     type: DataTypes.DECIMAL
@@ -40,16 +42,6 @@ Session.init({
   },
   weather_wind_speed: {
     type: DataTypes.DECIMAL
-  },
-  created_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW
   }
 }, {
   sequelize,

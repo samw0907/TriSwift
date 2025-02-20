@@ -35,7 +35,7 @@ Progress.init({
   modelName: 'Progress',
   tableName: 'Progress',
   timestamps: true,
-  underscored: false 
+  underscored: true
 });
 
 module.exports = Progress;

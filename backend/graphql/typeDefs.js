@@ -6,6 +6,8 @@ const typeDefs = gql`
     name: String!
     email: String!
     sessions: [Session]
+    created_at: String!
+    updated_at: String!
   }
 
   type Session {

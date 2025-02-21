@@ -2,41 +2,37 @@ const bcrypt = require("bcrypt");
 const { User, Session, SessionActivity, PersonalRecord, Transition } = require("../models");
 
 const resolvers = {
-    Query: {
-        users: async (_, __, { user }) => {
+  Query: {
+      users: async (_, __, { user }) => {
           if (!user) throw new Error("Authentication required.");
-          return await User.findAll({ where: { id: user.id } }); // Only fetch the logged-in user
-        },
-
-        user: async (_, __, { user }) => {
+          return [await User.findByPk(user.id)];
+      },
+      user: async (_, __, { user }) => {
           if (!user) throw new Error("Authentication required.");
           return await User.findByPk(user.id, { include: Session });
-        },        
-        
-        transitions: async (_, { sessionId }, { user }) => {
+      },
+      transitions: async (_, { sessionId }, { user }) => {
           if (!user) throw new Error("Authentication required.");
-        
-          try {
-            const session = await Session.findOne({ where: { id: sessionId, user_id: user.id } });
-            if (!session) throw new Error("Unauthorized access.");
-        
-            return await Transition.findAll({ where: { session_id: sessionId } });
-          } catch (error) {
-            console.error("Fetch Transitions Error:", error);
-            throw new Error("Failed to fetch transitions: " + error.message);
-          }
-        },
-        
-        sessions: async (_, __, { user }) => {
+
+          const session = await Session.findByPk(sessionId);
+          if (!session || session.user_id !== user.id) throw new Error("Unauthorized");
+
+          const transitions = await Transition.findAll({ where: { session_id: sessionId } });
+          return transitions.map(t => ({
+              id: t.id,
+              sessionId: t.session_id,
+              previousSport: t.previous_sport,
+              nextSport: t.next_sport,
+              transitionTime: t.transition_time,
+              comments: t.comments,
+              created_at: t.created_at.toISOString(),
+              updated_at: t.updated_at.toISOString(),
+          }));
+      },
+      sessions: async (_, __, { user }) => {
           if (!user) throw new Error("Authentication required.");
-        
-          try {
-            const sessions = await Session.findAll({
-              where: { user_id: user.id },
-              include: SessionActivity
-            });
-        
-            return sessions.map(session => ({
+          const sessions = await Session.findAll({ where: { user_id: user.id }, include: SessionActivity });
+          return sessions.map(session => ({
               id: session.id,
               userId: session.user_id,
               sessionType: session.session_type,
@@ -49,43 +45,55 @@ const resolvers = {
               created_at: session.created_at.toISOString(),
               updated_at: session.updated_at.toISOString(),
               activities: session.SessionActivities.map(activity => ({
-                id: activity.id,
-                sessionId: activity.session_id,
-                sportType: activity.sport_type,
-                duration: activity.duration,
-                distance: activity.distance,
-                heartRateMin: activity.heart_rate_min,
-                heartRateMax: activity.heart_rate_max,
-                heartRateAvg: activity.heart_rate_avg,
-                cadence: activity.cadence,
-                power: activity.power,
+                  id: activity.id,
+                  sessionId: activity.session_id,
+                  sportType: activity.sport_type,
+                  duration: activity.duration,
+                  distance: activity.distance,
+                  heartRateMin: activity.heart_rate_min,
+                  heartRateMax: activity.heart_rate_max,
+                  heartRateAvg: activity.heart_rate_avg,
+                  cadence: activity.cadence,
+                  power: activity.power,
               })) || [],
-            }));
-          } catch (error) {
-            console.error("Fetch Sessions Error:", error);
-            throw new Error("Failed to fetch sessions: " + error.message);
-          }
-        },
-        
-      session: async (_, { id }) => {
-        try {
+          }));
+      },
+      session: async (_, { id }, { user }) => {
+          if (!user) throw new Error("Authentication required.");
           const session = await Session.findByPk(id, { include: SessionActivity });
-  
-          if (!session) throw new Error("Session not found");
-  
+          if (!session || session.user_id !== user.id) throw new Error("Unauthorized");
           return {
-            id: session.id,
-            userId: session.user_id,
-            sessionType: session.session_type,
-            date: session.date ? session.date.toISOString() : null,
-            totalDuration: session.total_duration,
-            totalDistance: session.total_distance,
-            weatherTemp: session.weather_temp,
-            weatherHumidity: session.weather_humidity,
-            weatherWindSpeed: session.weather_wind_speed,
-            created_at: session.created_at.toISOString(),
-            updated_at: session.updated_at.toISOString(),
-            activities: session.SessionActivities.map(activity => ({
+              id: session.id,
+              userId: session.user_id,
+              sessionType: session.session_type,
+              date: session.date ? session.date.toISOString() : null,
+              totalDuration: session.total_duration,
+              totalDistance: session.total_distance,
+              weatherTemp: session.weather_temp,
+              weatherHumidity: session.weather_humidity,
+              weatherWindSpeed: session.weather_wind_speed,
+              created_at: session.created_at.toISOString(),
+              updated_at: session.updated_at.toISOString(),
+              activities: session.SessionActivities.map(activity => ({
+                  id: activity.id,
+                  sessionId: activity.session_id,
+                  sportType: activity.sport_type,
+                  duration: activity.duration,
+                  distance: activity.distance,
+                  heartRateMin: activity.heart_rate_min,
+                  heartRateMax: activity.heart_rate_max,
+                  heartRateAvg: activity.heart_rate_avg,
+                  cadence: activity.cadence,
+                  power: activity.power,
+              })) || [],
+          };
+      },
+      sessionActivities: async (_, { sessionId }, { user }) => {
+          if (!user) throw new Error("Authentication required.");
+          const session = await Session.findByPk(sessionId);
+          if (!session || session.user_id !== user.id) throw new Error("Unauthorized");
+          const activities = await SessionActivity.findAll({ where: { session_id: sessionId } });
+          return activities.map(activity => ({
               id: activity.id,
               sessionId: activity.session_id,
               sportType: activity.sport_type,
@@ -96,51 +104,26 @@ const resolvers = {
               heartRateAvg: activity.heart_rate_avg,
               cadence: activity.cadence,
               power: activity.power,
-            })) || [],
-          };
-        } catch (error) {
-          console.error("Fetch Session Error:", error);
-          throw new Error("Failed to fetch session: " + error.message);
-        }
-      },
-  
-      sessionActivities: async (_, { sessionId }, { user }) => {
-        if (!user) throw new Error("Authentication required.");
-      
-        try {
-          const session = await Session.findOne({ where: { id: sessionId, user_id: user.id } });
-          if (!session) throw new Error("Unauthorized access.");
-      
-          return await SessionActivity.findAll({ where: { session_id: sessionId } });
-        } catch (error) {
-          console.error("Fetch Session Activities Error:", error);
-          throw new Error("Failed to fetch session activities: " + error.message);
-        }
-      },
-      
-      personalRecords: async (_, __, { user }) => {
-        if (!user) throw new Error("Authentication required.");
-      
-        try {
-          const records = await PersonalRecord.findAll({ where: { user_id: user.id } });
-      
-          return records.map(record => ({
-            id: record.id,
-            userId: record.user_id,
-            activityType: record.activity_type,
-            distance: record.distance,
-            bestTime: record.best_time,
-            recordDate: record.record_date ? record.record_date.toISOString() : null,
-            created_at: record.created_at ? record.created_at.toISOString() : null,
-            updated_at: record.updated_at ? record.updated_at.toISOString() : null
+              created_at: activity.created_at.toISOString(),
+              updated_at: activity.updated_at.toISOString(),
           }));
-        } catch (error) {
-          console.error("Fetch Personal Records Error:", error);
-          throw new Error("Failed to fetch personal records: " + error.message);
-        }
-      },      
-    },
-    
+      },
+      personalRecords: async (_, __, { user }) => {
+          if (!user) throw new Error("Authentication required.");
+          const records = await PersonalRecord.findAll({ where: { user_id: user.id } });
+          return records.map(record => ({
+              id: record.id,
+              userId: record.user_id,
+              activityType: record.activity_type,
+              distance: record.distance,
+              bestTime: record.best_time,
+              recordDate: record.record_date ? record.record_date.toISOString() : null,
+              created_at: record.created_at ? record.created_at.toISOString() : null,
+              updated_at: record.updated_at ? record.updated_at.toISOString() : null
+          }));
+      }
+  },
+
   Mutation: {
     createSession: async (_, { input }) => {
       try {
@@ -184,7 +167,6 @@ const resolvers = {
         const session = await Session.findByPk(id);
         if (!session) throw new Error("Session not found");
     
-        // Update only provided fields
         const updatedValues = {};
         if (input.sessionType !== undefined) updatedValues.session_type = input.sessionType;
         if (input.date !== undefined) updatedValues.date = input.date;
@@ -196,7 +178,6 @@ const resolvers = {
     
         await session.update(updatedValues);
     
-        // ✅ Fetch the updated session again to ensure correct formatting
         const updatedSession = await Session.findByPk(id);
     
         return {

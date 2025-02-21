@@ -6,6 +6,10 @@ const { connectToDatabase } = require("./util/db");
 const { setupApolloServer } = require("./graphql");
 
 const sessionRoutes = require("./routes/sessions");
+const activityRoutes = require("./routes/activities");
+const transitionRoutes = require("./routes/transitions");
+const personalRecordRoutes = require("./routes/personalRecords");
+const userRoutes = require("./routes/users");
 const authRoutes = require("./routes/auth");
 
 const app = express();
@@ -13,7 +17,11 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/sessions", sessionRoutes);
+app.use("/api/activities", activityRoutes);
+app.use("/api/transitions", transitionRoutes);
+app.use("/api/personal-records", personalRecordRoutes);
 
 app.get("/", (req, res) => {
   res.send("TriSwift Backend is Running!");
@@ -28,9 +36,8 @@ const start = async () => {
   await connectToDatabase();
   await setupApolloServer(app);
   app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
   });
 };
 
 start();
-

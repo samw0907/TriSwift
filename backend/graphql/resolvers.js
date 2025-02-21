@@ -5,43 +5,36 @@ const resolvers = {
     Query: {
         users: async (_, __, { user }) => {
           if (!user) throw new Error("Authentication required.");
-          return await User.findAll({ where: { id: user.id } });
+          return await User.findAll({ where: { id: user.id } }); // Only fetch the logged-in user
         },
 
-        user: async (_, { id }) => {
-          try {
-            const user = await User.findByPk(id, { include: Session });
-            if (!user) throw new Error("User not found");
-            return user;
-          } catch (error) {
-            console.error("Fetch User Error:", error);
-            throw new Error("Failed to fetch user: " + error.message);
-          }
-        },
-
+        user: async (_, __, { user }) => {
+          if (!user) throw new Error("Authentication required.");
+          return await User.findByPk(user.id, { include: Session });
+        },        
+        
         transitions: async (_, { sessionId }, { user }) => {
           if (!user) throw new Error("Authentication required.");
-          const transitions = await Transition.findAll({ 
-            where: { session_id: sessionId },
-            include: { model: Session, where: { user_id: user.id } }
-          });
-          return transitions.map(t => ({
-            id: t.id,
-            sessionId: t.session_id,
-            previousSport: t.previous_sport,
-            nextSport: t.next_sport,
-            transitionTime: t.transition_time,
-            comments: t.comments,
-            created_at: t.created_at.toISOString(),
-            updated_at: t.updated_at.toISOString(),
-          }));
-        },
-
-        sessions: async (_, { userId }) => {
+        
           try {
-            const sessions = userId 
-              ? await Session.findAll({ where: { user_id: userId }, include: SessionActivity })
-              : await Session.findAll({ include: SessionActivity });
+            const session = await Session.findOne({ where: { id: sessionId, user_id: user.id } });
+            if (!session) throw new Error("Unauthorized access.");
+        
+            return await Transition.findAll({ where: { session_id: sessionId } });
+          } catch (error) {
+            console.error("Fetch Transitions Error:", error);
+            throw new Error("Failed to fetch transitions: " + error.message);
+          }
+        },
+        
+        sessions: async (_, __, { user }) => {
+          if (!user) throw new Error("Authentication required.");
+        
+          try {
+            const sessions = await Session.findAll({
+              where: { user_id: user.id },
+              include: SessionActivity
+            });
         
             return sessions.map(session => ({
               id: session.id,
@@ -73,7 +66,7 @@ const resolvers = {
             throw new Error("Failed to fetch sessions: " + error.message);
           }
         },
-  
+        
       session: async (_, { id }) => {
         try {
           const session = await Session.findByPk(id, { include: SessionActivity });
@@ -110,33 +103,26 @@ const resolvers = {
           throw new Error("Failed to fetch session: " + error.message);
         }
       },
-
+  
       sessionActivities: async (_, { sessionId }, { user }) => {
         if (!user) throw new Error("Authentication required.");
-        const activities = await SessionActivity.findAll({ 
-          where: { session_id: sessionId },
-          include: { model: Session, where: { user_id: user.id } }
-        });
-  
-        return activities.map(activity => ({
-          id: activity.id,
-          sessionId: activity.session_id,
-          sportType: activity.sport_type,
-          duration: activity.duration,
-          distance: activity.distance,
-          heartRateMin: activity.heart_rate_min,
-          heartRateMax: activity.heart_rate_max,
-          heartRateAvg: activity.heart_rate_avg,
-          cadence: activity.cadence,
-          power: activity.power,
-          created_at: activity.created_at.toISOString(),
-          updated_at: activity.updated_at.toISOString(),
-        }));
-      },
-
-      personalRecords: async (_, { userId }) => {
+      
         try {
-          const records = await PersonalRecord.findAll({ where: { user_id: userId } });
+          const session = await Session.findOne({ where: { id: sessionId, user_id: user.id } });
+          if (!session) throw new Error("Unauthorized access.");
+      
+          return await SessionActivity.findAll({ where: { session_id: sessionId } });
+        } catch (error) {
+          console.error("Fetch Session Activities Error:", error);
+          throw new Error("Failed to fetch session activities: " + error.message);
+        }
+      },
+      
+      personalRecords: async (_, __, { user }) => {
+        if (!user) throw new Error("Authentication required.");
+      
+        try {
+          const records = await PersonalRecord.findAll({ where: { user_id: user.id } });
       
           return records.map(record => ({
             id: record.id,
@@ -152,9 +138,9 @@ const resolvers = {
           console.error("Fetch Personal Records Error:", error);
           throw new Error("Failed to fetch personal records: " + error.message);
         }
-      }
+      },      
     },
-
+    
   Mutation: {
     createSession: async (_, { input }) => {
       try {
@@ -198,6 +184,7 @@ const resolvers = {
         const session = await Session.findByPk(id);
         if (!session) throw new Error("Session not found");
     
+        // Update only provided fields
         const updatedValues = {};
         if (input.sessionType !== undefined) updatedValues.session_type = input.sessionType;
         if (input.date !== undefined) updatedValues.date = input.date;
@@ -208,7 +195,8 @@ const resolvers = {
         if (input.weatherWindSpeed !== undefined) updatedValues.weather_wind_speed = input.weatherWindSpeed;
     
         await session.update(updatedValues);
-
+    
+        // ✅ Fetch the updated session again to ensure correct formatting
         const updatedSession = await Session.findByPk(id);
     
         return {

@@ -1,6 +1,6 @@
 const express = require("express");
 const { Op } = require("sequelize");
-const { Session, SessionActivity } = require("../models");
+const { Session, SessionActivity, PersonalRecord } = require("../models");
 const authMiddleware = require("../middlewares/authMiddleware");
 
 const router = express.Router();
@@ -102,19 +102,80 @@ router.get("/:sessionId", authMiddleware, async (req, res) => {
   });
 
 router.post("/:sessionId", authMiddleware, async (req, res) => {
-  try {
+try {
     const session = await Session.findOne({ where: { id: req.params.sessionId, user_id: req.user.id } });
-
+  
     if (!session) {
-      return res.status(404).json({ error: "Session not found or unauthorized" });
+    return res.status(404).json({ error: "Session not found or unauthorized" });
     }
+  
+    const { sport_type, duration, distance, heart_rate_min, heart_rate_max, heart_rate_avg, cadence, power } = req.body;
+  
+    const activity = await SessionActivity.create({
+      session_id: session.id,
+      sport_type,
+      duration,
+      distance,
+      heart_rate_min,
+      heart_rate_max,
+      heart_rate_avg,
+      cadence,
+      power,
+    });
 
-    const activity = await SessionActivity.create({ session_id: session.id, ...req.body });
+    await updatePersonalRecord(req.user.id, sport_type, distance, duration, session.date);
+  
     res.status(201).json(activity);
-  } catch (error) {
+} catch (error) {
+    console.error("Error creating session activity:", error);
     res.status(400).json({ error: "Failed to create activity" });
-  }
+}
 });
+
+  async function updatePersonalRecord(userId, sportType, distance, bestTime, recordDate) {
+    try {
+      const existingRecord = await PersonalRecord.findOne({
+        where: { user_id: userId, activity_type: sportType, distance: distance },
+        order: [["best_time", "ASC"]],
+      });
+  
+      if (!existingRecord || parseInt(bestTime) < parseInt(existingRecord.best_time)) {
+        if (existingRecord) {
+          await existingRecord.update({ best_time: bestTime, record_date: recordDate });
+        } else {
+          await PersonalRecord.create({
+            user_id: userId,
+            activity_type: sportType,
+            distance: distance,
+            best_time: bestTime,
+            record_date: recordDate,
+          });
+        }
+      }
+  
+      await enforcePersonalRecordLimit(userId, sportType);
+    } catch (error) {
+      console.error("Error updating personal record:", error);
+    }
+  }
+
+async function enforcePersonalRecordLimit(userId, sportType) {
+try {
+    const records = await PersonalRecord.findAll({
+    where: { user_id: userId, activity_type: sportType },
+    order: [["best_time", "ASC"]],
+});
+  
+    if (records.length > 3) {
+    const recordsToDelete = records.slice(3);
+    for (const record of recordsToDelete) {
+        await record.destroy();
+    }
+    }
+} catch (error) {
+    console.error("Error enforcing personal record limit:", error);
+}
+}
 
 router.put("/:activityId", authMiddleware, async (req, res) => {
   try {

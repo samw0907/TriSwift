@@ -6,16 +6,67 @@ const router = express.Router();
 
 router.get("/", authMiddleware, async (req, res) => {
   try {
+    const { 
+      start_date, 
+      end_date, 
+      session_type, 
+      min_duration, 
+      max_duration, 
+      min_distance, 
+      max_distance, 
+      sort_duration, 
+      sort_distance, 
+      sort_session_type 
+    } = req.query;
+
+    let sessionFilters = { user_id: req.user.id };
+    let sortingOptions = [];
+
+    if (start_date || end_date) {
+      sessionFilters.date = {};
+      if (start_date) sessionFilters.date[Op.gte] = new Date(start_date);
+      if (end_date) sessionFilters.date[Op.lte] = new Date(end_date);
+    }
+
+    if (session_type) {
+      sessionFilters.session_type = { [Op.iLike]: session_type };
+    }
+
+    if (min_duration || max_duration) {
+      sessionFilters.total_duration = {};
+      if (min_duration) sessionFilters.total_duration[Op.gte] = parseInt(min_duration, 10);
+      if (max_duration) sessionFilters.total_duration[Op.lte] = parseInt(max_duration, 10);
+    }
+
+    if (min_distance || max_distance) {
+      sessionFilters.total_distance = {};
+      if (min_distance) sessionFilters.total_distance[Op.gte] = parseFloat(min_distance);
+      if (max_distance) sessionFilters.total_distance[Op.lte] = parseFloat(max_distance);
+    }
+
+    if (sort_duration) {
+      sortingOptions.push(["total_duration", sort_duration.toLowerCase() === "asc" ? "ASC" : "DESC"]);
+    }
+    if (sort_distance) {
+      sortingOptions.push(["total_distance", sort_distance.toLowerCase() === "asc" ? "ASC" : "DESC"]);
+    }
+    if (sort_session_type) {
+      sortingOptions.push(["session_type", sort_session_type.toLowerCase() === "asc" ? "ASC" : "DESC"]);
+    }
+
     const sessions = await Session.findAll({
-      where: { user_id: req.user.id },
+      where: sessionFilters,
       include: { model: SessionActivity },
+      order: sortingOptions.length ? sortingOptions : [["date", "DESC"]],
     });
 
     res.json(sessions);
   } catch (error) {
+    console.error("Error fetching sessions:", error);
     res.status(500).json({ error: "Failed to fetch sessions" });
   }
 });
+
 
 router.post("/", authMiddleware, async (req, res) => {
   try {

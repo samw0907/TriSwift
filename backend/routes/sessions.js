@@ -57,5 +57,4 @@ router.post("/:sessionId/activities", authMiddleware, async (req, res) => {
   }
 });
 
-
 module.exports = router;

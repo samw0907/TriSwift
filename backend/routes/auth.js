@@ -12,11 +12,10 @@ router.post("/signup", async (req, res) => {
       return res.status(400).json({ error: "Password is required" });
     }
 
-    // Create user (password will be hashed by the hook in User.js)
     const user = await User.create({
       name,
       email,
-      password_hash: password, // Hook in User.js will hash this
+      password_hash: password,
     });
 
     res.status(201).json({ message: "User created successfully", user });

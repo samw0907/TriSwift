@@ -1,30 +1,30 @@
 const express = require("express");
-const { PersonalRecord } = require("../models");
+const { Op } = require("sequelize");
+const { PersonalRecord, SessionActivity } = require("../models");
 const authMiddleware = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
 router.get("/", authMiddleware, async (req, res) => {
   try {
-    const records = await PersonalRecord.findAll({ where: { user_id: req.user.id } });
+    const records = await PersonalRecord.findAll({
+      where: { user_id: req.user.id },
+      order: [["distance", "ASC"], ["best_time", "ASC"]],
+      limit: 3,
+    });
+
     res.json(records);
   } catch (error) {
+    console.error("Error fetching personal records:", error);
     res.status(500).json({ error: "Failed to fetch personal records" });
-  }
-});
-
-router.post("/", authMiddleware, async (req, res) => {
-  try {
-    const record = await PersonalRecord.create({ user_id: req.user.id, ...req.body });
-    res.status(201).json(record);
-  } catch (error) {
-    res.status(400).json({ error: "Failed to create personal record" });
   }
 });
 
 router.put("/:recordId", authMiddleware, async (req, res) => {
   try {
-    const record = await PersonalRecord.findOne({ where: { id: req.params.recordId, user_id: req.user.id } });
+    const record = await PersonalRecord.findOne({
+      where: { id: req.params.recordId, user_id: req.user.id },
+    });
 
     if (!record) {
       return res.status(404).json({ error: "Personal record not found or unauthorized" });
@@ -39,7 +39,9 @@ router.put("/:recordId", authMiddleware, async (req, res) => {
 
 router.delete("/:recordId", authMiddleware, async (req, res) => {
   try {
-    const record = await PersonalRecord.findOne({ where: { id: req.params.recordId, user_id: req.user.id } });
+    const record = await PersonalRecord.findOne({
+      where: { id: req.params.recordId, user_id: req.user.id },
+    });
 
     if (!record) {
       return res.status(404).json({ error: "Personal record not found or unauthorized" });

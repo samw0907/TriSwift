@@ -41,7 +41,7 @@ User.init({
   underscored: true,
   hooks: {
     beforeCreate: async (user) => {
-      if (user.password_hash) {
+      if (user.password_hash && !user.password_hash.startsWith("$2b$")) {
         user.password_hash = await bcrypt.hash(user.password_hash, 10);
       }
     }

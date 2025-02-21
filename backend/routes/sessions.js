@@ -1,4 +1,5 @@
 const express = require("express");
+const { Op } = require("sequelize");
 const { Session, SessionActivity } = require("../models");
 const authMiddleware = require("../middlewares/authMiddleware");
 

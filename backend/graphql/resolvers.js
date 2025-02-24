@@ -312,35 +312,39 @@ const resolvers = {
 
     createTransition: async (_, { input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-    
+  
+      console.log("Received Input:", input);
+      console.log("Extracted sessionId:", input.sessionId);
+  
       try {
-        const session = await Session.findByPk(input.session_id);
-        if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only add transitions to your own sessions.");
-    
-        const transition = await Transition.create({
-          session_id: input.sessionId,
-          previous_sport: input.previous_sport,
-          next_sport: input.next_sport,
-          transition_time: input.transition_time,
-          comments: input.comments,
-        });
-    
-        return {
-          id: transition.id,
-          sessionId: transition.session_id,
-          previousSport: transition.previous_sport,
-          nextSport: transition.next_sport,
-          transitionTime: transition.transition_time,
-          comments: transition.comments,
-          created_at: transition.created_at.toISOString(),
-          updated_at: transition.updated_at.toISOString(),
-        };
+          const session = await Session.findByPk(input.sessionId);
+          console.log("Session Found:", session ? "Yes" : "No");
+  
+          if (!session) throw new Error("Session not found.");
+          if (session.user_id !== user.id) throw new Error("Unauthorized: You can only add transitions to your own sessions.");
+  
+          const transition = await Transition.create({
+              session_id: input.sessionId,
+              previous_sport: input.previousSport,
+              next_sport: input.nextSport,
+              transition_time: input.transitionTime,
+              comments: input.comments,
+          });
+  
+          return {
+              id: transition.id,
+              sessionId: transition.session_id,
+              previousSport: transition.previous_sport,
+              nextSport: transition.next_sport,
+              transitionTime: transition.transition_time,
+              comments: transition.comments,
+          };
       } catch (error) {
-        console.error("Create Transition Error:", error);
-        throw new Error("Failed to create transition: " + error.message);
+          console.error("Create Transition Error:", error);
+          throw new Error("Failed to create transition: " + error.message);
       }
-    },
-    
+  },
+   
     updateTransition: async (_, { id, input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
   

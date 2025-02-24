@@ -62,7 +62,12 @@ const typeDefs = gql`
     updated_at: String!
   }
 
+    type AuthPayload {
+    token: String!
+  }
+
   # Input Types for Mutations
+
   input SessionInput {
     sessionType: String!
     date: String!
@@ -160,6 +165,8 @@ const typeDefs = gql`
 
   # Mutations
   type Mutation {
+    login(email: String!, password: String!): AuthPayload
+
     createSession(input: SessionInput!): Session
     createSessionActivity(input: SessionActivityInput!): SessionActivity
     createTransition(input: TransitionInput!): Transition

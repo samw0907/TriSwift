@@ -287,8 +287,13 @@ const resolvers = {
       }
     },    
 
-    createTransition: async (_, { input }) => {
+    createTransition: async (_, { input }, { user }) => {
+      if (!user) throw new Error("Authentication required.");
+    
       try {
+        const session = await Session.findByPk(input.session_id);
+        if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only add transitions to your own sessions.");
+    
         const transition = await Transition.create({
           session_id: input.session_id,
           previous_sport: input.previous_sport,
@@ -312,11 +317,16 @@ const resolvers = {
         throw new Error("Failed to create transition: " + error.message);
       }
     },
-
-    updateTransition: async (_, { id, input }) => {
+    
+    updateTransition: async (_, { id, input }, { user }) => {
+      if (!user) throw new Error("Authentication required.");
+    
       try {
         const transition = await Transition.findByPk(id);
         if (!transition) throw new Error("Transition not found");
+    
+        const session = await Session.findByPk(transition.session_id);
+        if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only update transitions in your own sessions.");
     
         const updatedValues = {
           previous_sport: input.previousSport ?? transition.previous_sport,
@@ -341,12 +351,17 @@ const resolvers = {
         throw new Error("Failed to update transition: " + error.message);
       }
     },
-
-    deleteTransition: async (_, { id }) => {
+    
+    deleteTransition: async (_, { id }, { user }) => {
+      if (!user) throw new Error("Authentication required.");
+    
       try {
         const transition = await Transition.findByPk(id);
         if (!transition) throw new Error("Transition not found");
-  
+    
+        const session = await Session.findByPk(transition.session_id);
+        if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only delete transitions from your own sessions.");
+    
         await transition.destroy();
         return { message: "Transition deleted successfully" };
       } catch (error) {
@@ -354,6 +369,7 @@ const resolvers = {
         throw new Error("Failed to delete transition: " + error.message);
       }
     },
+    
     
     createSessionActivity: async (_, { input }) => {
         try {

@@ -29,7 +29,7 @@ const typeDefs = gql`
     id: ID!
     sessionId: ID!
     sportType: String!
-    duration: String
+    duration: Int
     distance: Float
     heartRateMin: Int
     heartRateMax: Int
@@ -42,10 +42,10 @@ const typeDefs = gql`
 
   type Transition {
     id: ID!
-    session_id: ID!
-    previous_sport: String!
-    next_sport: String!
-    transition_time: Int!
+    sessionId: ID!
+    previousSport: String!
+    nextSport: String!
+    transitionTime: Int!
     comments: String
     created_at: String!
     updated_at: String!
@@ -107,10 +107,10 @@ const typeDefs = gql`
   }
   
   input TransitionInput {
-    session_id: ID!
-    previous_sport: String!
-    next_sport: String!
-    transition_time: Int!
+    sessionId: ID!
+    previousSport: String!
+    nextSport: String!
+    transitionTime: Int!
     comments: String
   }
 

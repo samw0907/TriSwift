@@ -22,9 +22,9 @@ const resolvers = {
         return transitions.map(t => ({
             id: t.id,
             sessionId: t.session_id,
-            previous_sport: t.previous_sport,  
-            next_sport: t.next_sport,          
-            transition_time: t.transition_time,
+            previousSport: t.previous_sport,  
+            nextSport: t.next_sport,          
+            transitionTime: t.transition_time,
             comments: t.comments,
             created_at: t.created_at.toISOString(),
             updated_at: t.updated_at.toISOString(),
@@ -296,7 +296,7 @@ const resolvers = {
         if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only add transitions to your own sessions.");
     
         const transition = await Transition.create({
-          session_id: input.session_id,
+          session_id: input.sessionId,
           previous_sport: input.previous_sport,
           next_sport: input.next_sport,
           transition_time: input.transition_time,
@@ -305,10 +305,10 @@ const resolvers = {
     
         return {
           id: transition.id,
-          session_id: transition.session_id,
-          previous_sport: transition.previous_sport,
-          next_sport: transition.next_sport,
-          transition_time: transition.transition_time,
+          sessionId: transition.session_id,
+          previousSport: transition.previous_sport,
+          nextSport: transition.next_sport,
+          transitionTime: transition.transition_time,
           comments: transition.comments,
           created_at: transition.created_at.toISOString(),
           updated_at: transition.updated_at.toISOString(),
@@ -338,10 +338,10 @@ const resolvers = {
       await transition.update(updatedValues);
       return {
           id: transition.id,
-          session_id: transition.session_id,
-          previous_sport: transition.previous_sport,
-          next_sport: transition.next_sport,
-          transition_time: transition.transition_time,
+          sessionId: transition.session_id,
+          previousSport: transition.previous_sport,
+          nextSport: transition.next_sport,
+          transitionTime: transition.transition_time,
           comments: transition.comments,
           created_at: transition.created_at.toISOString(),
           updated_at: transition.updated_at.toISOString(),

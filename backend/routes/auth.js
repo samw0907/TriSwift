@@ -27,29 +27,26 @@ router.post("/signup", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+      const { email, password } = req.body;
 
-    const user = await User.findOne({ where: { email } });
-    if (!user) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
+      const user = await User.findOne({ where: { email } });
 
-    const passwordValid = await bcrypt.compare(password, user.password_hash);
-    if (!passwordValid) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
+      if (!user) {
+          return res.status(401).json({ error: "Invalid email or password" });
+      }
 
-    const userForToken = {
-      id: user.id,
-      email: user.email,
-    };
+      const passwordValid = await bcrypt.compare(password, user.password_hash);
 
-    const token = jwt.sign(userForToken, SECRET, { expiresIn: "7d" });
+      if (!passwordValid) {
+          return res.status(401).json({ error: "Invalid email or password" });
+      }
 
-    res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
+      const token = jwt.sign({ id: user.id, email: user.email }, SECRET, { expiresIn: "7d" });
+
+      res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Login failed" });
+      console.error("Login Error:", error);
+      res.status(500).json({ error: "Login failed" });
   }
 });
 

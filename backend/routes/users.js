@@ -36,40 +36,6 @@ router.post("/signup", async (req, res) => {
       res.status(500).json({ error: "Failed to create user" });
     }
   });
-  
-
-
-router.post("/login", async (req, res) => {
-    try {
-      const { email, password } = req.body;
-  
-      const user = await User.findOne({ where: { email } });
-  
-      if (!user) {
-        console.error("User not found:", email);
-        return res.status(401).json({ error: "Invalid email or password" });
-      }
-  
-      console.log("User Found:", user.email);
-      console.log("Stored Password Hash:", user.password_hash);
-      console.log("Entered Password:", password);
-  
-      const passwordValid = await bcrypt.compare(password, user.password_hash);
-      
-      if (!passwordValid) {
-        console.error("Password mismatch for:", email);
-        return res.status(401).json({ error: "Invalid email or password" });
-      }
-  
-      const token = jwt.sign({ id: user.id, email: user.email }, SECRET, { expiresIn: "7d" });
-  
-      res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
-    } catch (error) {
-      console.error("Login Error:", error);
-      res.status(500).json({ error: "Login failed" });
-    }
-  });
-  
 
 router.get("/profile", authMiddleware, async (req, res) => {
   try {

@@ -12,23 +12,24 @@ const resolvers = {
           return await User.findByPk(user.id, { include: Session });
       },
       transitions: async (_, { sessionId }, { user }) => {
-          if (!user) throw new Error("Authentication required.");
-
-          const session = await Session.findByPk(sessionId);
-          if (!session || session.user_id !== user.id) throw new Error("Unauthorized");
-
-          const transitions = await Transition.findAll({ where: { session_id: sessionId } });
-          return transitions.map(t => ({
-              id: t.id,
-              sessionId: t.session_id,
-              previousSport: t.previous_sport,
-              nextSport: t.next_sport,
-              transitionTime: t.transition_time,
-              comments: t.comments,
-              created_at: t.created_at.toISOString(),
-              updated_at: t.updated_at.toISOString(),
-          }));
-      },
+        if (!user) throw new Error("Authentication required.");
+    
+        const session = await Session.findByPk(sessionId);
+        if (!session) throw new Error("Session not found.");
+        if (session.user_id !== user.id) throw new Error("Unauthorized: You can only view transitions for your own sessions.");
+    
+        const transitions = await Transition.findAll({ where: { session_id: sessionId } });
+        return transitions.map(t => ({
+            id: t.id,
+            sessionId: t.session_id,
+            previous_sport: t.previous_sport,  
+            next_sport: t.next_sport,          
+            transition_time: t.transition_time,
+            comments: t.comments,
+            created_at: t.created_at.toISOString(),
+            updated_at: t.updated_at.toISOString(),
+        }));
+    },    
       sessions: async (_, __, { user }) => {
           if (!user) throw new Error("Authentication required.");
           const sessions = await Session.findAll({ where: { user_id: user.id }, include: SessionActivity });
@@ -320,23 +321,22 @@ const resolvers = {
     
     updateTransition: async (_, { id, input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-    
-      try {
-        const transition = await Transition.findByPk(id);
-        if (!transition) throw new Error("Transition not found");
-    
-        const session = await Session.findByPk(transition.session_id);
-        if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only update transitions in your own sessions.");
-    
-        const updatedValues = {
+  
+      const transition = await Transition.findByPk(id);
+      if (!transition) throw new Error("Transition not found.");
+  
+      const session = await Session.findByPk(transition.session_id);
+      if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only update transitions in your own sessions.");
+  
+      const updatedValues = {
           previous_sport: input.previousSport ?? transition.previous_sport,
           next_sport: input.nextSport ?? transition.next_sport,
           transition_time: input.transitionTime ?? transition.transition_time,
           comments: input.comments ?? transition.comments,
-        };
-    
-        await transition.update(updatedValues);
-        return {
+      };
+  
+      await transition.update(updatedValues);
+      return {
           id: transition.id,
           session_id: transition.session_id,
           previous_sport: transition.previous_sport,
@@ -345,32 +345,22 @@ const resolvers = {
           comments: transition.comments,
           created_at: transition.created_at.toISOString(),
           updated_at: transition.updated_at.toISOString(),
-        };
-      } catch (error) {
-        console.error("Update Transition Error:", error);
-        throw new Error("Failed to update transition: " + error.message);
-      }
-    },
+      };
+  },  
     
     deleteTransition: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-    
-      try {
-        const transition = await Transition.findByPk(id);
-        if (!transition) throw new Error("Transition not found");
-    
-        const session = await Session.findByPk(transition.session_id);
-        if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only delete transitions from your own sessions.");
-    
-        await transition.destroy();
-        return { message: "Transition deleted successfully" };
-      } catch (error) {
-        console.error("Delete Transition Error:", error);
-        throw new Error("Failed to delete transition: " + error.message);
-      }
-    },
-    
-    
+
+      const transition = await Transition.findByPk(id);
+      if (!transition) throw new Error("Transition not found.");
+
+      const session = await Session.findByPk(transition.session_id);
+      if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only delete transitions from your own sessions.");
+
+      await transition.destroy();
+      return { message: "Transition deleted successfully" };
+  },
+  
     createSessionActivity: async (_, { input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
     

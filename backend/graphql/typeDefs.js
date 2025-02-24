@@ -49,7 +49,7 @@ const typeDefs = gql`
     comments: String
     created_at: String!
     updated_at: String!
-}
+  }
 
   type PersonalRecord {
     id: ID!
@@ -62,9 +62,8 @@ const typeDefs = gql`
     updated_at: String!
   }
 
-  # Input Types for Mutations (FIXED PascalCase)
+  # Input Types for Mutations
   input SessionInput {
-    userId: ID!
     sessionType: String!
     date: String!
     totalDuration: Int!
@@ -123,7 +122,6 @@ const typeDefs = gql`
   }
 
   input PersonalRecordInput {
-    userId: ID!
     activityType: String!  
     distance: Float
     bestTime: Int!
@@ -149,15 +147,14 @@ const typeDefs = gql`
     password: String
   }
 
-
   # Queries
   type Query {
-    users: [User]
-    user(id: ID!): User 
-    sessions(userId: ID): [Session!]! 
+    users: [User] # Returns the logged-in user only
+    user: User # Fetches logged-in user's details
+    sessions: [Session!]! 
     session(id: ID!): Session
     sessionActivities(sessionId: ID!): [SessionActivity]
-    personalRecords(userId: ID!): [PersonalRecord]
+    personalRecords: [PersonalRecord]
     transitions(sessionId: ID!): [Transition]
   }
 

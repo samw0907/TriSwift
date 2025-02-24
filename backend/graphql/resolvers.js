@@ -460,41 +460,47 @@ const resolvers = {
       }
     },
     
-      createPersonalRecord: async (_, { input }) => {
-        try {
-            if (!input.userId || !input.activityType || !input.bestTime) {
-                throw new Error('User ID, Activity Type, and Best Time are required.');
-            }
+    createPersonalRecord: async (_, { input }, { user }) => {
+      if (!user) throw new Error("Authentication required.");
     
-            const record = await PersonalRecord.create({
-                user_id: input.userId,
-                activity_type: input.activityType,
-                distance: input.distance,
-                best_time: input.bestTime,
-                max_power: input.maxPower,
-                record_date: input.recordDate || new Date(),
-            });
-    
-            return {
-                id: record.id,
-                userId: record.user_id,
-                activityType: record.activity_type,
-                distance: record.distance,
-                bestTime: record.best_time,
-                recordDate: record.record_date ? record.record_date.toISOString() : null,
-                created_at: record.created_at ? record.created_at.toISOString() : null,
-                updated_at: record.updated_at ? record.updated_at.toISOString() : null
-            };
-        } catch (error) {
-            console.error("Create Personal Record Error:", error);
-            throw new Error("Failed to create personal record: " + error.message);
+      try {
+        if (!input.activityType || !input.bestTime) {
+          throw new Error("Activity Type and Best Time are required.");
         }
+    
+        const record = await PersonalRecord.create({
+          user_id: user.id, 
+          activity_type: input.activityType,
+          distance: input.distance,
+          best_time: input.bestTime,
+          max_power: input.maxPower,
+          record_date: input.recordDate || new Date(),
+        });
+    
+        return {
+          id: record.id,
+          userId: record.user_id,
+          activityType: record.activity_type,
+          distance: record.distance,
+          bestTime: record.best_time,
+          recordDate: record.record_date ? record.record_date.toISOString() : null,
+          created_at: record.created_at ? record.created_at.toISOString() : null,
+          updated_at: record.updated_at ? record.updated_at.toISOString() : null
+        };
+      } catch (error) {
+        console.error("Create Personal Record Error:", error);
+        throw new Error("Failed to create personal record: " + error.message);
+      }
     },
-
-    updatePersonalRecord: async (_, { id, input }) => {
+    
+    updatePersonalRecord: async (_, { id, input }, { user }) => {
+      if (!user) throw new Error("Authentication required.");
+    
       try {
         const record = await PersonalRecord.findByPk(id);
         if (!record) throw new Error("Personal Record not found");
+    
+        if (record.user_id !== user.id) throw new Error("Unauthorized: You can only update your own records.");
     
         await record.update({
           activity_type: input.activityType ?? record.activity_type,
@@ -502,37 +508,39 @@ const resolvers = {
           best_time: input.bestTime ?? record.best_time,
           record_date: input.recordDate ?? record.record_date
         });
-  
-        const updatedRecord = await PersonalRecord.findByPk(id);
     
         return {
-          id: updatedRecord.id,
-          userId: updatedRecord.user_id,
-          activityType: updatedRecord.activity_type,
-          distance: updatedRecord.distance,
-          bestTime: updatedRecord.best_time,
-          recordDate: updatedRecord.record_date ? updatedRecord.record_date.toISOString() : null,
-          created_at: updatedRecord.created_at.toISOString(),
-          updated_at: updatedRecord.updated_at.toISOString()
+          id: record.id,
+          userId: record.user_id,
+          activityType: record.activity_type,
+          distance: record.distance,
+          bestTime: record.best_time,
+          recordDate: record.record_date ? record.record_date.toISOString() : null,
+          created_at: record.created_at.toISOString(),
+          updated_at: record.updated_at.toISOString()
         };
       } catch (error) {
         console.error("Update Personal Record Error:", error);
         throw new Error("Failed to update personal record: " + error.message);
       }
     },
-
-    deletePersonalRecord: async (_, { id }) => {
+    
+    deletePersonalRecord: async (_, { id }, { user }) => {
+      if (!user) throw new Error("Authentication required.");
+    
       try {
         const record = await PersonalRecord.findByPk(id);
         if (!record) throw new Error("Personal Record not found");
-  
+    
+        if (record.user_id !== user.id) throw new Error("Unauthorized: You can only delete your own records.");
+    
         await record.destroy();
         return { message: "Personal Record deleted successfully" };
       } catch (error) {
         console.error("Delete Personal Record Error:", error);
         throw new Error("Failed to delete personal record: " + error.message);
       }
-    },
+    }    
   }
 }
 

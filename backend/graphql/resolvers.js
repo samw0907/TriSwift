@@ -123,94 +123,101 @@ const resolvers = {
           }));
       }
   },
-
   Mutation: {
-    createSession: async (_, { input }) => {
-      try {
-        const {
-          userId, sessionType, date, totalDuration, totalDistance,
-          weatherTemp, weatherHumidity, weatherWindSpeed
-        } = input;
-
-        const session = await Session.create({
-          user_id: userId,
-          session_type: sessionType,
-          date: new Date(date),
-          total_duration: totalDuration,
-          total_distance: totalDistance,
-          weather_temp: weatherTemp,
-          weather_humidity: weatherHumidity,
-          weather_wind_speed: weatherWindSpeed,
-        });
-
-        return {
-          id: session.id,
-          userId: session.user_id,
-          sessionType: session.session_type,
-          date: session.date.toISOString(),
-          totalDuration: session.total_duration,
-          totalDistance: session.total_distance,
-          weatherTemp: session.weather_temp,
-          weatherHumidity: session.weather_humidity,
-          weatherWindSpeed: session.weather_wind_speed,
-          created_at: session.created_at ? session.created_at.toISOString() : null,
-          updated_at: session.updated_at ? session.updated_at.toISOString() : null,
-        };
-      } catch (error) {
-        console.error("Create Session Error:", error);
-        throw new Error("Failed to create session: " + error.message);
-      }
-    },
-
-    updateSession: async (_, { id, input }) => {
-      try {
-        const session = await Session.findByPk(id);
-        if (!session) throw new Error("Session not found");
-    
-        const updatedValues = {};
-        if (input.sessionType !== undefined) updatedValues.session_type = input.sessionType;
-        if (input.date !== undefined) updatedValues.date = input.date;
-        if (input.totalDuration !== undefined) updatedValues.total_duration = input.totalDuration;
-        if (input.totalDistance !== undefined) updatedValues.total_distance = input.totalDistance;
-        if (input.weatherTemp !== undefined) updatedValues.weather_temp = input.weatherTemp;
-        if (input.weatherHumidity !== undefined) updatedValues.weather_humidity = input.weatherHumidity;
-        if (input.weatherWindSpeed !== undefined) updatedValues.weather_wind_speed = input.weatherWindSpeed;
-    
-        await session.update(updatedValues);
-    
-        const updatedSession = await Session.findByPk(id);
-    
-        return {
-          id: updatedSession.id,
-          userId: updatedSession.user_id,
-          sessionType: updatedSession.session_type,
-          date: updatedSession.date.toISOString(),
-          totalDuration: updatedSession.total_duration,
-          totalDistance: updatedSession.total_distance,
-          weatherTemp: updatedSession.weather_temp,
-          weatherHumidity: updatedSession.weather_humidity,
-          weatherWindSpeed: updatedSession.weather_wind_speed,
-          created_at: updatedSession.created_at.toISOString(),
-          updated_at: updatedSession.updated_at.toISOString(),
-        };
-      } catch (error) {
-        console.error("Update Session Error:", error);
-        throw new Error("Failed to update session: " + error.message);
-      }
-    },
-
-    deleteSession: async (_, { id }) => {
-      try {
-        const session = await Session.findByPk(id);
-        if (!session) throw new Error("Session not found");
+    createSession: async (_, { input }, { user }) => {
+      if (!user) throw new Error("Authentication required.");
   
-        await session.destroy();
-        return { message: "Session deleted successfully" };
+      try {
+          const {
+              sessionType, date, totalDuration, totalDistance,
+              weatherTemp, weatherHumidity, weatherWindSpeed
+          } = input;
+  
+          // ✅ Use logged-in user's ID instead of accepting a userId from input
+          const session = await Session.create({
+              user_id: user.id, 
+              session_type: sessionType,
+              date: new Date(date),
+              total_duration: totalDuration,
+              total_distance: totalDistance,
+              weather_temp: weatherTemp,
+              weather_humidity: weatherHumidity,
+              weather_wind_speed: weatherWindSpeed,
+          });
+  
+          return {
+              id: session.id,
+              userId: session.user_id,
+              sessionType: session.session_type,
+              date: session.date.toISOString(),
+              totalDuration: session.total_duration,
+              totalDistance: session.total_distance,
+              weatherTemp: session.weather_temp,
+              weatherHumidity: session.weather_humidity,
+              weatherWindSpeed: session.weather_wind_speed,
+              created_at: session.created_at.toISOString(),
+              updated_at: session.updated_at.toISOString(),
+          };
       } catch (error) {
-        console.error("Delete Session Error:", error);
-        throw new Error("Failed to delete session: " + error.message);
+          console.error("Create Session Error:", error);
+          throw new Error("Failed to create session: " + error.message);
       }
-    },
+  },
+  
+  updateSession: async (_, { id, input }, { user }) => {
+      if (!user) throw new Error("Authentication required.");
+  
+      try {
+          const session = await Session.findByPk(id);
+          if (!session) throw new Error("Session not found");
+          if (session.user_id !== user.id) throw new Error("Unauthorized");
+  
+          const updatedValues = {};
+          if (input.sessionType !== undefined) updatedValues.session_type = input.sessionType;
+          if (input.date !== undefined) updatedValues.date = input.date;
+          if (input.totalDuration !== undefined) updatedValues.total_duration = input.totalDuration;
+          if (input.totalDistance !== undefined) updatedValues.total_distance = input.totalDistance;
+          if (input.weatherTemp !== undefined) updatedValues.weather_temp = input.weatherTemp;
+          if (input.weatherHumidity !== undefined) updatedValues.weather_humidity = input.weatherHumidity;
+          if (input.weatherWindSpeed !== undefined) updatedValues.weather_wind_speed = input.weatherWindSpeed;
+  
+          await session.update(updatedValues);
+  
+          return {
+              id: session.id,
+              userId: session.user_id,
+              sessionType: session.session_type,
+              date: session.date.toISOString(),
+              totalDuration: session.total_duration,
+              totalDistance: session.total_distance,
+              weatherTemp: session.weather_temp,
+              weatherHumidity: session.weather_humidity,
+              weatherWindSpeed: session.weather_wind_speed,
+              created_at: session.created_at.toISOString(),
+              updated_at: session.updated_at.toISOString(),
+          };
+      } catch (error) {
+          console.error("Update Session Error:", error);
+          throw new Error("Failed to update session: " + error.message);
+      }
+  },
+  
+  deleteSession: async (_, { id }, { user }) => {
+      if (!user) throw new Error("Authentication required.");
+  
+      try {
+          const session = await Session.findByPk(id);
+          if (!session) throw new Error("Session not found");
+          if (session.user_id !== user.id) throw new Error("Unauthorized");
+  
+          await session.destroy();
+          return { message: "Session deleted successfully" };
+      } catch (error) {
+          console.error("Delete Session Error:", error);
+          throw new Error("Failed to delete session: " + error.message);
+      }
+  },
+  
 
     createUser: async (_, { input }) => {
       try {

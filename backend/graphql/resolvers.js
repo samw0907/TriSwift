@@ -133,7 +133,6 @@ const resolvers = {
               weatherTemp, weatherHumidity, weatherWindSpeed
           } = input;
   
-          // ✅ Use logged-in user's ID instead of accepting a userId from input
           const session = await Session.create({
               user_id: user.id, 
               session_type: sessionType,
@@ -218,7 +217,6 @@ const resolvers = {
       }
   },
   
-
     createUser: async (_, { input }) => {
       try {
         if (!input.name || !input.email || !input.password) {
@@ -250,31 +248,44 @@ const resolvers = {
       }
     },
     
-    updateUser: async (_, { id, input }) => {
+    updateUser: async (_, { id, input }, { user }) => {
+      if (!user) throw new Error("Authentication required.");
+      if (user.id !== parseInt(id)) throw new Error("Unauthorized: You can only update your own account.");
+    
       try {
-        const user = await User.findByPk(id);
-        if (!user) throw new Error("User not found");
-  
-        await user.update(input);
-        return user;
+        const userToUpdate = await User.findByPk(id);
+        if (!userToUpdate) throw new Error("User not found");
+    
+        await userToUpdate.update(input);
+    
+        return {
+          id: userToUpdate.id,
+          name: userToUpdate.name,
+          email: userToUpdate.email,
+          created_at: userToUpdate.created_at.toISOString(),
+          updated_at: userToUpdate.updated_at.toISOString(),
+        };
       } catch (error) {
         console.error("Update User Error:", error);
         throw new Error("Failed to update user: " + error.message);
       }
     },
-
-    deleteUser: async (_, { id }) => {
+    
+    deleteUser: async (_, { id }, { user }) => {
+      if (!user) throw new Error("Authentication required.");
+      if (user.id !== parseInt(id)) throw new Error("Unauthorized: You can only delete your own account.");
+    
       try {
-        const user = await User.findByPk(id);
-        if (!user) throw new Error("User not found");
-  
-        await user.destroy();
+        const userToDelete = await User.findByPk(id);
+        if (!userToDelete) throw new Error("User not found");
+    
+        await userToDelete.destroy();
         return { message: "User deleted successfully" };
       } catch (error) {
         console.error("Delete User Error:", error);
         throw new Error("Failed to delete user: " + error.message);
       }
-    },
+    },    
 
     createTransition: async (_, { input }) => {
       try {

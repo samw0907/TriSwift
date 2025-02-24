@@ -6,6 +6,7 @@ const { connectToDatabase } = require("./util/db");
 const { setupApolloServer } = require("./graphql");
 
 const sessionRoutes = require("./routes/sessions");
+const activityRoutes = require("./routes/activities");
 const transitionRoutes = require("./routes/transitions");
 const personalRecordRoutes = require("./routes/personalRecords");
 const userRoutes = require("./routes/users");
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/sessions", sessionRoutes);
+app.use("/api/activities", activityRoutes);
 app.use("/api/transitions", transitionRoutes);
 app.use("/api/personal-records", personalRecordRoutes);
 

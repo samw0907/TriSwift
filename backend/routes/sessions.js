@@ -5,7 +5,6 @@ const authMiddleware = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-// Fetch all sessions for the logged-in user
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const { 
@@ -69,7 +68,6 @@ router.get("/", authMiddleware, async (req, res) => {
   }
 });
 
-// Fetch a single session by ID
 router.get("/:sessionId", authMiddleware, async (req, res) => {
   try {
     const { sessionId } = req.params;
@@ -90,7 +88,6 @@ router.get("/:sessionId", authMiddleware, async (req, res) => {
   }
 });
 
-// Create a new session
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const { session_type, date, total_duration, total_distance, weather_temp, weather_humidity, weather_wind_speed } = req.body;
@@ -113,39 +110,10 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ FIXED: Create a new session activity
-router.post("/:sessionId/activities", authMiddleware, async (req, res) => {
-  try {
-    const session = await Session.findOne({ where: { id: req.params.sessionId, user_id: req.user.id } });
-
-    if (!session) {
-      return res.status(404).json({ error: "Session not found or unauthorized" });
-    }
-
-    const { sport_type, duration, distance, heart_rate_min, heart_rate_max, heart_rate_avg, cadence, power } = req.body;
-
-    const activity = await SessionActivity.create({
-      session_id: session.id,
-      sport_type,
-      duration,
-      distance,
-      heart_rate_min,
-      heart_rate_max,
-      heart_rate_avg,
-      cadence,
-      power,
-    });
-
-    await updatePersonalRecord(req.user.id, sport_type, distance, duration, session.date);
-
-    res.status(201).json(activity);
-  } catch (error) {
-    console.error("Error creating session activity:", error);
-    res.status(400).json({ error: "Failed to create activity" });
-  }
+router.post("/:sessionId/activities", (req, res) => {
+  res.status(400).json({ error: "Use /api/activities instead." });
 });
 
-// Update a session
 router.put("/:sessionId", authMiddleware, async (req, res) => {
   try {
     const session = await Session.findOne({ where: { id: req.params.sessionId, user_id: req.user.id } });
@@ -161,7 +129,6 @@ router.put("/:sessionId", authMiddleware, async (req, res) => {
   }
 });
 
-// Delete a session
 router.delete("/:sessionId", authMiddleware, async (req, res) => {
   try {
     const session = await Session.findOne({ where: { id: req.params.sessionId, user_id: req.user.id } });
@@ -176,52 +143,5 @@ router.delete("/:sessionId", authMiddleware, async (req, res) => {
     res.status(500).json({ error: "Failed to delete session" });
   }
 });
-
-// ✅ Function to update personal records automatically
-async function updatePersonalRecord(userId, sportType, distance, bestTime, recordDate) {
-  try {
-    const existingRecord = await PersonalRecord.findOne({
-      where: { user_id: userId, activity_type: sportType, distance: distance },
-      order: [["best_time", "ASC"]],
-    });
-
-    if (!existingRecord || parseInt(bestTime) < parseInt(existingRecord.best_time)) {
-      if (existingRecord) {
-        await existingRecord.update({ best_time: bestTime, record_date: recordDate });
-      } else {
-        await PersonalRecord.create({
-          user_id: userId,
-          activity_type: sportType,
-          distance: distance,
-          best_time: bestTime,
-          record_date: recordDate,
-        });
-      }
-    }
-
-    await enforcePersonalRecordLimit(userId, sportType);
-  } catch (error) {
-    console.error("Error updating personal record:", error);
-  }
-}
-
-// ✅ Function to enforce a max of 3 personal records per sport type
-async function enforcePersonalRecordLimit(userId, sportType) {
-  try {
-    const records = await PersonalRecord.findAll({
-      where: { user_id: userId, activity_type: sportType },
-      order: [["best_time", "ASC"]],
-    });
-
-    if (records.length > 3) {
-      const recordsToDelete = records.slice(3);
-      for (const record of recordsToDelete) {
-        await record.destroy();
-      }
-    }
-  } catch (error) {
-    console.error("Error enforcing personal record limit:", error);
-  }
-}
 
 module.exports = router;

@@ -1,5 +1,8 @@
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { User, Session, SessionActivity, PersonalRecord, Transition } = require("../models");
+const { SECRET } = require("../util/config");
+
 
 const resolvers = {
   Query: {
@@ -125,6 +128,25 @@ const resolvers = {
       }
   },
   Mutation: {
+    login: async (_, { email, password }) => {
+      try {
+        if (!email || !password) throw new Error("Missing email or password");
+
+        const user = await User.findOne({ where: { email } });
+        if (!user) throw new Error("Invalid credentials");
+
+        const passwordValid = await bcrypt.compare(password, user.password_hash);
+        if (!passwordValid) throw new Error("Invalid credentials");
+
+        const token = jwt.sign({ id: user.id, email: user.email }, SECRET, { expiresIn: "1h" });
+
+        return { token };
+      } catch (error) {
+        console.error("Login Error:", error);
+        throw new Error("Login failed");
+      }
+    },
+
     createSession: async (_, { input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
   

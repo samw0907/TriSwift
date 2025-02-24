@@ -371,66 +371,95 @@ const resolvers = {
     },
     
     
-    createSessionActivity: async (_, { input }) => {
-        try {
-          const activity = await SessionActivity.create({
-            session_id: input.sessionId,
-            sport_type: input.sportType,
-            duration: input.duration,
-            distance: input.distance,
-            heart_rate_min: input.heartRateMin,
-            heart_rate_max: input.heartRateMax,
-            heart_rate_avg: input.heartRateAvg,
-            cadence: input.cadence,
-            power: input.power,
-          });
-      
-          return {
-            id: activity.id,
-            sessionId: activity.session_id,
-            sportType: activity.sport_type,
-            duration: activity.duration,
-            distance: activity.distance,
-            heartRateMin: activity.heart_rate_min,
-            heartRateMax: activity.heart_rate_max,
-            heartRateAvg: activity.heart_rate_avg,
-            cadence: activity.cadence,
-            power: activity.power,
-            created_at: activity.created_at.toISOString(),
-            updated_at: activity.updated_at.toISOString()
-          };
-        } catch (error) {
-          console.error("Create Session Activity Error:", error);
-          throw new Error("Failed to create session activity: " + error.message);
-        }
-      },
-
-      updateSessionActivity: async (_, { id, input }) => {
-        try {
-          const activity = await SessionActivity.findByPk(id);
-          if (!activity) throw new Error("Session Activity not found");
+    createSessionActivity: async (_, { input }, { user }) => {
+      if (!user) throw new Error("Authentication required.");
     
-          await activity.update(input);
-          return activity;
-        } catch (error) {
-          console.error("Update Session Activity Error:", error);
-          throw new Error("Failed to update session activity: " + error.message);
-        }
-      },
-
-      deleteSessionActivity: async (_, { id }) => {
-        try {
-          const activity = await SessionActivity.findByPk(id);
-          if (!activity) throw new Error("Session Activity not found");
+      try {
+        const session = await Session.findByPk(input.sessionId);
+        if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only add activities to your own sessions.");
     
-          await activity.destroy();
-          return { message: "Session Activity deleted successfully" };
-        } catch (error) {
-          console.error("Delete Session Activity Error:", error);
-          throw new Error("Failed to delete session activity: " + error.message);
-        }
-      },
-
+        const activity = await SessionActivity.create({
+          session_id: input.sessionId,
+          sport_type: input.sportType,
+          duration: input.duration,
+          distance: input.distance,
+          heart_rate_min: input.heartRateMin,
+          heart_rate_max: input.heartRateMax,
+          heart_rate_avg: input.heartRateAvg,
+          cadence: input.cadence,
+          power: input.power,
+        });
+    
+        return {
+          id: activity.id,
+          sessionId: activity.session_id,
+          sportType: activity.sport_type,
+          duration: activity.duration,
+          distance: activity.distance,
+          heartRateMin: activity.heart_rate_min,
+          heartRateMax: activity.heart_rate_max,
+          heartRateAvg: activity.heart_rate_avg,
+          cadence: activity.cadence,
+          power: activity.power,
+          created_at: activity.created_at.toISOString(),
+          updated_at: activity.updated_at.toISOString()
+        };
+      } catch (error) {
+        console.error("Create Session Activity Error:", error);
+        throw new Error("Failed to create session activity: " + error.message);
+      }
+    },
+    
+    updateSessionActivity: async (_, { id, input }, { user }) => {
+      if (!user) throw new Error("Authentication required.");
+    
+      try {
+        const activity = await SessionActivity.findByPk(id);
+        if (!activity) throw new Error("Session Activity not found");
+    
+        const session = await Session.findByPk(activity.session_id);
+        if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only update activities in your own sessions.");
+    
+        await activity.update(input);
+    
+        return {
+          id: activity.id,
+          sessionId: activity.session_id,
+          sportType: activity.sport_type,
+          duration: activity.duration,
+          distance: activity.distance,
+          heartRateMin: activity.heart_rate_min,
+          heartRateMax: activity.heart_rate_max,
+          heartRateAvg: activity.heart_rate_avg,
+          cadence: activity.cadence,
+          power: activity.power,
+          created_at: activity.created_at.toISOString(),
+          updated_at: activity.updated_at.toISOString()
+        };
+      } catch (error) {
+        console.error("Update Session Activity Error:", error);
+        throw new Error("Failed to update session activity: " + error.message);
+      }
+    },
+    
+    deleteSessionActivity: async (_, { id }, { user }) => {
+      if (!user) throw new Error("Authentication required.");
+    
+      try {
+        const activity = await SessionActivity.findByPk(id);
+        if (!activity) throw new Error("Session Activity not found");
+  
+        const session = await Session.findByPk(activity.session_id);
+        if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only delete activities from your own sessions.");
+    
+        await activity.destroy();
+        return { message: "Session Activity deleted successfully" };
+      } catch (error) {
+        console.error("Delete Session Activity Error:", error);
+        throw new Error("Failed to delete session activity: " + error.message);
+      }
+    },
+    
       createPersonalRecord: async (_, { input }) => {
         try {
             if (!input.userId || !input.activityType || !input.bestTime) {

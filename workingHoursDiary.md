@@ -8,7 +8,7 @@ Date            Hours    Topic
                 2.5      Fixing authorization issues
 24.02.2025      2        GraphQL queries/mutations, typeDefs
                 7        Settting up routers, testing routers 
-25.02.2025
+25.02.2025      4        Docker set up
 
 26.02.2025
 27.02.2025

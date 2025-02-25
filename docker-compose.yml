@@ -9,7 +9,7 @@ services:
       - db
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgres://postgres:Shuggie0907!@db:5432/triswiftdb
+      - DATABASE_URL=postgres://postgres:Shuggie0907!@localhost:5432/triswiftdb
       - JWT_SECRET=fastsecret123
     volumes:
       - ./backend:/usr/src/app
@@ -29,4 +29,3 @@ services:
 
 volumes:
   pgdata:
-  

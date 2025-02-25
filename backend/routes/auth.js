@@ -2,7 +2,8 @@ const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models");
-const { JWT_SECRET } = require("../util/config");
+
+const getConfig = () => require("../util/config");
 
 router.post("/signup", async (req, res) => {
   try {
@@ -27,26 +28,35 @@ router.post("/signup", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   try {
-      const { email, password } = req.body;
+    const { email, password } = req.body;
+    const { JWT_SECRET } = getConfig();
 
-      const user = await User.findOne({ where: { email } });
+    console.log("🔑 Using JWT_SECRET:", JWT_SECRET);
 
-      if (!user) {
-          return res.status(401).json({ error: "Invalid email or password" });
-      }
+    if (!JWT_SECRET) {
+      console.error("🚨 JWT_SECRET is missing!");
+      return res.status(500).json({ error: "Server configuration error" });
+    }
 
-      const passwordValid = await bcrypt.compare(password, user.password_hash);
+    const user = await User.findOne({ where: { email } });
 
-      if (!passwordValid) {
-          return res.status(401).json({ error: "Invalid email or password" });
-      }
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
 
-      const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
+    const passwordValid = await bcrypt.compare(password, user.password_hash);
 
-      res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
+    if (!passwordValid) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    console.log("Signing JWT with secret:", JWT_SECRET);
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
+
+    res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
   } catch (error) {
-      console.error("Login Error:", error);
-      res.status(500).json({ error: "Login failed" });
+    console.error("🚨 Login Error:", error);
+    res.status(500).json({ error: "Login failed" });
   }
 });
 

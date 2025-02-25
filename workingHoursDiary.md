@@ -7,11 +7,11 @@ Date            Hours    Topic
 21.02.2025      6        Settting up routers, testing routers
                 2.5      Fixing authorization issues
 24.02.2025      2        GraphQL queries/mutations, typeDefs
-                6.5      Settting up routers, testing routers 
+                7        Settting up routers, testing routers 
 25.02.2025
 
 26.02.2025
 27.02.2025
 28.02.2025
 
-TOTAL HOURS     42     
+TOTAL HOURS     42.5     

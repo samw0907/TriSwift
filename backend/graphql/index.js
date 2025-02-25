@@ -3,13 +3,13 @@ const jwt = require("jsonwebtoken");
 const typeDefs = require("./typeDefs");
 const resolvers = require("./resolvers");
 const { User } = require("../models");
-const { SECRET } = require("../util/config");
+const { JWT_SECRET } = require("../util/config");
 
 const getUserFromToken = async (token) => {
   if (!token) return null;
   
   try {
-    const decoded = jwt.verify(token, SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
     const user = await User.findByPk(decoded.id);
     return user ? { id: user.id, email: user.email } : null;
   } catch (error) {

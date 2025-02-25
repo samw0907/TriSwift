@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { User, Session, SessionActivity, PersonalRecord, Transition } = require("../models");
-const { SECRET } = require("../util/config");
+const { JWT_SECRET } = require("../util/config");
 
 
 const resolvers = {
@@ -138,7 +138,7 @@ const resolvers = {
         const passwordValid = await bcrypt.compare(password, user.password_hash);
         if (!passwordValid) throw new Error("Invalid credentials");
 
-        const token = jwt.sign({ id: user.id, email: user.email }, SECRET, { expiresIn: "1h" });
+        const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
 
         return { token };
       } catch (error) {

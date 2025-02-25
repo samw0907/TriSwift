@@ -1,5 +1,5 @@
 const express = require("express");
-const { User, Session, SessionActivity, Transition, PersonalRecord, Progress } = require("../models");
+const { User, Session, SessionActivity, Transition, PersonalRecord} = require("../models");
 
 const router = express.Router();
 

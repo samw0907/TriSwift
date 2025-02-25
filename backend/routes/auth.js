@@ -2,7 +2,7 @@ const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models");
-const { SECRET } = require("../util/config");
+const { JWT_SECRET } = require("../util/config");
 
 router.post("/signup", async (req, res) => {
   try {
@@ -41,7 +41,7 @@ router.post("/login", async (req, res) => {
           return res.status(401).json({ error: "Invalid email or password" });
       }
 
-      const token = jwt.sign({ id: user.id, email: user.email }, SECRET, { expiresIn: "7d" });
+      const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
 
       res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
   } catch (error) {

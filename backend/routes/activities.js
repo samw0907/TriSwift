@@ -101,7 +101,7 @@ router.get("/:sessionId", authMiddleware, async (req, res) => {
     }
   });
 
-router.post("/:sessionId/activities", authMiddleware, async (req, res) => {
+router.post("/:sessionId", authMiddleware, async (req, res) => {
 try {
     const session = await Session.findOne({ where: { id: req.params.sessionId, user_id: req.user.id } });
   

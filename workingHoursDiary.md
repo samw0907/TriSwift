@@ -9,8 +9,7 @@ Date            Hours    Topic
 24.02.2025      2        GraphQL queries/mutations, typeDefs
                 7        Settting up routers, testing routers 
 25.02.2025      8        Docker set up
-
-26.02.2025
+26.02.2025      3        Testing backend
 27.02.2025
 28.02.2025
 

@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const { User, Session, SessionActivity, PersonalRecord, Transition } = require("../models");
 const { JWT_SECRET } = require("../util/config");
 
-
 const resolvers = {
   Query: {
       users: async (_, __, { user }) => {

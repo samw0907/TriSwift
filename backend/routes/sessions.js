@@ -110,10 +110,6 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-router.post("/:sessionId/activities", (req, res) => {
-  res.status(400).json({ error: "Use /api/activities instead." });
-});
-
 router.put("/:sessionId", authMiddleware, async (req, res) => {
   try {
     const session = await Session.findOne({ where: { id: req.params.sessionId, user_id: req.user.id } });

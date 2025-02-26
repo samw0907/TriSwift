@@ -11,7 +11,7 @@ Date            Hours    Topic
                 7        Settting up routers, testing routers
 25.02.2025      8        Docker set up
 26.02.2025      4        Testing backend
-                4        
+                4        Frontend set up (React, Typescript)
 27.02.2025
 28.02.2025
                 ()

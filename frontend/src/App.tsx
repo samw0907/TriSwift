@@ -1,11 +1,15 @@
-import { ApolloProvider } from '@apollo/client';
-import client from './graphql/client';
-import AppRoutes from './routes';
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
 
-export default function App() {
+const App = () => {
   return (
-    <ApolloProvider client={client}>
-      <AppRoutes />
-    </ApolloProvider>
+    <Routes>
+      <Route path="/" element={<Dashboard />} />
+      <Route path="/login" element={<Login />} />
+    </Routes>
   );
-}
+};
+
+export default App;

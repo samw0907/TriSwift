@@ -159,7 +159,7 @@ const typeDefs = gql`
     sessions: [Session!]! 
     session(id: ID!): Session
     sessionActivities(sessionId: ID!): [SessionActivity]
-    personalRecords: [PersonalRecord]
+    personalRecords(sportType: String!): [PersonalRecord]
     transitions(sessionId: ID!): [Transition]
   }
 

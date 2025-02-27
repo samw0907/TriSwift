@@ -111,20 +111,44 @@ const resolvers = {
               updated_at: activity.updated_at.toISOString(),
           }));
       },
-      personalRecords: async (_, __, { user }) => {
-          if (!user) throw new Error("Authentication required.");
-          const records = await PersonalRecord.findAll({ where: { user_id: user.id } });
-          return records.map(record => ({
-              id: record.id,
-              userId: record.user_id,
-              activityType: record.activity_type,
-              distance: record.distance,
-              bestTime: record.best_time,
-              recordDate: record.record_date ? record.record_date.toISOString() : null,
-              created_at: record.created_at ? record.created_at.toISOString() : null,
-              updated_at: record.updated_at ? record.updated_at.toISOString() : null
-          }));
-      }
+      
+      personalRecords: async (_, { sportType }, { user }) => {
+        if (!user) throw new Error("Authentication required.");
+      
+        try {
+          const records = await PersonalRecord.findAll({
+            where: {
+              user_id: user.id,
+              activity_type: sportType,
+            },
+            order: [["distance", "ASC"], ["best_time", "ASC"]],
+          });
+      
+          const groupedRecords = {};
+          records.forEach((record) => {
+            if (!groupedRecords[record.distance]) {
+              groupedRecords[record.distance] = [];
+            }
+            if (groupedRecords[record.distance].length < 3) {
+              groupedRecords[record.distance].push({
+                id: record.id,
+                userId: record.user_id,
+                activityType: record.activity_type,
+                distance: record.distance,
+                bestTime: record.best_time,
+                recordDate: record.record_date ? record.record_date.toISOString() : null,
+                created_at: record.created_at ? record.created_at.toISOString() : null,
+                updated_at: record.updated_at ? record.updated_at.toISOString() : null,
+              });
+            }
+          });
+      
+          return Object.values(groupedRecords);
+        } catch (error) {
+          console.error("Error fetching personal records:", error);
+          throw new Error("Failed to fetch personal records");
+        }
+      }      
   },
   Mutation: {
     login: async (_, { email, password }) => {

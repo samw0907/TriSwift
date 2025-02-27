@@ -117,10 +117,7 @@ const resolvers = {
       
         try {
           const records = await PersonalRecord.findAll({
-            where: {
-              user_id: user.id,
-              activity_type: sportType,
-            },
+            where: { user_id: user.id, activity_type: sportType },
             order: [["distance", "ASC"], ["best_time", "ASC"]],
           });
       
@@ -133,6 +130,7 @@ const resolvers = {
               groupedRecords[record.distance].push({
                 id: record.id,
                 userId: record.user_id,
+                sessionId: record.session_id,
                 activityType: record.activity_type,
                 distance: record.distance,
                 bestTime: record.best_time,
@@ -143,13 +141,12 @@ const resolvers = {
             }
           });
       
-          return Object.values(groupedRecords);
+          return Object.values(groupedRecords).flat();
         } catch (error) {
           console.error("Error fetching personal records:", error);
           throw new Error("Failed to fetch personal records");
         }
-      }      
-  },
+      },      
   Mutation: {
     login: async (_, { email, password }) => {
       try {
@@ -582,5 +579,5 @@ const resolvers = {
     }    
   }
 }
-
+}
 module.exports = resolvers;

@@ -54,6 +54,7 @@ const typeDefs = gql`
   type PersonalRecord {
     id: ID!
     userId: ID!
+    sessionId: ID!
     activityType: String!
     distance: Float
     bestTime: Int

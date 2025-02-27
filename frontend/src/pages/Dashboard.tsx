@@ -1,61 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
-import { useNavigate } from 'react-router-dom';
 import { GET_WORKOUTS } from '../graphql/queries';
-import { ADD_WORKOUT } from '../graphql/mutations';
+import { ADD_SESSION } from '../graphql/mutations';
 import '../styles/dashboard.css';
 
 const Dashboard = () => {
-  const navigate = useNavigate();
-  const token = localStorage.getItem('token');
-
-  useEffect(() => {
-    if (!token) {
-      navigate('/login');
-    }
-  }, [token, navigate]);
-
-  const { loading, error, data } = useQuery(GET_WORKOUTS, {
-    fetchPolicy: 'cache-and-network',
-  });
-
-  const [addWorkout] = useMutation(ADD_WORKOUT, {
+  const { loading, error, data } = useQuery(GET_WORKOUTS);
+  const [addSession] = useMutation(ADD_SESSION, {
     refetchQueries: [{ query: GET_WORKOUTS }],
   });
 
   const [formState, setFormState] = useState({
-    session_type: '',
+    sessionType: '',
     date: '',
-    total_duration: '',
-    total_distance: '',
+    totalDuration: 0,
+    totalDistance: 0,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await addWorkout({
-      variables: {
-        ...formState,
-        total_duration: Number(formState.total_duration),
-        total_distance: Number(formState.total_distance),
-      },
-    });
-
-    setFormState({ session_type: '', date: '', total_duration: '', total_distance: '' });
+    await addSession({ variables: formState });
+    setFormState({ sessionType: '', date: '', totalDuration: 0, totalDistance: 0 });
   };
 
-  if (loading) return <p>Loading workouts...</p>;
-  if (error) return <p>Error loading workouts: {error.message}</p>;
+  if (loading) return <p>Loading sessions...</p>;
+  if (error) return <p>Error loading sessions: {error.message}</p>;
 
   return (
     <div>
-      <h1>Workout Dashboard</h1>
+      <h1>Session Dashboard</h1>
 
       <form onSubmit={handleSubmit}>
         <input
           type="text"
           placeholder="Session Type"
-          value={formState.session_type}
-          onChange={(e) => setFormState({ ...formState, session_type: e.target.value })}
+          value={formState.sessionType}
+          onChange={(e) => setFormState({ ...formState, sessionType: e.target.value })}
           required
         />
         <input
@@ -67,31 +47,27 @@ const Dashboard = () => {
         <input
           type="number"
           placeholder="Duration (sec)"
-          value={formState.total_duration}
-          onChange={(e) => setFormState({ ...formState, total_duration: e.target.value })}
+          value={formState.totalDuration}
+          onChange={(e) => setFormState({ ...formState, totalDuration: Number(e.target.value) })}
           required
         />
         <input
           type="number"
           placeholder="Distance (km)"
-          value={formState.total_distance}
-          onChange={(e) => setFormState({ ...formState, total_distance: e.target.value })}
+          value={formState.totalDistance}
+          onChange={(e) => setFormState({ ...formState, totalDistance: Number(e.target.value) })}
           required
         />
-        <button type="submit">Add Workout</button>
+        <button type="submit">Add Session</button>
       </form>
 
-      {data.workouts.length === 0 ? (
-        <p>No workouts recorded yet. Add one above!</p>
-      ) : (
-        <ul>
-          {data.workouts.map((workout: any) => (
-            <li key={workout.id}>
-              <strong>{workout.session_type}</strong> - {workout.date} - {workout.total_distance} km
-            </li>
-          ))}
-        </ul>
-      )}
+      <ul>
+        {data.sessions.map((session: any) => (
+          <li key={session.id}>
+            <strong>{session.sessionType}</strong> - {session.date} - {session.totalDistance} km
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };

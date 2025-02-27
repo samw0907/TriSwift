@@ -8,11 +8,10 @@ const Login = () => {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [login, { loading, error }] = useMutation(LOGIN_USER, {
     onCompleted: (data) => {
-      console.log("Login Response:", data); // Debugging output
+      console.log("Login Response:", data); // <-- Log response
       if (data?.login?.token) {
         localStorage.setItem('token', data.login.token);
-        console.log("Token Saved:", localStorage.getItem('token')); // Confirm it's saved
-        window.location.reload(); // Force Apollo Client to reload with new token
+        navigate('/');
       }
     },
     onError: (error) => {
@@ -21,12 +20,15 @@ const Login = () => {
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCredentials({ ...credentials, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    console.log(`Updating ${name}:`, value); // <-- Debugging log
+    setCredentials((prev) => ({ ...prev, [name]: value }));
   };
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitting login:", credentials);
+    console.log("Submitting login:", credentials); // <-- Log credentials
     await login({ variables: { email: credentials.email, password: credentials.password } });
   };
 

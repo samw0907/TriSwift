@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 
-export const GET_WORKOUTS = gql`
+export const GET_SESSIONS = gql`
   query GetWorkouts {
     sessions {
       id

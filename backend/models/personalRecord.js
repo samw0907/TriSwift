@@ -1,5 +1,5 @@
-const { Model, DataTypes } = require('sequelize');
-const { sequelize } = require('../util/db');
+const { Model, DataTypes } = require("sequelize");
+const { sequelize } = require("../util/db");
 
 class PersonalRecord extends Model {}
 
@@ -13,10 +13,19 @@ PersonalRecord.init({
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Users',
-      key: 'id'
+      model: "Users",
+      key: "id"
     },
-    onDelete: 'CASCADE'
+    onDelete: "CASCADE"
+  },
+  session_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: "Sessions",
+      key: "id"
+    },
+    onDelete: "CASCADE"
   },
   activity_type: {
     type: DataTypes.STRING,
@@ -26,19 +35,20 @@ PersonalRecord.init({
     type: DataTypes.DECIMAL
   },
   best_time: {
-    type: DataTypes.STRING
+    type: DataTypes.INTEGER,
+    allowNull: false
   },
   record_date: {
     type: DataTypes.DATE
   }
 }, {
   sequelize,
-  modelName: 'PersonalRecord',
-  tableName: 'PersonalRecords',
+  modelName: "PersonalRecord",
+  tableName: "PersonalRecords",
   timestamps: true,
   underscored: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at'
+  createdAt: "created_at",
+  updatedAt: "updated_at"
 });
 
 module.exports = PersonalRecord;

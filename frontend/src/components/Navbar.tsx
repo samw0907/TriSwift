@@ -2,25 +2,27 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
+  const token = localStorage.getItem('token');
   const navigate = useNavigate();
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
   };
 
   return (
-    <nav className="navbar">
-      <h2>TriSwift</h2>
-      <ul>
-        <li><Link to="/">Home</Link></li>
-        <li><Link to="/dashboard">Sessions</Link></li>
-        <li><Link to="/records">Personal Records</Link></li>
-        {!localStorage.getItem('token') ? (
-          <li><Link to="/login">Login / Signup</Link></li>
-        ) : (
-          <li><button onClick={handleLogout} className="logout-btn">Logout</button></li>
-        )}
-      </ul>
+    <nav style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
+      <Link to="/">Home</Link> |  
+      <Link to="/dashboard">Dashboard</Link> |  
+      <Link to="/records">Personal Records</Link> |  
+      {!token ? (
+        <>
+          <Link to="/login">Login</Link> |  
+          <Link to="/signup">Signup</Link>
+        </>
+      ) : (
+        <button onClick={handleLogout} style={{ marginLeft: '10px' }}>Logout</button>
+      )}
     </nav>
   );
 };

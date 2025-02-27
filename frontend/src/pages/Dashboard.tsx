@@ -17,8 +17,9 @@ const Dashboard = () => {
     refetchQueries: [{ query: GET_SESSIONS }],
   });
 
+  const [showForm, setShowForm] = useState(false);
+  const [sessionType, setSessionType] = useState('');
   const [formState, setFormState] = useState({
-    sessionType: '',
     date: '',
     hours: '',
     minutes: '',
@@ -26,31 +27,41 @@ const Dashboard = () => {
     totalDistance: '',
   });
 
+  const handleSessionTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSessionType(e.target.value);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (name === 'hours' || name === 'minutes' || name === 'seconds') {
+      setFormState((prev) => ({
+        ...prev,
+        [name]: value === '' ? '' : String(Math.max(0, Number(value))),
+      }));
+    } else {
+      setFormState((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const totalDuration =
-      Number(formState.hours || 0) * 3600 +
-      Number(formState.minutes || 0) * 60 +
-      Number(formState.seconds || 0);
-
+      (Number(formState.hours) || 0) * 3600 +
+      (Number(formState.minutes) || 0) * 60 +
+      (Number(formState.seconds) || 0);
+    
     await addSession({
       variables: {
-        sessionType: formState.sessionType,
+        sessionType,
         date: formState.date,
-        totalDuration: totalDuration,
+        totalDuration,
         totalDistance: formState.totalDistance ? Number(formState.totalDistance) : 0,
       },
     });
 
-    setFormState({
-      sessionType: '',
-      date: '',
-      hours: '',
-      minutes: '',
-      seconds: '',
-      totalDistance: '',
-    });
+    setShowForm(false);
+    setSessionType('');
+    setFormState({ date: '', hours: '', minutes: '', seconds: '', totalDistance: '' });
   };
 
   if (loading) return <p>Loading sessions...</p>;
@@ -59,89 +70,64 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <h1>Session Dashboard</h1>
+      {!showForm && (
+        <button onClick={() => setShowForm(true)}>Add Session</button>
+      )}
 
-      <form onSubmit={handleSubmit} className="session-form">
-        <div className="row">
-          <div className="input-box">
-            <label>Session Type:</label>
-            <select
-              value={formState.sessionType}
-              onChange={(e) => setFormState({ ...formState, sessionType: e.target.value })}
-              required
-            >
-              <option value="">Select Type</option>
-              <option value="Multi-Sport">Multi-Sport</option>
-              <option value="Swim">Swim</option>
-              <option value="Bike">Bike</option>
-              <option value="Run">Run</option>
-            </select>
-          </div>
+      {showForm && (
+        <form onSubmit={handleSubmit} className="session-form">
+          <label>Session Type:</label>
+          <select value={sessionType} onChange={handleSessionTypeChange} required>
+            <option value="">Select Type</option>
+            <option value="Multi-Sport">Multi-Sport</option>
+            <option value="Swim">Swim</option>
+            <option value="Bike">Bike</option>
+            <option value="Run">Run</option>
+          </select>
 
-          <div className="input-box">
-            <label>Date:</label>
-            <input
-              type="date"
-              value={formState.date}
-              onChange={(e) => setFormState({ ...formState, date: e.target.value })}
-              required
-            />
-          </div>
-        </div>
+          {sessionType === 'Multi-Sport' && <p>Feature coming soon!</p>}
+          {sessionType && sessionType !== 'Multi-Sport' && (
+            <>
+              <label>Date:</label>
+              <input type="date" name="date" value={formState.date} onChange={handleInputChange} required />
+              
+              <label>Duration:</label>
+              <div className="duration-inputs">
+                <div className="duration-box">
+                  <input type="number" name="hours" placeholder="0" value={formState.hours} onChange={handleInputChange} min="0" required />
+                  <span>Hours</span>
+                </div>
+                <div className="duration-box">
+                  <input type="number" name="minutes" placeholder="0" value={formState.minutes} onChange={handleInputChange} min="0" max="59" required />
+                  <span>Minutes</span>
+                </div>
+                <div className="duration-box">
+                  <input type="number" name="seconds" placeholder="0" value={formState.seconds} onChange={handleInputChange} min="0" max="59" required />
+                  <span>Seconds</span>
+                </div>
+              </div>
 
-        <label>Duration:</label>
-        <div className="duration-inputs">
-          <div className="duration-box">
-            <input
-              type="number"
-              placeholder="0"
-              value={formState.hours}
-              onChange={(e) => setFormState({ ...formState, hours: e.target.value })}
-              min="0"
-              required
-            />
-            <span>Hours</span>
-          </div>
-          <div className="duration-box">
-            <input
-              type="number"
-              placeholder="0"
-              value={formState.minutes}
-              onChange={(e) => setFormState({ ...formState, minutes: e.target.value })}
-              min="0"
-              max="59"
-              required
-            />
-            <span>Minutes</span>
-          </div>
-          <div className="duration-box">
-            <input
-              type="number"
-              placeholder="0"
-              value={formState.seconds}
-              onChange={(e) => setFormState({ ...formState, seconds: e.target.value })}
-              min="0"
-              max="59"
-              required
-            />
-            <span>Seconds</span>
-          </div>
-        </div>
+              <label>Total Distance ({sessionType === 'Swim' ? 'meters' : 'km'}):</label>
+              <input
+                type="number"
+                name="totalDistance"
+                placeholder="Enter distance"
+                value={formState.totalDistance}
+                onChange={handleInputChange}
+                min="0"
+                step="0.1"
+              />
 
-        <label>Total Distance (km):</label>
-        <input
-          type="number"
-          placeholder="Enter distance"
-          value={formState.totalDistance}
-          onChange={(e) => setFormState({ ...formState, totalDistance: e.target.value })}
-        />
-
-        <button type="submit">Add Session</button>
-      </form>
+              <button type="submit">Add Session</button>
+            </>
+          )}
+        </form>
+      )}
 
       <ul className="session-list">
         {data.sessions.map((session: any) => (
           <li key={session.id}>
-            <strong>{session.sessionType}</strong> - {formatDuration(session.totalDuration)} - {session.totalDistance} km
+            <strong>{session.sessionType}</strong> - {formatDuration(session.totalDuration)} - {session.totalDistance} {session.sessionType === 'Swim' ? 'm' : 'km'}
           </li>
         ))}
       </ul>

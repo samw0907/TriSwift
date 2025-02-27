@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 
 const Home = () => {
   return (
-    <div className="home">
+    <div style={{ textAlign: 'center' }}>
       <h1>Welcome to TriSwift</h1>
-      <p>Your all-in-one fitness tracking app for triathletes.</p>
-      <Link to="/dashboard" className="btn">Go to Dashboard</Link>
+      <p>Track your fitness progress with ease.</p>
+      <Link to="/login">
+        <button>Login</button>
+      </Link>
     </div>
   );
 };

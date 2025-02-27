@@ -8,7 +8,7 @@ const Login = () => {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [login, { loading, error }] = useMutation(LOGIN_USER, {
     onCompleted: (data) => {
-      console.log("Login Response:", data); // <-- Log response
+      console.log("Login Response:", data);
       if (data?.login?.token) {
         localStorage.setItem('token', data.login.token);
         navigate('/');
@@ -21,14 +21,14 @@ const Login = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    console.log(`Updating ${name}:`, value); // <-- Debugging log
+    console.log(`Updating ${name}:`, value);
     setCredentials((prev) => ({ ...prev, [name]: value }));
   };
   
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitting login:", credentials); // <-- Log credentials
+    console.log("Submitting login:", credentials);
     await login({ variables: { email: credentials.email, password: credentials.password } });
   };
 

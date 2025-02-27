@@ -8,9 +8,14 @@ const Login = () => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [login, { loading, error }] = useMutation(LOGIN_USER, {
     onCompleted: (data) => {
-      localStorage.setItem('token', data.login.token);
-      navigate('/');
+      if (data?.login?.token) {
+        localStorage.setItem('token', data.login.token);
+        navigate('/');
+      }
     },
+    onError: () => {
+      // Handles GraphQL errors without crashing the app
+    }
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,15 +24,29 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login({ variables: { username: credentials.username, password: credentials.password } });
+    await login({ variables: { ...credentials } });
   };
 
   return (
     <div>
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
-        <input type="text" name="username" placeholder="Username" onChange={handleChange} required />
-        <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
+        <input 
+          type="text" 
+          name="username" 
+          placeholder="Username" 
+          value={credentials.username} 
+          onChange={handleChange} 
+          required 
+        />
+        <input 
+          type="password" 
+          name="password" 
+          placeholder="Password" 
+          value={credentials.password} 
+          onChange={handleChange} 
+          required 
+        />
         <button type="submit" disabled={loading}>Login</button>
       </form>
       {error && <p style={{ color: 'red' }}>Login failed. Check credentials.</p>}

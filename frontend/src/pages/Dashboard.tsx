@@ -21,9 +21,9 @@ const Dashboard = () => {
   const [sessionType, setSessionType] = useState('');
   const [formState, setFormState] = useState({
     date: '',
-    hours: '',
-    minutes: '',
-    seconds: '',
+    hours: '0',
+    minutes: '0',
+    seconds: '0',
     totalDistance: '',
   });
 
@@ -33,15 +33,17 @@ const Dashboard = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+  
     if (name === 'hours' || name === 'minutes' || name === 'seconds') {
       setFormState((prev) => ({
         ...prev,
-        [name]: value === '' ? '' : String(Math.max(0, Number(value))),
+        [name]: value === '' ? '0' : String(Math.max(0, Number(value))),
       }));
     } else {
       setFormState((prev) => ({ ...prev, [name]: value }));
     }
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -12,7 +12,8 @@ Date            Hours    Topic
 25.02.2025      8        Docker set up
 26.02.2025      4        Testing backend
                 4        Frontend set up (React, Typescript)
-27.02.2025      8        Frontend - login and dashboard basics
+27.02.2025      5        Frontend - login and dashboard basics
+                3.5      Backend, fixing typeDefs and Routes
 28.02.2025
-                ()
-TOTAL HOURS     58.5     
+                (33.5)
+TOTAL HOURS     67     

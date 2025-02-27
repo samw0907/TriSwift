@@ -135,8 +135,8 @@ const resolvers = {
                 distance: record.distance,
                 bestTime: record.best_time,
                 recordDate: record.record_date ? record.record_date.toISOString() : null,
-                created_at: record.created_at ? record.created_at.toISOString() : null,
-                updated_at: record.updated_at ? record.updated_at.toISOString() : null,
+                created_at: record.created_at.toISOString(),
+                updated_at: record.updated_at.toISOString(),
               });
             }
           });
@@ -146,7 +146,8 @@ const resolvers = {
           console.error("Error fetching personal records:", error);
           throw new Error("Failed to fetch personal records");
         }
-      },      
+      },
+           
   Mutation: {
     login: async (_, { email, password }) => {
       try {
@@ -484,7 +485,7 @@ const resolvers = {
       try {
         const activity = await SessionActivity.findByPk(id);
         if (!activity) throw new Error("Session Activity not found");
-  
+    
         const session = await Session.findByPk(activity.session_id);
         if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only delete activities from your own sessions.");
     
@@ -494,18 +495,22 @@ const resolvers = {
         console.error("Delete Session Activity Error:", error);
         throw new Error("Failed to delete session activity: " + error.message);
       }
-    },
+    },    
     
     createPersonalRecord: async (_, { input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
     
       try {
-        if (!input.activityType || !input.bestTime) {
-          throw new Error("Activity Type and Best Time are required.");
+        if (!input.activityType || !input.bestTime || !input.sessionId) {
+          throw new Error("Activity Type, Best Time, and Session ID are required.");
         }
+    
+        const session = await Session.findByPk(input.sessionId);
+        if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only add records to your own sessions.");
     
         const record = await PersonalRecord.create({
           user_id: user.id, 
+          session_id: input.sessionId,
           activity_type: input.activityType,
           distance: input.distance,
           best_time: input.bestTime,
@@ -516,18 +521,19 @@ const resolvers = {
         return {
           id: record.id,
           userId: record.user_id,
+          sessionId: record.session_id,
           activityType: record.activity_type,
           distance: record.distance,
           bestTime: record.best_time,
           recordDate: record.record_date ? record.record_date.toISOString() : null,
-          created_at: record.created_at ? record.created_at.toISOString() : null,
-          updated_at: record.updated_at ? record.updated_at.toISOString() : null
+          created_at: record.created_at.toISOString(),
+          updated_at: record.updated_at.toISOString()
         };
       } catch (error) {
         console.error("Create Personal Record Error:", error);
         throw new Error("Failed to create personal record: " + error.message);
       }
-    },
+    },    
     
     updatePersonalRecord: async (_, { id, input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
@@ -539,6 +545,7 @@ const resolvers = {
         if (record.user_id !== user.id) throw new Error("Unauthorized: You can only update your own records.");
     
         await record.update({
+          session_id: record.session_id,
           activity_type: input.activityType ?? record.activity_type,
           distance: input.distance ?? record.distance,
           best_time: input.bestTime ?? record.best_time,
@@ -548,6 +555,7 @@ const resolvers = {
         return {
           id: record.id,
           userId: record.user_id,
+          sessionId: record.session_id,
           activityType: record.activity_type,
           distance: record.distance,
           bestTime: record.best_time,
@@ -559,7 +567,7 @@ const resolvers = {
         console.error("Update Personal Record Error:", error);
         throw new Error("Failed to update personal record: " + error.message);
       }
-    },
+    },    
     
     deletePersonalRecord: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");

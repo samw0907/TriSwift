@@ -63,7 +63,7 @@ const typeDefs = gql`
     updated_at: String!
   }
 
-    type AuthPayload {
+  type AuthPayload {
     token: String!
   }
 
@@ -128,6 +128,7 @@ const typeDefs = gql`
   }
 
   input PersonalRecordInput {
+    sessionId: ID!
     activityType: String!  
     distance: Float
     bestTime: Int!
@@ -160,7 +161,7 @@ const typeDefs = gql`
     sessions: [Session!]! 
     session(id: ID!): Session
     sessionActivities(sessionId: ID!): [SessionActivity]
-    personalRecords(sportType: String!): [PersonalRecord]
+    personalRecords(sportType: String!): [[PersonalRecord]]  # ✅ Ensure this is correct
     transitions(sessionId: ID!): [Transition]
   }
 

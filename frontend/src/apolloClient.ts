@@ -7,7 +7,7 @@ const httpLink = createHttpLink({
 
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem('token');
-  console.log("Current Token (Apollo Auth):", token); // Debugging output
+  console.log("Current Token (Apollo Auth):", token);
   return {
     headers: {
       ...headers,

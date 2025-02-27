@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_SESSIONS } from '../graphql/queries';
-import { ADD_SESSION } from '../graphql/mutations';
+import { ADD_SESSION, DELETE_SESSION } from '../graphql/mutations';
 import '../styles/dashboard.css';
 
 const formatDuration = (totalSeconds: number) => {
@@ -14,6 +14,10 @@ const formatDuration = (totalSeconds: number) => {
 const Dashboard = () => {
   const { loading, error, data } = useQuery(GET_SESSIONS);
   const [addSession] = useMutation(ADD_SESSION, {
+    refetchQueries: [{ query: GET_SESSIONS }],
+  });
+
+  const [deleteSession] = useMutation(DELETE_SESSION, {
     refetchQueries: [{ query: GET_SESSIONS }],
   });
 
@@ -33,7 +37,7 @@ const Dashboard = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-  
+
     if (name === 'hours' || name === 'minutes' || name === 'seconds') {
       setFormState((prev) => ({
         ...prev,
@@ -44,6 +48,11 @@ const Dashboard = () => {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this session?")) {
+      await deleteSession({ variables: { id } });
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,13 +60,17 @@ const Dashboard = () => {
       (Number(formState.hours) || 0) * 3600 +
       (Number(formState.minutes) || 0) * 60 +
       (Number(formState.seconds) || 0);
-    
+
+    const convertedDistance = sessionType === "Swim"
+      ? Number(formState.totalDistance) / 1000
+      : Number(formState.totalDistance);
+
     await addSession({
       variables: {
         sessionType,
         date: formState.date,
         totalDuration,
-        totalDistance: formState.totalDistance ? Number(formState.totalDistance) : 0,
+        totalDistance: convertedDistance,
       },
     });
 
@@ -127,11 +140,25 @@ const Dashboard = () => {
       )}
 
       <ul className="session-list">
-        {data.sessions.map((session: any) => (
-          <li key={session.id}>
-            <strong>{session.sessionType}</strong> - {formatDuration(session.totalDuration)} - {session.totalDistance} {session.sessionType === 'Swim' ? 'm' : 'km'}
-          </li>
-        ))}
+        {data.sessions.map((session: any) => {
+          const displayedDistance = session.sessionType === 'Swim' 
+            ? session.totalDistance * 1000 
+            : session.totalDistance;
+
+          return (
+            <li key={session.id} className="session-item">
+              <span>
+                <strong>{session.sessionType}</strong> - {formatDuration(session.totalDuration)} - {displayedDistance} {session.sessionType === 'Swim' ? 'm' : 'km'}
+              </span>
+              <button 
+                onClick={() => handleDelete(session.id)} 
+                className="text-red-500 hover:text-red-700 transition-colors duration-200"
+                >
+                  🗑️
+              </button>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

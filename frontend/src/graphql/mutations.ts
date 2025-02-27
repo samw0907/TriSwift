@@ -36,3 +36,11 @@ export const ADD_SESSION = gql`
     }
   }
 `;
+
+export const DELETE_SESSION = gql`
+  mutation DeleteSession($id: ID!) {
+    deleteSession(id: $id) {
+      message
+    }
+  }
+`;

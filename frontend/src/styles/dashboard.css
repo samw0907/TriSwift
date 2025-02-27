@@ -67,4 +67,29 @@
     margin: 5px 0;
     border-radius: 5px;
   }
+
+  .session-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f8f8;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+  }
+  
+  .delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: red !important;
+    transition: color 0.2s ease-in-out;
+  }
+  
+  .delete-btn:hover {
+    color: darkred;
+  }
+  
+  
   

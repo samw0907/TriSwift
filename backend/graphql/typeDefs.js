@@ -63,9 +63,11 @@ const typeDefs = gql`
     updated_at: String!
   }
 
-  type AuthPayload {
-    token: String!
-  }
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
 
   # Input Types for Mutations
 
@@ -153,8 +155,9 @@ const typeDefs = gql`
 
   # Queries
   type Query {
-    users: [User] # Returns the logged-in user only
-    user: User # Fetches logged-in user's details
+    currentUser: User
+    users: [User]
+    user: User
     sessions: [Session!]! 
     session(id: ID!): Session
     sessionActivities(sessionId: ID!): [SessionActivity]

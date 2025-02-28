@@ -173,41 +173,47 @@ const resolvers = {
         return Object.values(groupedRecords).flat();
       },
    },  
-
-  Mutation: {
-    login: async (_, { email, password }) => {
-      console.log("🔍 Login Mutation Triggered");
-      console.log("📧 Email received:", email);
-      console.log("🔑 Password received:", password);
+    Mutation: {
+      login: async (_, { email, password }) => {
+        console.log("🔍 Login Mutation Triggered");
+        console.log("📧 Email received:", email);
+        console.log("🔑 Password received:", password);
+      
+        try {
+          if (!email || !password) throw new Error("Missing email or password");
+      
+          const normalizedEmail = email.toLowerCase().trim();
+          console.log("🔍 Normalized Email:", normalizedEmail);
+      
+          const user = await User.findOne({ where: { email: normalizedEmail } });
+          console.log("✅ User Found:", user ? user.email : "No User Found");
+      
+          if (!user) {
+            console.log("❌ No user found for this email");
+            throw new Error("Invalid credentials");
+          }
+      
+          const passwordValid = await bcrypt.compare(password, user.password_hash);
+          console.log("🔐 Password Match:", passwordValid ? "✔️ Valid" : "❌ Invalid");
+      
+          if (!passwordValid) {
+            console.log("❌ Password incorrect");
+            throw new Error("Invalid credentials");
+          }
     
-      try {
-        if (!email || !password) throw new Error("Missing email or password");
+          console.log("🔑 Generating JWT...");
+          const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
+          console.log("✅ JWT Token Generated:", token);
     
-        const normalizedEmail = email.toLowerCase().trim();
-        console.log("🔍 Normalized Email:", normalizedEmail);
-    
-        const user = await User.findOne({ where: { email: normalizedEmail } });
-        console.log("✅ User Found:", user ? user.email : "No User Found");
-    
-        if (!user) throw new Error("Invalid credentials");
-    
-        const passwordValid = await bcrypt.compare(password, user.password_hash);
-        console.log("🔐 Password Match:", passwordValid ? "✔️ Valid" : "❌ Invalid");
-    
-        if (!passwordValid) throw new Error("Invalid credentials");
-    
-        const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
-        console.log("🔑 JWT Token Generated:", token);
-    
-        return {
-          token,
-          user: { id: user.id, name: user.name, email: user.email }
-        };
-      } catch (error) {
-        console.error("❌ Login Error:", error);
-        throw new Error("Login failed");
-      }
-    },     
+          return {
+            token,
+            user: { id: user.id, name: user.name, email: user.email }
+          };
+        } catch (error) {
+          console.error("❌ Full Login Error:", error);
+          throw new Error(`Login failed: ${error.message}`);
+        }
+      },    
 
     createSession: async (_, { input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
@@ -290,7 +296,6 @@ const resolvers = {
       }
     },
     
-  
     deleteSession: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
     

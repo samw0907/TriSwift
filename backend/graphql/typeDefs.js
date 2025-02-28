@@ -16,6 +16,8 @@ const typeDefs = gql`
     sessionType: String!
     date: String!
     isMultiSport: Boolean!
+    totalDuration: Int! 
+    totalDistance: Float! 
     activities: [SessionActivity]
     transitions: [Transition]
     weatherTemp: Float
@@ -63,11 +65,10 @@ const typeDefs = gql`
     updated_at: String!
   }
 
-type AuthPayload {
-  token: String!
-  user: User!
-}
-
+  type AuthPayload {
+    token: String!
+    user: User!
+  }
 
   # Input Types for Mutations
 
@@ -75,6 +76,8 @@ type AuthPayload {
     sessionType: String!
     date: String!
     isMultiSport: Boolean!
+    totalDuration: Int!
+    totalDistance: Float!
     weatherTemp: Float
     weatherHumidity: Int
     weatherWindSpeed: Float
@@ -84,6 +87,8 @@ type AuthPayload {
     sessionType: String
     date: String
     isMultiSport: Boolean
+    totalDuration: Int
+    totalDistance: Float
     weatherTemp: Float
     weatherHumidity: Int
     weatherWindSpeed: Float

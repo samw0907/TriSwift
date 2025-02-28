@@ -1,16 +1,16 @@
 import { gql } from '@apollo/client';
 
 export const GET_SESSIONS = gql`
-  query GetWorkouts {
+  query GetSessions {
     sessions {
       id
-      session_type
+      sessionType
       date
-      total_duration
-      total_distance
-      weather_temp
-      weather_humidity
-      weather_wind_speed
+      totalDuration
+      totalDistance
+      weatherTemp
+      weatherHumidity
+      weatherWindSpeed
       created_at
       updated_at
     }

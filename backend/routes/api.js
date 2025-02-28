@@ -48,14 +48,5 @@ router.get("/personal-records/:userId", async (req, res) => {
   }
 });
 
-router.get("/progress/:userId", async (req, res) => {
-  try {
-    const progress = await Progress.findAll({ where: { user_id: req.params.userId } });
-    res.json(progress);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch progress" });
-  }
-});
-
 module.exports = router;
 

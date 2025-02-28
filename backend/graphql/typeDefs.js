@@ -17,16 +17,19 @@ const typeDefs = gql`
     date: String!
     totalDuration: Int!
     totalDistance: Float!
+    isMultiSport: Boolean!
+    activities: [SessionActivity]
+    transitions: [Transition]
     weatherTemp: Float
     weatherHumidity: Int
     weatherWindSpeed: Float
-    activities: [SessionActivity]
     created_at: String!
     updated_at: String!
   }
 
   type SessionActivity {
     id: ID!
+    userId: ID!
     sessionId: ID!
     sportType: String!
     duration: Int

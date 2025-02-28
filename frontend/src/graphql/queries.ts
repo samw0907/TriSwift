@@ -21,7 +21,7 @@ export const GET_PERSONAL_RECORDS = gql`
   query GetPersonalRecords($sportType: String!) {
     personalRecords(sportType: $sportType) {
       distance
-      bestTimes
+      bestTime
     }
   }
 `;

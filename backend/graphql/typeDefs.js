@@ -132,6 +132,7 @@ const typeDefs = gql`
     activityType: String!  
     distance: Float
     bestTime: Int!
+    recordDate: String
   }
 
   input UpdatePersonalRecordInput {
@@ -139,6 +140,7 @@ const typeDefs = gql`
     activityType: String
     distance: Float
     bestTime: Int
+    recordDate: String
   }
 
   input CreateUserInput {

@@ -514,8 +514,7 @@ const resolvers = {
           activity_type: input.activityType,
           distance: input.distance,
           best_time: input.bestTime,
-          max_power: input.maxPower,
-          record_date: input.recordDate || new Date(),
+          record_date: input.recordDate ? new Date(input.recordDate) : new Date(),
         });
     
         return {

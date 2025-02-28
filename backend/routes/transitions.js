@@ -72,7 +72,7 @@ router.get("/:sessionId", authMiddleware, async (req, res) => {
       console.error("Error fetching transitions:", error);
       res.status(500).json({ error: "Failed to fetch transitions" });
     }
-  });
+});
 
 router.post("/:sessionId", authMiddleware, async (req, res) => {
   try {
@@ -86,6 +86,10 @@ router.post("/:sessionId", authMiddleware, async (req, res) => {
 
     const { previous_sport, next_sport, transition_time, comments } = req.body;
 
+    if (!previous_sport || !next_sport || transition_time === undefined) {
+      return res.status(400).json({ error: "Missing required fields (previous_sport, next_sport, transition_time)" });
+    }
+
     const transition = await Transition.create({
       session_id: session.id,
       previous_sport,
@@ -96,6 +100,7 @@ router.post("/:sessionId", authMiddleware, async (req, res) => {
 
     res.status(201).json(transition);
   } catch (error) {
+    console.error("Error creating transition:", error);
     res.status(400).json({ error: "Failed to create transition" });
   }
 });
@@ -110,9 +115,20 @@ router.put("/:transitionId", authMiddleware, async (req, res) => {
       return res.status(404).json({ error: "Transition not found or unauthorized" });
     }
 
-    await transition.update(req.body);
+    const { previous_sport, next_sport, transition_time, comments } = req.body;
+
+    const updatedValues = {
+      previous_sport: previous_sport ?? transition.previous_sport,
+      next_sport: next_sport ?? transition.next_sport,
+      transition_time: transition_time ?? transition.transition_time,
+      comments: comments ?? transition.comments,
+    };
+
+    await transition.update(updatedValues);
+    
     res.json(transition);
   } catch (error) {
+    console.error("Error updating transition:", error);
     res.status(400).json({ error: "Failed to update transition" });
   }
 });
@@ -130,6 +146,7 @@ router.delete("/:transitionId", authMiddleware, async (req, res) => {
     await transition.destroy();
     res.json({ message: "Transition deleted successfully" });
   } catch (error) {
+    console.error("Error deleting transition:", error);
     res.status(500).json({ error: "Failed to delete transition" });
   }
 });

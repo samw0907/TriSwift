@@ -1,52 +1,98 @@
 const express = require("express");
-const { User, Session, SessionActivity, Transition, PersonalRecord} = require("../models");
+const { User, Session, SessionActivity, Transition, PersonalRecord } = require("../models");
+const authMiddleware = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-router.get("/sessions", async (req, res) => {
+router.get("/sessions", authMiddleware, async (req, res) => {
   try {
-    const sessions = await Session.findAll({ include: SessionActivity });
+    const sessions = await Session.findAll({ 
+      where: { user_id: req.user.id }, 
+      include: [SessionActivity, Transition] 
+    });
+
     res.json(sessions);
   } catch (error) {
+    console.error("Error fetching sessions:", error);
     res.status(500).json({ error: "Failed to fetch sessions" });
   }
 });
 
-router.post("/sessions", async (req, res) => {
+router.post("/sessions", authMiddleware, async (req, res) => {
   try {
-    const session = await Session.create(req.body);
+    const { session_type, date, total_duration, total_distance, weather_temp, weather_humidity, weather_wind_speed } = req.body;
+
+    if (!session_type || !date || total_duration === undefined || total_distance === undefined) {
+      return res.status(400).json({ error: "All required fields must be provided" });
+    }
+
+    const session = await Session.create({
+      user_id: req.user.id,
+      session_type,
+      date: new Date(date),
+      total_duration,
+      total_distance,
+      weather_temp,
+      weather_humidity,
+      weather_wind_speed,
+    });
+
     res.status(201).json(session);
   } catch (error) {
+    console.error("Error creating session:", error);
     res.status(400).json({ error: "Failed to create session" });
   }
 });
 
-router.get("/activities", async (req, res) => {
+router.get("/activities", authMiddleware, async (req, res) => {
   try {
-    const activities = await SessionActivity.findAll();
+    const activities = await SessionActivity.findAll({
+      include: { model: Session, where: { user_id: req.user.id } }
+    });
+
     res.json(activities);
   } catch (error) {
+    console.error("Error fetching activities:", error);
     res.status(500).json({ error: "Failed to fetch activities" });
   }
 });
 
-router.post("/activities", async (req, res) => {
+router.post("/activities", authMiddleware, async (req, res) => {
   try {
-    const activity = await SessionActivity.create(req.body);
+    const { session_id, sport_type, duration, distance, heart_rate_min, heart_rate_max, heart_rate_avg, cadence, power } = req.body;
+
+    const session = await Session.findByPk(session_id);
+    if (!session || session.user_id !== req.user.id) {
+      return res.status(403).json({ error: "Unauthorized: You can only add activities to your own sessions." });
+    }
+
+    const activity = await SessionActivity.create({
+      session_id,
+      sport_type,
+      duration,
+      distance,
+      heart_rate_min,
+      heart_rate_max,
+      heart_rate_avg,
+      cadence,
+      power,
+    });
+
     res.status(201).json(activity);
   } catch (error) {
-    res.status(400).json({ error: "Failed to create activity" });
+    console.error("Error creating session activity:", error);
+    res.status(400).json({ error: "Failed to create session activity" });
   }
 });
 
-router.get("/personal-records/:userId", async (req, res) => {
+router.get("/personal-records", authMiddleware, async (req, res) => {
   try {
-    const records = await PersonalRecord.findAll({ where: { user_id: req.params.userId } });
+    const records = await PersonalRecord.findAll({ where: { user_id: req.user.id } });
     res.json(records);
   } catch (error) {
+    console.error("Error fetching personal records:", error);
     res.status(500).json({ error: "Failed to fetch personal records" });
   }
 });
 
 module.exports = router;
-

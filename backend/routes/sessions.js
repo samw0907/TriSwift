@@ -1,6 +1,6 @@
 const express = require("express");
 const { Op } = require("sequelize");
-const { Session, SessionActivity, PersonalRecord } = require("../models");
+const { Session, SessionActivity, Transition, PersonalRecord } = require("../models");
 const authMiddleware = require("../middlewares/authMiddleware");
 
 const router = express.Router();
@@ -57,7 +57,7 @@ router.get("/", authMiddleware, async (req, res) => {
 
     const sessions = await Session.findAll({
       where: sessionFilters,
-      include: { model: SessionActivity },
+      include: [SessionActivity, Transition],
       order: sortingOptions.length ? sortingOptions : [["date", "DESC"]],
     });
 
@@ -74,7 +74,7 @@ router.get("/:sessionId", authMiddleware, async (req, res) => {
 
     const session = await Session.findOne({
       where: { id: sessionId, user_id: req.user.id },
-      include: { model: SessionActivity },
+      include: [SessionActivity, Transition],
     });
 
     if (!session) {
@@ -92,10 +92,14 @@ router.post("/", authMiddleware, async (req, res) => {
   try {
     const { session_type, date, total_duration, total_distance, weather_temp, weather_humidity, weather_wind_speed } = req.body;
 
+    if (!session_type || !date || total_duration === undefined || total_distance === undefined) {
+      return res.status(400).json({ error: "All required fields must be provided" });
+    }
+
     const session = await Session.create({
       user_id: req.user.id,
       session_type,
-      date,
+      date: new Date(date),
       total_duration,
       total_distance,
       weather_temp,
@@ -121,6 +125,7 @@ router.put("/:sessionId", authMiddleware, async (req, res) => {
     await session.update(req.body);
     res.json(session);
   } catch (error) {
+    console.error("Error updating session:", error);
     res.status(400).json({ error: "Failed to update session" });
   }
 });
@@ -136,6 +141,7 @@ router.delete("/:sessionId", authMiddleware, async (req, res) => {
     await session.destroy();
     res.json({ message: "Session deleted successfully" });
   } catch (error) {
+    console.error("Error deleting session:", error);
     res.status(500).json({ error: "Failed to delete session" });
   }
 });

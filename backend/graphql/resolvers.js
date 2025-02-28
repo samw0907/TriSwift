@@ -178,21 +178,22 @@ const resolvers = {
     login: async (_, { email, password }) => {
       try {
         if (!email || !password) throw new Error("Missing email or password");
-
-        const user = await User.findOne({ where: { email } });
+    
+        const normalizedEmail = email.toLowerCase().trim();
+        const user = await User.findOne({ where: { email: normalizedEmail } });
         if (!user) throw new Error("Invalid credentials");
-
+    
         const passwordValid = await bcrypt.compare(password, user.password_hash);
         if (!passwordValid) throw new Error("Invalid credentials");
-
+    
         const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
-
+    
         return { token };
       } catch (error) {
         console.error("Login Error:", error);
         throw new Error("Login failed");
       }
-    },
+    },    
 
     createSession: async (_, { input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
@@ -300,19 +301,21 @@ const resolvers = {
         if (!input.name || !input.email || !input.password) {
           throw new Error("All fields (name, email, password) are required");
         }
-  
-        const existingUser = await User.findOne({ where: { email: input.email } });
+    
+        const normalizedEmail = input.email.toLowerCase().trim();
+    
+        const existingUser = await User.findOne({ where: { email: normalizedEmail } });
         if (existingUser) {
           throw new Error("Email is already in use");
         }
-
-        const passwordHash = await bcrypt.hash(input.password, 10);
+    
+        const passwordHash = await bcrypt.hash(input.password, 12);
         const user = await User.create({
-          name: input.name,
-          email: input.email,
+          name: input.name.trim(),
+          email: normalizedEmail,
           password_hash: passwordHash,
         });
-  
+    
         return {
           id: user.id,
           name: user.name,
@@ -324,7 +327,7 @@ const resolvers = {
         console.error("Create User Error:", error);
         throw new Error("Failed to create user: " + error.message);
       }
-    },
+    },    
     
     updateUser: async (_, { id, input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
@@ -333,6 +336,20 @@ const resolvers = {
       try {
         const userToUpdate = await User.findByPk(id);
         if (!userToUpdate) throw new Error("User not found");
+    
+        if (input.email) {
+          const normalizedEmail = input.email.toLowerCase().trim();
+          const existingUser = await User.findOne({ where: { email: normalizedEmail } });
+          if (existingUser && existingUser.id !== user.id) {
+            throw new Error("Email is already in use");
+          }
+          input.email = normalizedEmail;
+        }
+    
+        if (input.password) {
+          input.password_hash = await bcrypt.hash(input.password, 12);
+          delete input.password;
+        }
     
         await userToUpdate.update(input);
     
@@ -347,7 +364,7 @@ const resolvers = {
         console.error("Update User Error:", error);
         throw new Error("Failed to update user: " + error.message);
       }
-    },
+    },    
     
     deleteUser: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
@@ -357,67 +374,37 @@ const resolvers = {
         const userToDelete = await User.findByPk(id);
         if (!userToDelete) throw new Error("User not found");
     
+        await SessionActivity.destroy({ where: { session_id: user.id } });
+        await Transition.destroy({ where: { session_id: user.id } });
+        await PersonalRecord.destroy({ where: { user_id: user.id } });
+        await Session.destroy({ where: { user_id: user.id } });
+    
         await userToDelete.destroy();
+    
         return { message: "User deleted successfully" };
       } catch (error) {
         console.error("Delete User Error:", error);
         throw new Error("Failed to delete user: " + error.message);
       }
-    },    
-
+    },
+       
     createTransition: async (_, { input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-  
-      console.log("Received Input:", input);
-      console.log("Extracted sessionId:", input.sessionId);
-  
+    
       try {
-          const session = await Session.findByPk(input.sessionId);
-          console.log("Session Found:", session ? "Yes" : "No");
-  
-          if (!session) throw new Error("Session not found.");
-          if (session.user_id !== user.id) throw new Error("Unauthorized: You can only add transitions to your own sessions.");
-  
-          const transition = await Transition.create({
-              session_id: input.sessionId,
-              previous_sport: input.previousSport,
-              next_sport: input.nextSport,
-              transition_time: input.transitionTime,
-              comments: input.comments,
-          });
-  
-          return {
-              id: transition.id,
-              sessionId: transition.session_id,
-              previousSport: transition.previous_sport,
-              nextSport: transition.next_sport,
-              transitionTime: transition.transition_time,
-              comments: transition.comments,
-          };
-      } catch (error) {
-          console.error("Create Transition Error:", error);
-          throw new Error("Failed to create transition: " + error.message);
-      }
-  },
-   
-    updateTransition: async (_, { id, input }, { user }) => {
-      if (!user) throw new Error("Authentication required.");
-  
-      const transition = await Transition.findByPk(id);
-      if (!transition) throw new Error("Transition not found.");
-  
-      const session = await Session.findByPk(transition.session_id);
-      if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only update transitions in your own sessions.");
-  
-      const updatedValues = {
-          previous_sport: input.previousSport ?? transition.previous_sport,
-          next_sport: input.nextSport ?? transition.next_sport,
-          transition_time: input.transitionTime ?? transition.transition_time,
-          comments: input.comments ?? transition.comments,
-      };
-  
-      await transition.update(updatedValues);
-      return {
+        const session = await Session.findByPk(input.sessionId);
+        if (!session) throw new Error("Session not found.");
+        if (session.user_id !== user.id) throw new Error("Unauthorized: You can only add transitions to your own sessions.");
+    
+        const transition = await Transition.create({
+          session_id: input.sessionId,
+          previous_sport: input.previousSport.trim(),
+          next_sport: input.nextSport.trim(),
+          transition_time: input.transitionTime,
+          comments: input.comments ? input.comments.trim() : null,
+        });
+    
+        return {
           id: transition.id,
           sessionId: transition.session_id,
           previousSport: transition.previous_sport,
@@ -426,32 +413,70 @@ const resolvers = {
           comments: transition.comments,
           created_at: transition.created_at.toISOString(),
           updated_at: transition.updated_at.toISOString(),
+        };
+      } catch (error) {
+        console.error("Create Transition Error:", error);
+        throw new Error("Failed to create transition: " + error.message);
+      }
+    },
+    
+    updateTransition: async (_, { id, input }, { user }) => {
+      if (!user) throw new Error("Authentication required.");
+    
+      const transition = await Transition.findByPk(id);
+      if (!transition) throw new Error("Transition not found.");
+    
+      const session = await Session.findByPk(transition.session_id);
+      if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only update transitions in your own sessions.");
+    
+      const updatedValues = {
+        previous_sport: input.previousSport ? input.previousSport.trim() : transition.previous_sport,
+        next_sport: input.nextSport ? input.nextSport.trim() : transition.next_sport,
+        transition_time: input.transitionTime ?? transition.transition_time,
+        comments: input.comments ? input.comments.trim() : transition.comments,
       };
-  },  
+    
+      await transition.update(updatedValues);
+    
+      return {
+        id: transition.id,
+        sessionId: transition.session_id,
+        previousSport: transition.previous_sport,
+        nextSport: transition.next_sport,
+        transitionTime: transition.transition_time,
+        comments: transition.comments,
+        created_at: transition.created_at.toISOString(),
+        updated_at: transition.updated_at.toISOString(),
+      };
+    },
     
     deleteTransition: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-
+    
       const transition = await Transition.findByPk(id);
       if (!transition) throw new Error("Transition not found.");
-
+    
       const session = await Session.findByPk(transition.session_id);
       if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only delete transitions from your own sessions.");
-
+    
       await transition.destroy();
-      return { message: "Transition deleted successfully" };
-  },
+      return { message: "Transition deleted successfully." };
+    },    
   
     createSessionActivity: async (_, { input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
     
       try {
         const session = await Session.findByPk(input.sessionId);
-        if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only add activities to your own sessions.");
+        if (!session) throw new Error("Session not found.");
+        if (session.user_id !== user.id) throw new Error("Unauthorized: You can only add activities to your own sessions.");
+        if (!input.sportType || !input.duration || !input.distance) {
+          throw new Error("Sport type, duration, and distance are required.");
+        }
     
         const activity = await SessionActivity.create({
           session_id: input.sessionId,
-          sport_type: input.sportType,
+          sport_type: input.sportType.trim(),
           duration: input.duration,
           distance: input.distance,
           heart_rate_min: input.heartRateMin,
@@ -473,14 +498,14 @@ const resolvers = {
           cadence: activity.cadence,
           power: activity.power,
           created_at: activity.created_at.toISOString(),
-          updated_at: activity.updated_at.toISOString()
+          updated_at: activity.updated_at.toISOString(),
         };
       } catch (error) {
         console.error("Create Session Activity Error:", error);
         throw new Error("Failed to create session activity: " + error.message);
       }
-    },
-    
+    }, 
+
     updateSessionActivity: async (_, { id, input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
     
@@ -491,7 +516,18 @@ const resolvers = {
         const session = await Session.findByPk(activity.session_id);
         if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only update activities in your own sessions.");
     
-        await activity.update(input);
+        const updatedValues = {
+          sport_type: input.sportType ? input.sportType.trim() : activity.sport_type,
+          duration: input.duration ?? activity.duration,
+          distance: input.distance ?? activity.distance,
+          heart_rate_min: input.heartRateMin ?? activity.heart_rate_min,
+          heart_rate_max: input.heartRateMax ?? activity.heart_rate_max,
+          heart_rate_avg: input.heartRateAvg ?? activity.heart_rate_avg,
+          cadence: input.cadence ?? activity.cadence,
+          power: input.power ?? activity.power,
+        };
+    
+        await activity.update(updatedValues);
     
         return {
           id: activity.id,
@@ -505,53 +541,80 @@ const resolvers = {
           cadence: activity.cadence,
           power: activity.power,
           created_at: activity.created_at.toISOString(),
-          updated_at: activity.updated_at.toISOString()
+          updated_at: activity.updated_at.toISOString(),
         };
       } catch (error) {
         console.error("Update Session Activity Error:", error);
         throw new Error("Failed to update session activity: " + error.message);
       }
-    },
+    },    
     
     deleteSessionActivity: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-    
       try {
         const activity = await SessionActivity.findByPk(id);
         if (!activity) throw new Error("Session Activity not found");
-    
+
         const session = await Session.findByPk(activity.session_id);
         if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only delete activities from your own sessions.");
-    
+
         await activity.destroy();
-        return { message: "Session Activity deleted successfully" };
+        return { message: "Session Activity deleted successfully." };
       } catch (error) {
         console.error("Delete Session Activity Error:", error);
         throw new Error("Failed to delete session activity: " + error.message);
       }
-    },    
+    },   
     
     createPersonalRecord: async (_, { input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-    
       try {
-        if (!input.activityType || !input.bestTime || !input.sessionId) {
-          throw new Error("Activity Type, Best Time, and Session ID are required.");
+        if (!input.activityType || !input.sessionId) {
+          throw new Error("Activity Type and Session ID are required.");
         }
-    
+
         const session = await Session.findByPk(input.sessionId);
-        if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only add records to your own sessions.");
-    
-        const record = await PersonalRecord.create({
-          user_id: user.id, 
-          session_id: input.sessionId,
-          activity_type: input.activityType,
-          distance: input.distance,
-          best_time: input.bestTime,
-          record_date: input.recordDate ? new Date(input.recordDate) : new Date(),
+        if (!session || session.user_id !== user.id) {
+          throw new Error("Unauthorized: You can only add records to your own sessions.");
+        }
+        const activities = await SessionActivity.findAll({
+          where: { session_id: input.sessionId, sport_type: input.activityType.trim() },
+          order: [["distance", "ASC"], ["duration", "ASC"]],
         });
-    
-        return {
+
+        if (!activities.length) {
+          throw new Error("No session activities found for the given sport type.");
+        }
+        const validDistances = {
+          Running: [100, 200, 400, 1000, 5000, 10000, 21100, 42200],
+          Cycling: [10000, 20000, 40000, 50000, 80000, 100000, 150000, 200000],
+          Swimming: [100, 200, 400, 800, 1000, 1500, 2000],
+        };
+
+        const recordsToSave = [];
+
+        for (const dist of validDistances[input.activityType.trim()] || []) {
+          const bestAttempts = activities.filter(a => a.distance === dist).slice(0, 3);
+
+          bestAttempts.forEach((activity) => {
+            recordsToSave.push({
+              user_id: user.id,
+              session_id: input.sessionId,
+              activity_type: input.activityType.trim(),
+              distance: activity.distance,
+              best_time: activity.duration,
+              record_date: session.date,
+            });
+          });
+        }
+
+        if (!recordsToSave.length) {
+          throw new Error("No valid records found for predefined distances.");
+        }
+
+        const createdRecords = await PersonalRecord.bulkCreate(recordsToSave);
+
+        return createdRecords.map(record => ({
           id: record.id,
           userId: record.user_id,
           sessionId: record.session_id,
@@ -560,31 +623,34 @@ const resolvers = {
           bestTime: record.best_time,
           recordDate: record.record_date ? record.record_date.toISOString() : null,
           created_at: record.created_at.toISOString(),
-          updated_at: record.updated_at.toISOString()
-        };
+          updated_at: record.updated_at.toISOString(),
+        }));
       } catch (error) {
         console.error("Create Personal Record Error:", error);
         throw new Error("Failed to create personal record: " + error.message);
       }
-    },    
+    },
     
     updatePersonalRecord: async (_, { id, input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-    
+
       try {
         const record = await PersonalRecord.findByPk(id);
         if (!record) throw new Error("Personal Record not found");
-    
         if (record.user_id !== user.id) throw new Error("Unauthorized: You can only update your own records.");
-    
-        await record.update({
-          session_id: record.session_id,
-          activity_type: input.activityType ?? record.activity_type,
+        if (input.sessionId && input.sessionId !== record.session_id) {
+          throw new Error("Session ID cannot be changed.");
+        }
+
+        const updatedValues = {
+          activity_type: input.activityType ? input.activityType.trim() : record.activity_type,
           distance: input.distance ?? record.distance,
           best_time: input.bestTime ?? record.best_time,
-          record_date: input.recordDate ?? record.record_date
-        });
-    
+          record_date: input.recordDate ?? record.record_date,
+        };
+
+        await record.update(updatedValues);
+
         return {
           id: record.id,
           userId: record.user_id,
@@ -594,30 +660,31 @@ const resolvers = {
           bestTime: record.best_time,
           recordDate: record.record_date ? record.record_date.toISOString() : null,
           created_at: record.created_at.toISOString(),
-          updated_at: record.updated_at.toISOString()
+          updated_at: record.updated_at.toISOString(),
         };
       } catch (error) {
         console.error("Update Personal Record Error:", error);
         throw new Error("Failed to update personal record: " + error.message);
       }
-    },    
+    }, 
     
     deletePersonalRecord: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-    
+
       try {
         const record = await PersonalRecord.findByPk(id);
         if (!record) throw new Error("Personal Record not found");
-    
+
         if (record.user_id !== user.id) throw new Error("Unauthorized: You can only delete your own records.");
-    
+
         await record.destroy();
-        return { message: "Personal Record deleted successfully" };
+        return { message: `Personal Record ID ${id} deleted successfully.` };
       } catch (error) {
         console.error("Delete Personal Record Error:", error);
         throw new Error("Failed to delete personal record: " + error.message);
       }
-    }    
+    },
   }
 }
+
 module.exports = resolvers;

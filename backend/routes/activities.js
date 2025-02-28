@@ -111,6 +111,10 @@ router.post("/:sessionId", authMiddleware, async (req, res) => {
 
     const { sport_type, duration, distance, heart_rate_min, heart_rate_max, heart_rate_avg, cadence, power } = req.body;
 
+    if (!sport_type || duration === undefined || distance === undefined) {
+      return res.status(400).json({ error: "Missing required fields (sport_type, duration, distance)" });
+    }
+
     const activity = await SessionActivity.create({
       session_id: session.id,
       sport_type,
@@ -123,7 +127,7 @@ router.post("/:sessionId", authMiddleware, async (req, res) => {
       power,
     });
 
-    await updatePersonalRecord(req.user.id, session.id, sport_type, distance, duration, session.date);
+    await updatePersonalRecord(req.user.id, activity.id, sport_type, distance, duration, session.date);
 
     res.status(201).json(activity);
   } catch (error) {
@@ -138,9 +142,10 @@ const PREDEFINED_DISTANCES = {
   Cycling: [10000, 20000, 40000, 50000, 80000, 100000, 150000, 200000]
 };
 
-async function updatePersonalRecord(userId, sessionId, sportType, distance, bestTime, recordDate) {
+async function updatePersonalRecord(userId, sessionActivityId, sportType, distance, bestTime, recordDate) {
   try {
     const normalizedSportType = sportType.charAt(0).toUpperCase() + sportType.slice(1).toLowerCase();
+    
     if (!PREDEFINED_DISTANCES[normalizedSportType]?.includes(distance)) {
       console.log(`Skipping personal record update. ${distance} is not a predefined distance for ${normalizedSportType}`);
       return;
@@ -158,11 +163,11 @@ async function updatePersonalRecord(userId, sessionId, sportType, distance, best
 
       await PersonalRecord.create({
         user_id: userId,
-        session_id: sessionId,
+        session_activity_id: sessionActivityId,
         activity_type: normalizedSportType,
         distance: distance,
         best_time: parseInt(bestTime),
-        record_date: recordDate,
+        record_date: recordDate || new Date(),
       });
     }
   } catch (error) {

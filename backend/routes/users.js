@@ -11,10 +11,10 @@ router.post("/signup", async (req, res) => {
     try {
       const { name, email, password } = req.body;
   
-      if (!password) {
-        return res.status(400).json({ error: "Password is required" });
+      if (!name || !email || !password) {
+        return res.status(400).json({ error: "Name, email, and password are required." });
       }
-  
+
       const existingUser = await User.findOne({ where: { email } });
       if (existingUser) {
         return res.status(400).json({ error: "Email is already in use" });
@@ -28,14 +28,45 @@ router.post("/signup", async (req, res) => {
         password_hash: passwordHash,
       });
   
-      await user.reload();
-  
-      res.status(201).json({ message: "User created successfully", user: { id: user.id, name: user.name, email: user.email } });
+      res.status(201).json({ 
+        message: "User created successfully", 
+        user: { id: user.id, name: user.name, email: user.email, created_at: user.created_at }
+      });
     } catch (error) {
       console.error("Signup Error:", error);
       res.status(500).json({ error: "Failed to create user" });
     }
-  });
+});
+
+router.post("/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+  
+      if (!email || !password) {
+        return res.status(400).json({ error: "Email and password are required." });
+      }
+
+      const user = await User.findOne({ where: { email } });
+      if (!user) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+
+      const passwordValid = await bcrypt.compare(password, user.password_hash);
+      if (!passwordValid) {
+        return res.status(401).json({ error: "Invalid email or password" });
+      }
+
+      const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
+
+      res.json({ 
+        token, 
+        user: { id: user.id, name: user.name, email: user.email } 
+      });
+    } catch (error) {
+      console.error("Login Error:", error);
+      res.status(500).json({ error: "Login failed" });
+    }
+});
 
 router.get("/profile", authMiddleware, async (req, res) => {
   try {

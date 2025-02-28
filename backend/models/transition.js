@@ -27,27 +27,20 @@ Transition.init({
     allowNull: false
   },
   transition_time: {
-    type: DataTypes.STRING
+    type: DataTypes.INTEGER,
+    allowNull: false
   },
   comments: {
     type: DataTypes.TEXT
-  },
-  created_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW
-  },
-  updated_at: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW
   }
 }, {
   sequelize,
   modelName: 'Transition',
   tableName: 'Transitions',
   timestamps: true,
-  underscored: true
+  underscored: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
 });
 
 module.exports = Transition;

@@ -9,6 +9,15 @@ SessionActivity.init({
     primaryKey: true,
     autoIncrement: true
   },
+  user_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Users',
+      key: 'id'
+    },
+    onDelete: 'CASCADE'
+  },
   session_id: {
     type: DataTypes.INTEGER,
     allowNull: false,

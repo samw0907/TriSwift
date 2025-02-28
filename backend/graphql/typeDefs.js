@@ -15,8 +15,6 @@ const typeDefs = gql`
     userId: ID!
     sessionType: String!
     date: String!
-    totalDuration: Int!
-    totalDistance: Float!
     isMultiSport: Boolean!
     activities: [SessionActivity]
     transitions: [Transition]
@@ -57,8 +55,7 @@ const typeDefs = gql`
   type PersonalRecord {
     id: ID!
     userId: ID!
-    sessionId: ID!
-    activityType: String!
+    sessionActivityId: ID!
     distance: Float
     bestTime: Int
     recordDate: String!
@@ -75,8 +72,7 @@ const typeDefs = gql`
   input SessionInput {
     sessionType: String!
     date: String!
-    totalDuration: Int!
-    totalDistance: Float!
+    isMultiSport: Boolean!
     weatherTemp: Float
     weatherHumidity: Int
     weatherWindSpeed: Float
@@ -85,8 +81,7 @@ const typeDefs = gql`
   input UpdateSessionInput {
     sessionType: String
     date: String
-    totalDuration: Int
-    totalDistance: Float
+    isMultiSport: Boolean
     weatherTemp: Float
     weatherHumidity: Int
     weatherWindSpeed: Float
@@ -131,16 +126,14 @@ const typeDefs = gql`
   }
 
   input PersonalRecordInput {
-    sessionId: ID!
-    activityType: String!  
+    sessionActivityId: ID!  
     distance: Float
     bestTime: Int!
     recordDate: String
   }
 
   input UpdatePersonalRecordInput {
-    sessionId: ID!
-    activityType: String
+    sessionActivityId: ID!
     distance: Float
     bestTime: Int
     recordDate: String

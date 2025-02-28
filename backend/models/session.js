@@ -22,16 +22,13 @@ Session.init({
     type: DataTypes.STRING,
     allowNull: false
   },
+  is_multi_sport: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+  },
   date: {
     type: DataTypes.DATE,
-    allowNull: false
-  },
-  total_duration: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  total_distance: {
-    type: DataTypes.DECIMAL,
     allowNull: false
   },
   weather_temp: {

@@ -1,8 +1,8 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes } = require("sequelize");
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('SessionActivities', {
+    await queryInterface.createTable("session_activities", {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -10,21 +10,24 @@ module.exports = {
       },
       session_id: {
         type: DataTypes.INTEGER,
+        allowNull: false,
         references: {
-          model: 'Sessions',
-          key: 'id',
+          model: "sessions", // Ensuring consistency with lowercase table names
+          key: "id",
         },
-        onDelete: 'CASCADE'
+        onDelete: "CASCADE",
       },
       sport_type: {
         type: DataTypes.STRING,
         allowNull: false,
       },
       duration: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER, // Changed from STRING to INTEGER for time storage
+        allowNull: false,
       },
       distance: {
-        type: DataTypes.DECIMAL,
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
       },
       heart_rate_min: {
         type: DataTypes.INTEGER,
@@ -44,17 +47,17 @@ module.exports = {
       created_at: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: Sequelize.NOW,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
       updated_at: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: Sequelize.NOW,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"),
       },
     });
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable('SessionActivities');
+    await queryInterface.dropTable("session_activities");
   },
 };

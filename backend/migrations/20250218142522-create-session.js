@@ -1,8 +1,8 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes } = require("sequelize");
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Sessions', {
+    await queryInterface.createTable("sessions", {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -10,11 +10,12 @@ module.exports = {
       },
       user_id: {
         type: DataTypes.INTEGER,
+        allowNull: false,
         references: {
-          model: 'Users',
-          key: 'id',
+          model: "users", // Ensure lowercase consistency
+          key: "id",
         },
-        onDelete: 'CASCADE'
+        onDelete: "CASCADE",
       },
       session_type: {
         type: DataTypes.STRING,
@@ -25,34 +26,39 @@ module.exports = {
         allowNull: false,
       },
       total_duration: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER, // Duration should be stored as an integer (e.g., in seconds or minutes)
       },
       total_distance: {
-        type: DataTypes.DECIMAL,
+        type: DataTypes.DECIMAL(10, 2),
+      },
+      is_multi_sport: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false, // Default to false if not specified
       },
       weather_temp: {
-        type: DataTypes.DECIMAL,
+        type: DataTypes.DECIMAL(5, 2),
       },
       weather_humidity: {
         type: DataTypes.INTEGER,
       },
       weather_wind_speed: {
-        type: DataTypes.DECIMAL,
+        type: DataTypes.DECIMAL(5, 2),
       },
       created_at: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: Sequelize.NOW,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
       updated_at: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: Sequelize.NOW,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"),
       },
     });
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable('Sessions');
+    await queryInterface.dropTable("sessions");
   },
 };

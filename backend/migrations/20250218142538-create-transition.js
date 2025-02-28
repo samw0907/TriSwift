@@ -1,8 +1,8 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes } = require("sequelize");
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Transitions', {
+    await queryInterface.createTable("transitions", {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -10,11 +10,12 @@ module.exports = {
       },
       session_id: {
         type: DataTypes.INTEGER,
+        allowNull: false,
         references: {
-          model: 'Sessions',
-          key: 'id',
+          model: "sessions", // Ensuring consistency with lowercase table names
+          key: "id",
         },
-        onDelete: 'CASCADE'
+        onDelete: "CASCADE",
       },
       previous_sport: {
         type: DataTypes.STRING,
@@ -25,25 +26,27 @@ module.exports = {
         allowNull: false,
       },
       transition_time: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER, // Changed from STRING to INTEGER for time storage
+        allowNull: false,
       },
       comments: {
         type: DataTypes.TEXT,
+        allowNull: true,
       },
       created_at: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: Sequelize.NOW,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
       updated_at: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: Sequelize.NOW,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"),
       },
     });
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable('Transitions');
+    await queryInterface.dropTable("transitions");
   },
 };

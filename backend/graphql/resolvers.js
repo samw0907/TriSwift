@@ -219,30 +219,45 @@ const resolvers = {
   
     createSession: async (_, { input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-  
+    
       try {
-        const existingSession = await Session.findOne({
-          where: { user_id: user.id, date: new Date(input.date) }
-        });
-        if (existingSession) throw new Error("A session on this date already exists.");
-  
+        const { sessionType, date, totalDuration, totalDistance, isMultiSport, weatherTemp, weatherHumidity, weatherWindSpeed } = input;
+    
+        if (!sessionType || isMultiSport === undefined || totalDuration === undefined || totalDistance === undefined) {
+          throw new Error("Missing required fields: sessionType, isMultiSport, totalDuration, and totalDistance are required.");
+        }
+    
+        const existingSession = await Session.findOne({ where: { user_id: user.id, date: new Date(date) } });
+        if (existingSession) throw new Error("A session on this date already exists. Please update the existing session.");
+    
         const session = await Session.create({
           user_id: user.id,
-          session_type: input.sessionType,
-          date: new Date(input.date),
-          is_multi_sport: input.isMultiSport,
-          weather_temp: input.weatherTemp,
-          weather_humidity: input.weatherHumidity,
-          weather_wind_speed: input.weatherWindSpeed
+          session_type: sessionType,
+          date: new Date(date),
+          total_duration: totalDuration,
+          total_distance: totalDistance,
+          is_multi_sport: isMultiSport,
+          weather_temp: weatherTemp,
+          weather_humidity: weatherHumidity ? parseInt(weatherHumidity, 10) : null,
+          weather_wind_speed: weatherWindSpeed,
         });
-  
+    
         return {
-          ...session.toJSON(),
+          id: session.id,
+          userId: session.user_id,
+          sessionType: session.session_type,
           date: session.date.toISOString(),
+          totalDuration: session.total_duration,
+          totalDistance: session.total_distance,
+          isMultiSport: session.is_multi_sport,
+          weatherTemp: session.weather_temp,
+          weatherHumidity: session.weather_humidity,
+          weatherWindSpeed: session.weather_wind_speed,
           created_at: session.created_at.toISOString(),
           updated_at: session.updated_at.toISOString(),
         };
       } catch (error) {
+        console.error("Create Session Error:", error);
         throw new Error("Failed to create session: " + error.message);
       }
     },

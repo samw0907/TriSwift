@@ -29,19 +29,31 @@ export const ADD_SESSION = gql`
     $sessionType: String!,
     $date: String!,
     $totalDuration: Int!,
-    $totalDistance: Float!
+    $totalDistance: Float!,
+    $isMultiSport: Boolean!,
+    $weatherTemp: Float,
+    $weatherHumidity: Int,
+    $weatherWindSpeed: Float
   ) {
     createSession(input: {
-      session_type: $sessionType,
+      sessionType: $sessionType,
       date: $date,
-      total_duration: $totalDuration,
-      total_distance: $totalDistance
+      totalDuration: $totalDuration,
+      totalDistance: $totalDistance,
+      isMultiSport: $isMultiSport,
+      weatherTemp: $weatherTemp,
+      weatherHumidity: $weatherHumidity,
+      weatherWindSpeed: $weatherWindSpeed
     }) {
       id
-      session_type
+      sessionType
       date
-      total_duration
-      total_distance
+      totalDuration
+      totalDistance
+      isMultiSport
+      weatherTemp
+      weatherHumidity
+      weatherWindSpeed
       created_at
       updated_at
     }

@@ -13,7 +13,7 @@ module.exports = {
         email: 'fastwoman@example.com',
         password_hash: 'hashedpassword123',
       }
-    ]);
+    ], { validate: true });
   },
 
   down: async () => {

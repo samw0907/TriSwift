@@ -6,7 +6,7 @@ module.exports = {
       {
         session_id: 1,
         sport_type: 'run',
-        duration: '1h 0m 0s',
+        duration: 3600,
         distance: 10.0,
         heart_rate_min: 120,
         heart_rate_max: 180,
@@ -17,7 +17,7 @@ module.exports = {
       {
         session_id: 2,
         sport_type: 'swim',
-        duration: '0h 30m 0s',
+        duration: 1800,
         distance: 2.0,
         heart_rate_min: 110,
         heart_rate_max: 160,
@@ -28,7 +28,7 @@ module.exports = {
       {
         session_id: 2,
         sport_type: 'bike',
-        duration: '1h 0m 0s',
+        duration: 3600,
         distance: 28.0,
         heart_rate_min: 115,
         heart_rate_max: 170,
@@ -36,11 +36,10 @@ module.exports = {
         cadence: 85,
         power: 250,
       }
-    ]);
+    ], { validate: true });
   },
 
   down: async () => {
     await SessionActivity.destroy({ where: {} });
   }
 };
-

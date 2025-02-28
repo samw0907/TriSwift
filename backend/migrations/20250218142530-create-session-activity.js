@@ -12,7 +12,7 @@ module.exports = {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "sessions", // Ensuring consistency with lowercase table names
+          model: "sessions",
           key: "id",
         },
         onDelete: "CASCADE",
@@ -22,7 +22,7 @@ module.exports = {
         allowNull: false,
       },
       duration: {
-        type: DataTypes.INTEGER, // Changed from STRING to INTEGER for time storage
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
       distance: {

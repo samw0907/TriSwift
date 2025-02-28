@@ -12,7 +12,7 @@ module.exports = {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "users", // Ensuring lowercase table names for consistency
+          model: "users",
           key: "id",
         },
         onDelete: "CASCADE",
@@ -22,11 +22,11 @@ module.exports = {
         allowNull: false,
       },
       distance: {
-        type: DataTypes.DECIMAL(10, 2), // Defined precision to ensure proper storage
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
       },
       best_time: {
-        type: DataTypes.INTEGER, // Changed from STRING to INTEGER to store time in seconds
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
       record_date: {

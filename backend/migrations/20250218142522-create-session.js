@@ -12,7 +12,7 @@ module.exports = {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "users", // Ensure lowercase consistency
+          model: "users",
           key: "id",
         },
         onDelete: "CASCADE",
@@ -26,7 +26,7 @@ module.exports = {
         allowNull: false,
       },
       total_duration: {
-        type: DataTypes.INTEGER, // Duration should be stored as an integer (e.g., in seconds or minutes)
+        type: DataTypes.INTEGER,
       },
       total_distance: {
         type: DataTypes.DECIMAL(10, 2),
@@ -34,7 +34,7 @@ module.exports = {
       is_multi_sport: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: false, // Default to false if not specified
+        defaultValue: false,
       },
       weather_temp: {
         type: DataTypes.DECIMAL(5, 2),

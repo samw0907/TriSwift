@@ -5,29 +5,30 @@ module.exports = {
     await Session.bulkCreate([
       {
         user_id: 1,
-        session_type: 'single-sport',
-        date: new Date('2025-02-15'),
-        total_duration: '1h 0m 0s',
+        session_type: 'Run',
+        date: '2025-02-15',
+        total_duration: '3600',
         total_distance: 10.0,
+        is_multi_sport: false,
         weather_temp: 15.5,
         weather_humidity: 65,
         weather_wind_speed: 10.2,
       },
       {
         user_id: 2,
-        session_type: 'multi-sport',
-        date: new Date('2025-02-16'),
-        total_duration: '1h 30m 0s',
+        session_type: 'Multi-sport',
+        date: '2025-02-16',
+        total_duration: '5400',
         total_distance: 30.0,
+        is_multi_sport: true,
         weather_temp: 18.0,
         weather_humidity: 70,
         weather_wind_speed: 8.5,
       }
-    ]);
+    ], { validate: true });
   },
 
   down: async () => {
     await Session.destroy({ where: {} });
   }
 };
-

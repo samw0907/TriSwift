@@ -7,10 +7,10 @@ module.exports = {
         session_id: 2,
         previous_sport: 'swim',
         next_sport: 'bike',
-        transition_time: '0h 2m 0s',
+        transition_time: 120,
         comments: 'Struggled getting wetsuit off',
       }
-    ]);
+    ], { validate: true });
   },
 
   down: async () => {

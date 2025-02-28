@@ -1,9 +1,12 @@
 {
-  "development": {
-    "use_env_variable": "DATABASE_URL",
-    "dialect": "postgres",
-    "logging": true
-  },
+"development": {
+  "username": "postgres",
+  "password": "Shuggie0907!",
+  "database": "triswiftdb",
+  "host": "db",
+  "dialect": "postgres",
+  "logging": true
+},
   "test": {
     "username": "root",
     "password": null,

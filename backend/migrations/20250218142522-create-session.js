@@ -2,6 +2,8 @@ const { DataTypes } = require("sequelize");
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+    console.log("Running sessions migration...");
+
     await queryInterface.createTable("sessions", {
       id: {
         type: DataTypes.INTEGER,
@@ -56,9 +58,12 @@ module.exports = {
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"),
       },
     });
+
+    console.log("✅ Sessions table created successfully!");
   },
 
   down: async (queryInterface) => {
+    console.log("Dropping sessions table...");
     await queryInterface.dropTable("sessions");
   },
 };

@@ -8,6 +8,15 @@ module.exports = {
         primaryKey: true,
         autoIncrement: true,
       },
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "users",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+      },      
       session_id: {
         type: DataTypes.INTEGER,
         allowNull: false,

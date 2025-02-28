@@ -4,7 +4,7 @@ module.exports = {
   up: async () => {
     await Session.bulkCreate([
       {
-        user_id: 1,
+        user_id: 4,
         session_type: 'Run',
         date: '2025-02-15',
         total_duration: '3600',
@@ -15,7 +15,7 @@ module.exports = {
         weather_wind_speed: 10.2,
       },
       {
-        user_id: 2,
+        user_id: 5,
         session_type: 'Multi-sport',
         date: '2025-02-16',
         total_duration: '5400',

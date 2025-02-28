@@ -49,7 +49,7 @@ const Dashboard = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this session?")) {
+    if (window.confirm('Are you sure you want to delete this session?')) {
       await deleteSession({ variables: { id } });
     }
   };
@@ -61,22 +61,22 @@ const Dashboard = () => {
       (Number(formState.minutes) || 0) * 60 +
       (Number(formState.seconds) || 0);
 
-    const convertedDistance = sessionType === "Swim"
+    const convertedDistance = sessionType === 'Swim'
       ? Number(formState.totalDistance) / 1000
       : Number(formState.totalDistance);
 
     await addSession({
       variables: {
-        sessionType,
+        session_type: sessionType,
         date: formState.date,
-        totalDuration,
-        totalDistance: convertedDistance,
+        total_duration: totalDuration,
+        total_distance: convertedDistance,
       },
     });
 
     setShowForm(false);
     setSessionType('');
-    setFormState({ date: '', hours: '', minutes: '', seconds: '', totalDistance: '' });
+    setFormState({ date: '', hours: '0', minutes: '0', seconds: '0', totalDistance: '' });
   };
 
   if (loading) return <p>Loading sessions...</p>;
@@ -85,9 +85,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <h1>Session Dashboard</h1>
-      {!showForm && (
-        <button onClick={() => setShowForm(true)}>Add Session</button>
-      )}
+      {!showForm && <button onClick={() => setShowForm(true)}>Add Session</button>}
 
       {showForm && (
         <form onSubmit={handleSubmit} className="session-form">
@@ -105,19 +103,19 @@ const Dashboard = () => {
             <>
               <label>Date:</label>
               <input type="date" name="date" value={formState.date} onChange={handleInputChange} required />
-              
+
               <label>Duration:</label>
               <div className="duration-inputs">
                 <div className="duration-box">
-                  <input type="number" name="hours" placeholder="0" value={formState.hours} onChange={handleInputChange} min="0" required />
+                  <input type="number" name="hours" value={formState.hours} onChange={handleInputChange} min="0" required />
                   <span>Hours</span>
                 </div>
                 <div className="duration-box">
-                  <input type="number" name="minutes" placeholder="0" value={formState.minutes} onChange={handleInputChange} min="0" max="59" required />
+                  <input type="number" name="minutes" value={formState.minutes} onChange={handleInputChange} min="0" max="59" required />
                   <span>Minutes</span>
                 </div>
                 <div className="duration-box">
-                  <input type="number" name="seconds" placeholder="0" value={formState.seconds} onChange={handleInputChange} min="0" max="59" required />
+                  <input type="number" name="seconds" value={formState.seconds} onChange={handleInputChange} min="0" max="59" required />
                   <span>Seconds</span>
                 </div>
               </div>
@@ -126,7 +124,6 @@ const Dashboard = () => {
               <input
                 type="number"
                 name="totalDistance"
-                placeholder="Enter distance"
                 value={formState.totalDistance}
                 onChange={handleInputChange}
                 min="0"
@@ -141,20 +138,20 @@ const Dashboard = () => {
 
       <ul className="session-list">
         {data.sessions.map((session: any) => {
-          const displayedDistance = session.sessionType === 'Swim' 
-            ? session.totalDistance * 1000 
-            : session.totalDistance;
+          const displayedDistance = session.session_type === 'Swim'
+            ? session.total_distance * 1000
+            : session.total_distance;
 
           return (
             <li key={session.id} className="session-item">
               <span>
-                <strong>{session.sessionType}</strong> - {formatDuration(session.totalDuration)} - {displayedDistance} {session.sessionType === 'Swim' ? 'm' : 'km'}
+                <strong>{session.session_type}</strong> - {formatDuration(session.total_duration)} - {displayedDistance} {session.session_type === 'Swim' ? 'm' : 'km'}
               </span>
-              <button 
-                onClick={() => handleDelete(session.id)} 
+              <button
+                onClick={() => handleDelete(session.id)}
                 className="text-red-500 hover:text-red-700 transition-colors duration-200"
-                >
-                  🗑️
+              >
+                🗑️
               </button>
             </li>
           );

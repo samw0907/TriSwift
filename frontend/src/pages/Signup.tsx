@@ -16,7 +16,11 @@ const Signup = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await signup({ variables: credentials });
+    try {
+      await signup({ variables: { input: credentials } });
+    } catch (error) {
+      console.error("Signup Error:", error);
+    }
   };
 
   return (
@@ -28,7 +32,7 @@ const Signup = () => {
         <input type="password" name="password" placeholder="Password" onChange={handleChange} required />
         <button type="submit" disabled={loading}>Signup</button>
       </form>
-      {error && <p style={{ color: 'red' }}>Signup failed. Try again.</p>}
+      {error && <p style={{ color: 'red' }}>Signup failed. Please try again.</p>}
     </div>
   );
 };

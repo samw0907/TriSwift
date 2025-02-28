@@ -176,24 +176,38 @@ const resolvers = {
 
   Mutation: {
     login: async (_, { email, password }) => {
+      console.log("🔍 Login Mutation Triggered");
+      console.log("📧 Email received:", email);
+      console.log("🔑 Password received:", password);
+    
       try {
         if (!email || !password) throw new Error("Missing email or password");
     
         const normalizedEmail = email.toLowerCase().trim();
+        console.log("🔍 Normalized Email:", normalizedEmail);
+    
         const user = await User.findOne({ where: { email: normalizedEmail } });
+        console.log("✅ User Found:", user ? user.email : "No User Found");
+    
         if (!user) throw new Error("Invalid credentials");
     
         const passwordValid = await bcrypt.compare(password, user.password_hash);
+        console.log("🔐 Password Match:", passwordValid ? "✔️ Valid" : "❌ Invalid");
+    
         if (!passwordValid) throw new Error("Invalid credentials");
     
         const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1h" });
+        console.log("🔑 JWT Token Generated:", token);
     
-        return { token };
+        return {
+          token,
+          user: { id: user.id, name: user.name, email: user.email }
+        };
       } catch (error) {
-        console.error("Login Error:", error);
+        console.error("❌ Login Error:", error);
         throw new Error("Login failed");
       }
-    },    
+    },     
 
     createSession: async (_, { input }, { user }) => {
       if (!user) throw new Error("Authentication required.");

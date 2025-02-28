@@ -26,7 +26,7 @@ const PersonalRecords = () => {
   const mappedSportType = selectedSport ? sportTypeMapping[selectedSport] : null;
 
   const { loading, error, data } = useQuery(GET_PERSONAL_RECORDS, {
-    variables: { sportType: mappedSportType },
+    variables: { activity_type: mappedSportType },
     skip: !mappedSportType,
   });
 
@@ -39,6 +39,7 @@ const PersonalRecords = () => {
             key={sport}
             className={`sport-button ${selectedSport === sport ? 'active' : ''}`}
             onClick={() => setSelectedSport(sport)}
+            disabled={loading}
           >
             {sport}
           </button>
@@ -49,7 +50,7 @@ const PersonalRecords = () => {
         <div className="records-list">
           <h2>{sportTypeMapping[selectedSport]} Records</h2>
           {loading && <p>Loading...</p>}
-          {error && <p>Error fetching records.</p>}
+          {error && <p style={{ color: 'red' }}>Error fetching records. Please try again.</p>}
           {data && (
             <ul>
               {distances[sportTypeMapping[selectedSport] as keyof typeof distances].map((dist) => {
@@ -59,7 +60,7 @@ const PersonalRecords = () => {
                   <li key={dist}>
                     {dist}m - 
                     {matchingRecords.length > 0
-                      ? matchingRecords.map((r: any) => <span key={r.id}> {formatTime(r.bestTime)}</span>)
+                      ? matchingRecords.map((r: any) => <span key={r.id}> {formatTime(r.best_time)}</span>)
                       : " No data"}
                   </li>
                 );

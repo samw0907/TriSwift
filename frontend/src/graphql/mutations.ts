@@ -4,6 +4,11 @@ export const LOGIN_USER = gql`
   mutation Login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       token
+      user {
+        id
+        name
+        email
+      }
     }
   }
 `;
@@ -14,23 +19,29 @@ export const SIGNUP_USER = gql`
       id
       name
       email
+      created_at
     }
   }
 `;
 
 export const ADD_SESSION = gql`
-  mutation AddSession($sessionType: String!, $date: String!, $totalDuration: Int!, $totalDistance: Float!) {
+  mutation AddSession(
+    $sessionType: String!,
+    $date: String!,
+    $totalDuration: Int!,
+    $totalDistance: Float!
+  ) {
     createSession(input: {
-      sessionType: $sessionType, 
-      date: $date, 
-      totalDuration: $totalDuration, 
-      totalDistance: $totalDistance
+      session_type: $sessionType,
+      date: $date,
+      total_duration: $totalDuration,
+      total_distance: $totalDistance
     }) {
       id
-      sessionType
+      session_type
       date
-      totalDuration
-      totalDistance
+      total_duration
+      total_distance
       created_at
       updated_at
     }

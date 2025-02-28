@@ -14,7 +14,7 @@ Date            Hours    Topic
                 4        Frontend set up (React, Typescript)
 27.02.2025      5        Frontend - login and dashboard basics
                 4        Backend, fixing typeDefs and Routes
-28.02.2025      8        Backend, fixing Routes, migrations and tables
+28.02.2025      8.5      Backend, fixing Routes, migrations and tables
 29.02.2025      
                 (42)  
 TOTAL HOURS     77.5    

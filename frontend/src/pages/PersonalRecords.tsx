@@ -3,9 +3,9 @@ import { useQuery } from '@apollo/client';
 import { GET_PERSONAL_RECORDS } from '../graphql/queries';
 
 const distances = {
-  Swim: [100, 200, 400, 800, 1000, 1500, 2000],
-  Run: [100, 200, 400, 1000, 5000, 10000, 21100, 42200],
-  Bike: [10000, 20000, 40000, 50000, 80000, 100000, 150000, 200000],
+  Running: [100, 200, 400, 1000, 5000, 10000, 21100, 42200],
+  Cycling: [10000, 20000, 40000, 50000, 80000, 100000, 150000, 200000],
+  Swimming: [100, 200, 400, 800, 1000, 1500, 2000],
 };
 
 const formatTime = (seconds: number) => {
@@ -17,9 +17,17 @@ const formatTime = (seconds: number) => {
 const PersonalRecords = () => {
   const [selectedSport, setSelectedSport] = useState<string | null>(null);
 
+  const sportTypeMapping: { [key: string]: string } = {
+    Run: "Running",
+    Bike: "Cycling",
+    Swim: "Swimming",
+  };
+
+  const mappedSportType = selectedSport ? sportTypeMapping[selectedSport] : null;
+
   const { loading, error, data } = useQuery(GET_PERSONAL_RECORDS, {
-    variables: { sportType: selectedSport },
-    skip: !selectedSport,
+    variables: { sportType: mappedSportType },
+    skip: !mappedSportType,
   });
 
   return (
@@ -39,21 +47,23 @@ const PersonalRecords = () => {
 
       {selectedSport && (
         <div className="records-list">
-          <h2>{selectedSport} Records</h2>
+          <h2>{sportTypeMapping[selectedSport]} Records</h2>
           {loading && <p>Loading...</p>}
           {error && <p>Error fetching records.</p>}
           {data && (
             <ul>
-              {distances[selectedSport as keyof typeof distances].map((dist) => (
-                <li key={dist}>
-                  {dist}m - 
-                  {data.personalRecords.find((r: any) => r.distance === dist)
-                    ? data.personalRecords.find((r: any) => r.distance === dist).bestTimes.map((time: number, index: number) => (
-                        <span key={index}> {formatTime(time)}</span>
-                      ))
-                    : " No data"}
-                </li>
-              ))}
+              {distances[sportTypeMapping[selectedSport] as keyof typeof distances].map((dist) => {
+                const matchingRecords = data.personalRecords.filter((r: any) => r.distance === dist);
+
+                return (
+                  <li key={dist}>
+                    {dist}m - 
+                    {matchingRecords.length > 0
+                      ? matchingRecords.map((r: any) => <span key={r.id}> {formatTime(r.bestTime)}</span>)
+                      : " No data"}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>

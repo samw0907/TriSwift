@@ -132,14 +132,13 @@ const typeDefs = gql`
     activityType: String!  
     distance: Float
     bestTime: Int!
-    maxPower: Int
   }
 
   input UpdatePersonalRecordInput {
+    sessionId: ID!
     activityType: String
     distance: Float
     bestTime: Int
-    recordDate: String
   }
 
   input CreateUserInput {
@@ -161,7 +160,7 @@ const typeDefs = gql`
     sessions: [Session!]! 
     session(id: ID!): Session
     sessionActivities(sessionId: ID!): [SessionActivity]
-    personalRecords(sportType: String!): [[PersonalRecord]]  # ✅ Ensure this is correct
+    personalRecords(sportType: String!): [PersonalRecord]
     transitions(sessionId: ID!): [Transition]
   }
 

@@ -147,7 +147,7 @@ const resolvers = {
           throw new Error("Failed to fetch personal records");
         }
       },
-           
+   }, 
   Mutation: {
     login: async (_, { email, password }) => {
       try {
@@ -586,6 +586,5 @@ const resolvers = {
       }
     }    
   }
-}
 }
 module.exports = resolvers;

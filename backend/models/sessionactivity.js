@@ -32,7 +32,7 @@ SessionActivity.init({
     allowNull: false
   },
   duration: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     allowNull: false
   },
   distance: {

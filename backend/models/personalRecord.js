@@ -35,7 +35,7 @@ PersonalRecord.init({
     type: DataTypes.DECIMAL
   },
   best_time: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     allowNull: false
   },
   record_date: {

@@ -28,6 +28,23 @@ export const GET_SESSIONS = gql`
   }
 `;
 
+export const GET_SESSION_ACTIVITIES = gql`
+  query GetSessionActivities($sessionId: ID!) {
+    sessionActivities(sessionId: $sessionId) {
+      id
+      sportType
+      duration
+      distance
+      heartRateMin
+      heartRateMax
+      heartRateAvg
+      cadence
+      power
+      created_at
+      updated_at
+    }
+  }
+`;
 
 export const GET_PERSONAL_RECORDS = gql`
   query GetPersonalRecords($sportType: String!) {

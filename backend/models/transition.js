@@ -27,7 +27,7 @@ Transition.init({
     allowNull: false
   },
   transition_time: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     allowNull: false
   },
   comments: {

@@ -32,7 +32,7 @@ Session.init({
     allowNull: false
   },
   total_duration: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     allowNull: true
   },
   total_distance: {

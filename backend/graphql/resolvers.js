@@ -21,8 +21,8 @@ const resolvers = {
       const sessions = await Session.findAll({
         where: { user_id: user.id },
         include: [
-          { model: SessionActivity, as: "SessionActivities" }, // ✅ Corrected alias
-          { model: Transition, as: "Transitions" } // ✅ Corrected alias
+          { model: SessionActivity, as: "SessionActivities" },
+          { model: Transition, as: "Transitions" }
         ]
       });
 
@@ -36,8 +36,8 @@ const resolvers = {
           sessionType: session.session_type,
           date: session.date ? session.date.toISOString() : null,
           isMultiSport: session.is_multi_sport,
-          totalDuration,  // ✅ Now safely calculated
-          totalDistance,  // ✅ Now safely calculated
+          totalDuration,
+          totalDistance,
           weatherTemp: session.weather_temp,
           weatherHumidity: session.weather_humidity,
           weatherWindSpeed: session.weather_wind_speed,
@@ -71,8 +71,8 @@ const resolvers = {
       if (!user) throw new Error("Authentication required.");
       const session = await Session.findByPk(id, {
         include: [
-          { model: SessionActivity, as: "SessionActivities" }, // ✅ Corrected alias
-          { model: Transition, as: "Transitions" } // ✅ Corrected alias
+          { model: SessionActivity, as: "SessionActivities" },
+          { model: Transition, as: "Transitions" }
         ]
       });
 
@@ -87,8 +87,8 @@ const resolvers = {
         sessionType: session.session_type,
         date: session.date ? session.date.toISOString() : null,
         isMultiSport: session.is_multi_sport,
-        totalDuration,  // ✅ Now safely calculated
-        totalDistance,  // ✅ Now safely calculated
+        totalDuration,
+        totalDistance,
         weatherTemp: session.weather_temp,
         weatherHumidity: session.weather_humidity,
         weatherWindSpeed: session.weather_wind_speed,
@@ -253,7 +253,7 @@ const resolvers = {
           weather_wind_speed: weatherWindSpeed ?? null,
         });
     
-        console.log("✅ Session Created in DB:", session.toJSON()); // <-- Log session after creation
+        console.log("✅ Session Created in DB:", session.toJSON());
     
         return {
           id: session.id,

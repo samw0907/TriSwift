@@ -4,19 +4,32 @@ import { GET_SESSIONS } from '../graphql/queries';
 import { ADD_SESSION, DELETE_SESSION } from '../graphql/mutations';
 import '../styles/dashboard.css';
 
-const formatDuration = (totalSeconds: number) => {
+interface Session {
+  id: string;
+  sessionType: string;
+  date: string;
+  totalDuration: number;
+  totalDistance: number;
+  weatherTemp: number | null;
+  weatherHumidity: number | null;
+  weatherWindSpeed: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+const formatDuration = (totalSeconds: number): string => {
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 };
 
-const Dashboard = () => {
-  const { loading, error, data } = useQuery(GET_SESSIONS);
+const Dashboard: React.FC = () => {
+  const { loading, error, data } = useQuery<{ sessions: Session[] }>(GET_SESSIONS);
   const [addSession] = useMutation(ADD_SESSION, {
     refetchQueries: [{ query: GET_SESSIONS }],
   });
-
+  
   const [deleteSession] = useMutation(DELETE_SESSION, {
     refetchQueries: [{ query: GET_SESSIONS }],
   });
@@ -29,6 +42,9 @@ const Dashboard = () => {
     minutes: '0',
     seconds: '0',
     totalDistance: '',
+    weatherTemp: '',
+    weatherHumidity: '',
+    weatherWindSpeed: '',
   });
 
   const handleSessionTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -37,15 +53,7 @@ const Dashboard = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
-    if (name === 'hours' || name === 'minutes' || name === 'seconds') {
-      setFormState((prev) => ({
-        ...prev,
-        [name]: value === '' ? '0' : String(Math.max(0, Number(value))),
-      }));
-    } else {
-      setFormState((prev) => ({ ...prev, [name]: value }));
-    }
+    setFormState((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleDelete = async (id: string) => {
@@ -56,44 +64,44 @@ const Dashboard = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     const totalDuration =
       (Number(formState.hours) || 0) * 3600 +
       (Number(formState.minutes) || 0) * 60 +
       (Number(formState.seconds) || 0);
-  
+
     const convertedDistance = sessionType === 'Swim'
       ? Number(formState.totalDistance) / 1000
       : Number(formState.totalDistance);
-  
+
     console.log("🚀 Submitting session:", {
       sessionType,
       date: formState.date,
       isMultiSport: sessionType === 'Multi-Sport',
-      weatherTemp: null,
-      weatherHumidity: null,
-      weatherWindSpeed: null,
       totalDuration: sessionType !== 'Multi-Sport' ? totalDuration : undefined,
       totalDistance: sessionType !== 'Multi-Sport' ? convertedDistance : undefined,
+      weatherTemp: formState.weatherTemp ? parseFloat(formState.weatherTemp) : null,
+      weatherHumidity: formState.weatherHumidity ? parseInt(formState.weatherHumidity, 10) : null,
+      weatherWindSpeed: formState.weatherWindSpeed ? parseFloat(formState.weatherWindSpeed) : null,
     });
-  
+
     await addSession({
       variables: {
         sessionType,
         date: formState.date,
         isMultiSport: sessionType === 'Multi-Sport',
-        weatherTemp: null,
-        weatherHumidity: null,
-        weatherWindSpeed: null,
         totalDuration: sessionType !== 'Multi-Sport' ? totalDuration : undefined,
         totalDistance: sessionType !== 'Multi-Sport' ? convertedDistance : undefined,
+        weatherTemp: formState.weatherTemp ? parseFloat(formState.weatherTemp) : null,
+        weatherHumidity: formState.weatherHumidity ? parseInt(formState.weatherHumidity, 10) : null,
+        weatherWindSpeed: formState.weatherWindSpeed ? parseFloat(formState.weatherWindSpeed) : null,
       },
     });
-  
+
     setShowForm(false);
     setSessionType('');
-    setFormState({ date: '', hours: '0', minutes: '0', seconds: '0', totalDistance: '' });
-  };  
+    setFormState({ date: '', hours: '0', minutes: '0', seconds: '0', totalDistance: '', weatherTemp: '', weatherHumidity: '', weatherWindSpeed: '' });
+  };
 
   if (loading) return <p>Loading sessions...</p>;
   if (error) return <p>Error loading sessions: {error.message}</p>;
@@ -114,64 +122,45 @@ const Dashboard = () => {
             <option value="Run">Run</option>
           </select>
 
-          {sessionType === 'Multi-Sport' && <p>Feature coming soon!</p>}
-          {sessionType && sessionType !== 'Multi-Sport' && (
-            <>
-              <label>Date:</label>
-              <input type="date" name="date" value={formState.date} onChange={handleInputChange} required />
+          <label>Date:</label>
+          <input type="date" name="date" value={formState.date} onChange={handleInputChange} required />
 
-              <label>Duration:</label>
-              <div className="duration-inputs">
-                <div className="duration-box">
-                  <input type="number" name="hours" value={formState.hours} onChange={handleInputChange} min="0" required />
-                  <span>Hours</span>
-                </div>
-                <div className="duration-box">
-                  <input type="number" name="minutes" value={formState.minutes} onChange={handleInputChange} min="0" max="59" required />
-                  <span>Minutes</span>
-                </div>
-                <div className="duration-box">
-                  <input type="number" name="seconds" value={formState.seconds} onChange={handleInputChange} min="0" max="59" required />
-                  <span>Seconds</span>
-                </div>
-              </div>
+          <label>Duration:</label>
+          <div className="duration-inputs">
+            <input type="number" name="hours" value={formState.hours} onChange={handleInputChange} min="0" required /> Hours
+            <input type="number" name="minutes" value={formState.minutes} onChange={handleInputChange} min="0" max="59" required /> Minutes
+            <input type="number" name="seconds" value={formState.seconds} onChange={handleInputChange} min="0" max="59" required /> Seconds
+          </div>
 
-              <label>Total Distance ({sessionType === 'Swim' ? 'meters' : 'km'}):</label>
-              <input
-                type="number"
-                name="totalDistance"
-                value={formState.totalDistance}
-                onChange={handleInputChange}
-                min="0"
-                step="0.1"
-              />
+          <label>Total Distance ({sessionType === 'Swim' ? 'meters' : 'km'}):</label>
+          <input type="number" name="totalDistance" value={formState.totalDistance} onChange={handleInputChange} min="0" step="0.1" />
 
-              <button type="submit">Add Session</button>
-            </>
-          )}
+          <label>Weather Temperature (°C):</label>
+          <input type="number" name="weatherTemp" value={formState.weatherTemp} onChange={handleInputChange} step="0.1" />
+
+          <label>Weather Humidity (%):</label>
+          <input type="number" name="weatherHumidity" value={formState.weatherHumidity} onChange={handleInputChange} />
+
+          <label>Weather Wind Speed (km/h):</label>
+          <input type="number" name="weatherWindSpeed" value={formState.weatherWindSpeed} onChange={handleInputChange} step="0.1" />
+
+          <button type="submit">Add Session</button>
         </form>
       )}
 
       <ul className="session-list">
-        {data.sessions.map((session: any) => {
-          const displayedDistance = session.session_type === 'Swim'
-            ? session.total_distance * 1000
-            : session.total_distance;
-
-          return (
+        {data && data.sessions && data.sessions.length > 0 ? (
+          data.sessions.map((session) => (
             <li key={session.id} className="session-item">
               <span>
-                <strong>{session.session_type}</strong> - {formatDuration(session.total_duration)} - {displayedDistance} {session.session_type === 'Swim' ? 'm' : 'km'}
+                <strong>{session.sessionType}</strong> - {formatDuration(session.totalDuration)} - {session.totalDistance} km
               </span>
-              <button
-                onClick={() => handleDelete(session.id)}
-                className="text-red-500 hover:text-red-700 transition-colors duration-200"
-              >
-                🗑️
-              </button>
+              <button onClick={() => handleDelete(session.id)}>🗑️</button>
             </li>
-          );
-        })}
+          ))
+        ) : (
+          <p>No sessions found.</p>
+        )}
       </ul>
     </div>
   );

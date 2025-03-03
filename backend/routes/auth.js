@@ -13,15 +13,24 @@ router.post("/signup", async (req, res) => {
       return res.status(400).json({ error: "All fields (name, email, password) are required" });
     }
 
-    const existingUser = await User.findOne({ where: { email } });
+    const normalizedEmail = email.trim().toLowerCase();
+    const existingUser = await User.findOne({ where: { email: normalizedEmail } });
+
     if (existingUser) {
       return res.status(400).json({ error: "Email is already in use" });
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, password_hash: passwordHash });
+    const user = await User.create({ 
+      name: name.trim(), 
+      email: normalizedEmail, 
+      password_hash: passwordHash 
+    });
 
-    res.status(201).json({ message: "User created successfully", user: { id: user.id, name: user.name, email: user.email } });
+    res.status(201).json({ 
+      message: "User created successfully", 
+      user: { id: user.id, name: user.name, email: user.email } 
+    });
   } catch (error) {
     console.error("Signup Error:", error);
     res.status(500).json({ error: "Failed to create user" });
@@ -38,7 +47,8 @@ router.post("/login", async (req, res) => {
       return res.status(500).json({ error: "Server configuration error" });
     }
 
-    const user = await User.findOne({ where: { email } });
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ where: { email: normalizedEmail } });
 
     if (!user) {
       return res.status(401).json({ error: "Invalid email or password" });

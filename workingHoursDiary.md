@@ -16,10 +16,10 @@ Date            Hours    Topic
                 4        Backend, fixing typeDefs and Routes
 28.02.2025      8.5      Backend, fixing Routes, migrations and tables      
                 (42)
-03.03.2025      8.5      Backend, refactoring routes
+03.03.2025      9      Backend, refactoring routes
 04.03.2025
 05.03.2025
 06.03.2025
 07.03.2025  
-                (8.5)
-TOTAL HOURS     86    
+                ()
+TOTAL HOURS     86.5    

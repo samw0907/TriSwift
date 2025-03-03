@@ -13,9 +13,21 @@ export const GET_SESSIONS = gql`
       weatherWindSpeed
       created_at
       updated_at
+      activities { # Add activities to query
+        id
+        sportType
+        duration
+        distance
+        heartRateMin
+        heartRateMax
+        heartRateAvg
+        cadence
+        power
+      }
     }
   }
 `;
+
 
 export const GET_PERSONAL_RECORDS = gql`
   query GetPersonalRecords($sportType: String!) {

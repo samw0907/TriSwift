@@ -10,11 +10,21 @@ interface Session {
   date: string;
   totalDuration: number | null;
   totalDistance: number | null;
-  weatherTemp: number | null;
-  weatherHumidity: number | null;
-  weatherWindSpeed: number | null;
+  activities: Activity[];
   created_at: string;
   updated_at: string;
+}
+
+interface Activity {
+  id: string;
+  sportType: string;
+  duration: number;
+  distance: number;
+  heartRateMin?: number;
+  heartRateMax?: number;
+  heartRateAvg?: number;
+  cadence?: number;
+  power?: number;
 }
 
 const Dashboard: React.FC = () => {
@@ -25,14 +35,12 @@ const Dashboard: React.FC = () => {
 
   const [showSessionForm, setShowSessionForm] = useState(false);
   const [showActivityForm, setShowActivityForm] = useState(false);
+  const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
   const [sessionType, setSessionType] = useState('');
   const [sessionId, setSessionId] = useState<string | null>(null);
 
   const [sessionForm, setSessionForm] = useState({
     date: '',
-    weatherTemp: '',
-    weatherHumidity: '',
-    weatherWindSpeed: '',
   });
 
   const [activityForm, setActivityForm] = useState({
@@ -69,9 +77,6 @@ const Dashboard: React.FC = () => {
           isMultiSport: sessionType === 'Multi-Sport',
           totalDuration: null,
           totalDistance: null,
-          weatherTemp: sessionForm.weatherTemp ? parseFloat(sessionForm.weatherTemp) : null,
-          weatherHumidity: sessionForm.weatherHumidity ? parseInt(sessionForm.weatherHumidity, 10) : null,
-          weatherWindSpeed: sessionForm.weatherWindSpeed ? parseFloat(sessionForm.weatherWindSpeed) : null,
         },
       });
 
@@ -109,7 +114,7 @@ const Dashboard: React.FC = () => {
         variables: {
           sessionId,
           sportType: sessionType,
-          duration: durationInSeconds,
+          duration: durationInSeconds, // Pass as integer
           distance: parseFloat(activityForm.distance),
           heartRateMin: activityForm.heartRateMin ? parseInt(activityForm.heartRateMin) : null,
           heartRateMax: activityForm.heartRateMax ? parseInt(activityForm.heartRateMax) : null,
@@ -131,7 +136,7 @@ const Dashboard: React.FC = () => {
     setShowActivityForm(false);
     setSessionType('');
     setSessionId(null);
-    setSessionForm({ date: '', weatherTemp: '', weatherHumidity: '', weatherWindSpeed: '' });
+    setSessionForm({ date: '' });
     setActivityForm({ hours: '', minutes: '', seconds: '', distance: '', heartRateMin: '', heartRateMax: '', heartRateAvg: '', cadence: '', power: '' });
   };
 

@@ -18,8 +18,8 @@ const typeDefs = gql`
     isMultiSport: Boolean!
     totalDuration: Int
     totalDistance: Float
-    activities: [SessionActivity]
-    transitions: [Transition]
+    activities: [SessionActivity!]!
+    transitions: [Transition!]!
     weatherTemp: Float
     weatherHumidity: Int
     weatherWindSpeed: Float
@@ -76,8 +76,8 @@ const typeDefs = gql`
     sessionType: String!
     date: String!
     isMultiSport: Boolean!
-    totalDuration: Int!
-    totalDistance: Float!
+    totalDuration: Int
+    totalDistance: Float
     weatherTemp: Float
     weatherHumidity: Int
     weatherWindSpeed: Float
@@ -165,9 +165,9 @@ const typeDefs = gql`
     user: User
     sessions: [Session!]! 
     session(id: ID!): Session
-    sessionActivities(sessionId: ID!): [SessionActivity]
-    personalRecords(sportType: String!): [PersonalRecord]
-    transitions(sessionId: ID!): [Transition]
+    sessionActivities(sessionId: ID!): [SessionActivity!]!
+    personalRecords(sportType: String!): [PersonalRecord!]!
+    transitions(sessionId: ID!): [Transition!]!
   }
 
   # Mutations

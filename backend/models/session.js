@@ -33,13 +33,11 @@ Session.init({
   },
   total_duration: {
     type: DataTypes.INTEGER,
-    allowNull: false,
-    defaultValue: 0
+    allowNull: true
   },
   total_distance: {
     type: DataTypes.DECIMAL,
-    allowNull: false,
-    defaultValue: 0
+    allowNull: true
   },
   weather_temp: {
     type: DataTypes.DECIMAL

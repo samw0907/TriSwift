@@ -8,8 +8,8 @@ interface Session {
   id: string;
   sessionType: string;
   date: string;
-  totalDuration: number;
-  totalDistance: number;
+  totalDuration: number | null;
+  totalDistance: number | null;
   weatherTemp: number | null;
   weatherHumidity: number | null;
   weatherWindSpeed: number | null;
@@ -65,8 +65,8 @@ const Dashboard: React.FC = () => {
           sessionType,
           date: sessionForm.date,
           isMultiSport: sessionType === 'Multi-Sport',
-          totalDuration: 0,
-          totalDistance: 0,
+          totalDuration: null,
+          totalDistance: null,
           weatherTemp: sessionForm.weatherTemp ? parseFloat(sessionForm.weatherTemp) : null,
           weatherHumidity: sessionForm.weatherHumidity ? parseInt(sessionForm.weatherHumidity, 10) : null,
           weatherWindSpeed: sessionForm.weatherWindSpeed ? parseFloat(sessionForm.weatherWindSpeed) : null,

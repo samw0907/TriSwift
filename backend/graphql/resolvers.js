@@ -26,81 +26,60 @@ const resolvers = {
         ],
       });
     
-      return sessions.map(session => ({
-        id: session.id,
-        userId: session.user_id,
-        sessionType: session.session_type,
-        date: session.date.toISOString(),
-        isMultiSport: session.is_multi_sport,
-        weatherTemp: session.weather_temp,
-        weatherHumidity: session.weather_humidity,
-        weatherWindSpeed: session.weather_wind_speed,
-        created_at: session.created_at.toISOString(),
-        updated_at: session.updated_at.toISOString(),
-        activities: session.activities.map(activity => ({
-          id: activity.id,
-          sessionId: activity.session_id,
-          sportType: activity.sport_type,
-          duration: activity.duration,
-          distance: activity.distance,
-        })),
-        transitions: session.transitions.map(transition => ({
-          id: transition.id,
-          sessionId: transition.session_id,
-          previousSport: transition.previous_sport,
-          nextSport: transition.next_sport,
-          transitionTime: transition.transition_time,
-          comments: transition.comments,
-        })),
-      }));
+      return sessions.map(session => {
+        const totalDuration = session.activities.reduce((sum, activity) => sum + (activity.duration || 0), 0);
+        const totalDistance = session.activities.reduce((sum, activity) => sum + (activity.distance || 0), 0);
+
+        return {
+          id: session.id,
+          userId: session.user_id,
+          sessionType: session.session_type,
+          date: session.date.toISOString(),
+          isMultiSport: session.is_multi_sport,
+          totalDuration,
+          totalDistance,
+          weatherTemp: session.weather_temp,
+          weatherHumidity: session.weather_humidity,
+          weatherWindSpeed: session.weather_wind_speed,
+          created_at: session.created_at.toISOString(),
+          updated_at: session.updated_at.toISOString(),
+          activities: session.activities || [],
+          transitions: session.transitions || [],
+        };
+      });
     },    
 
     session: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
       const session = await Session.findByPk(id, {
         include: [
-          { model: SessionActivity, as: "SessionActivities" },
-          { model: Transition, as: "Transitions" }
+          { model: SessionActivity, as: "activities" },
+          { model: Transition, as: "transitions" }
         ]
       });
     
       if (!session || session.user_id !== user.id) throw new Error("Unauthorized");
-    
+
+      const totalDuration = session.activities.reduce((sum, activity) => sum + (activity.duration || 0), 0);
+      const totalDistance = session.activities.reduce((sum, activity) => sum + (activity.distance || 0), 0);
+
       return {
         id: session.id,
         userId: session.user_id,
         sessionType: session.session_type,
-        date: session.date ? session.date.toISOString() : null,
+        date: session.date.toISOString(),
         isMultiSport: session.is_multi_sport,
-        totalDuration: session.total_duration,
-        totalDistance: session.total_distance,
+        totalDuration,
+        totalDistance,
         weatherTemp: session.weather_temp,
         weatherHumidity: session.weather_humidity,
         weatherWindSpeed: session.weather_wind_speed,
         created_at: session.created_at.toISOString(),
         updated_at: session.updated_at.toISOString(),
-        activities: (session.SessionActivities || []).map(activity => ({
-          id: activity.id,
-          sessionId: activity.session_id,
-          sportType: activity.sport_type,
-          duration: activity.duration,
-          distance: activity.distance,
-          heartRateMin: activity.heart_rate_min,
-          heartRateMax: activity.heart_rate_max,
-          heartRateAvg: activity.heart_rate_avg,
-          cadence: activity.cadence,
-          power: activity.power,
-        })),
-        transitions: (session.Transitions || []).map(transition => ({
-          id: transition.id,
-          sessionId: transition.session_id,
-          previousSport: transition.previous_sport,
-          nextSport: transition.next_sport,
-          transitionTime: transition.transition_time,
-          comments: transition.comments,
-        }))
+        activities: session.activities || [],
+        transitions: session.transitions || [],
       };
-    },    
+    },
 
     sessionActivities: async (_, { sessionId }, { user }) => {
       if (!user) throw new Error("Authentication required.");
@@ -122,7 +101,7 @@ const resolvers = {
         power: activity.power,
         created_at: activity.created_at.toISOString(),
         updated_at: activity.updated_at.toISOString(),
-      }));
+      })) || [];
     },
 
     transitions: async (_, { sessionId }, { user }) => {
@@ -130,7 +109,7 @@ const resolvers = {
 
       const session = await Session.findByPk(sessionId);
       if (!session) throw new Error("Session not found.");
-      if (session.user_id !== user.id) throw new Error("Unauthorized: You can only view transitions for your own sessions.");
+      if (session.user_id !== user.id) throw new Error("Unauthorized");
 
       const transitions = await Transition.findAll({ where: { session_id: sessionId } });
       return transitions.map(t => ({
@@ -142,37 +121,28 @@ const resolvers = {
         comments: t.comments,
         created_at: t.created_at.toISOString(),
         updated_at: t.updated_at.toISOString(),
-      }));
+      })) || [];
     },
 
     personalRecords: async (_, { sportType }, { user }) => {
       if (!user) throw new Error("Authentication required.");
 
       const records = await PersonalRecord.findAll({
-        where: { user_id: user.id, activity_type: sportType },
+        where: { user_id: user.id, sportType },
         order: [["distance", "ASC"], ["best_time", "ASC"]],
       });
 
-      const groupedRecords = {};
+      const uniqueRecords = new Map();
       records.forEach(record => {
-        if (!groupedRecords[record.distance]) {
-          groupedRecords[record.distance] = [];
+        if (!uniqueRecords.has(record.distance)) {
+          uniqueRecords.set(record.distance, []);
         }
-        if (groupedRecords[record.distance].length < 3) {
-          groupedRecords[record.distance].push({
-            id: record.id,
-            userId: record.user_id,
-            sessionActivityId: record.session_activity_id,
-            activityType: record.activity_type,
-            distance: record.distance,
-            bestTime: record.best_time,
-            recordDate: record.record_date ? record.record_date.toISOString() : null,
-            created_at: record.created_at.toISOString(),
-            updated_at: record.updated_at.toISOString(),
-          });
+        if (uniqueRecords.get(record.distance).length < 3) {
+          uniqueRecords.get(record.distance).push(record);
         }
       });
-      return Object.values(groupedRecords).flat();
+
+      return Array.from(uniqueRecords.values()).flat();
     },
   },
   Mutation: {
@@ -224,6 +194,8 @@ const resolvers = {
           session_type: sessionType,
           date: new Date(date),
           is_multi_sport: isMultiSport,
+          total_duration: null,
+          total_distance: null,
           weather_temp: weatherTemp ?? null,
           weather_humidity: weatherHumidity ?? null,
           weather_wind_speed: weatherWindSpeed ?? null,
@@ -237,6 +209,8 @@ const resolvers = {
           sessionType: session.session_type,
           date: session.date.toISOString(),
           isMultiSport: session.is_multi_sport,
+          totalDuration: session.total_duration,
+          totalDistance: session.total_distance,
           weatherTemp: session.weather_temp,
           weatherHumidity: session.weather_humidity,
           weatherWindSpeed: session.weather_wind_speed,
@@ -247,24 +221,24 @@ const resolvers = {
         console.error("❌ Create Session Error:", error);
         throw new Error("Failed to create session: " + error.message);
       }
-    },    
-     
+    },
+    
     updateSession: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
     
       try {
         const session = await Session.findByPk(id, {
           include: [
-            { model: SessionActivity, as: "SessionActivities" },
-            { model: Transition, as: "Transitions" }
+            { model: SessionActivity, as: "activities" },
+            { model: Transition, as: "transitions" }
           ]
         });
     
         if (!session) throw new Error("Session not found.");
         if (session.user_id !== user.id) throw new Error("Unauthorized.");
     
-        let totalDuration = session.total_duration;
-        let totalDistance = session.total_distance;
+        let totalDuration = session.total_duration ?? 0;
+        let totalDistance = session.total_distance ?? 0;
     
         if (session.is_multi_sport) {
           totalDuration =
@@ -272,17 +246,39 @@ const resolvers = {
             (session.Transitions || []).reduce((sum, trans) => sum + (trans.transition_time || 0), 0);
     
           totalDistance = (session.SessionActivities || []).reduce((sum, act) => sum + (act.distance || 0), 0);
+        } else {
+          if (session.SessionActivities.length > 0) {
+            totalDuration = session.SessionActivities[0].duration || 0;
+            totalDistance = session.SessionActivities[0].distance || 0;
+          }
         }
     
-        await session.update({ total_duration: totalDuration, total_distance: totalDistance });
+        await session.update({
+          total_duration: totalDuration,
+          total_distance: totalDistance
+        });
     
-        return session;
+        console.log("✅ Session Updated:", session.toJSON());
+    
+        return {
+          id: session.id,
+          userId: session.user_id,
+          sessionType: session.session_type,
+          date: session.date.toISOString(),
+          isMultiSport: session.is_multi_sport,
+          totalDuration: session.total_duration,
+          totalDistance: session.total_distance,
+          weatherTemp: session.weather_temp,
+          weatherHumidity: session.weather_humidity,
+          weatherWindSpeed: session.weather_wind_speed,
+          created_at: session.created_at.toISOString(),
+          updated_at: session.updated_at.toISOString(),
+        };
       } catch (error) {
         console.error("❌ Update Session Error:", error);
         throw new Error("Failed to update session: " + error.message);
       }
     },    
-    
   
     deleteSession: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
@@ -468,7 +464,10 @@ const resolvers = {
           throw new Error("Session ID, sportType, duration, and distance are required.");
         }
     
-        const session = await Session.findByPk(sessionId);
+        const session = await Session.findByPk(sessionId, {
+          include: [{ model: SessionActivity, as: "activities" }]
+        });
+    
         if (!session || session.user_id !== user.id) throw new Error("Unauthorized.");
     
         const activity = await SessionActivity.create({
@@ -480,6 +479,16 @@ const resolvers = {
         });
     
         console.log("✅ Activity Created:", activity.toJSON());
+
+        const updatedTotalDuration = (session.SessionActivities || []).reduce((sum, act) => sum + (act.duration || 0), duration);
+        const updatedTotalDistance = (session.SessionActivities || []).reduce((sum, act) => sum + (act.distance || 0), distance);
+    
+        await session.update({
+          total_duration: updatedTotalDuration,
+          total_distance: updatedTotalDistance,
+        });
+    
+        console.log("✅ Session Updated After Activity Addition:", session.toJSON());
     
         return {
           id: activity.id,
@@ -495,8 +504,8 @@ const resolvers = {
         console.error("❌ Create Session Activity Error:", error);
         throw new Error("Failed to create session activity: " + error.message);
       }
-    },    
-  
+    },
+    
     updateSessionActivity: async (_, { id, input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
     
@@ -504,9 +513,12 @@ const resolvers = {
         const activity = await SessionActivity.findByPk(id);
         if (!activity) throw new Error("Session Activity not found");
     
-        const session = await Session.findByPk(activity.session_id);
-        if (!session || session.user_id !== user.id) throw new Error("Unauthorized.");
+        const session = await Session.findByPk(activity.session_id, {
+          include: [{ model: SessionActivity, as: "activities" }]
+        });
     
+        if (!session || session.user_id !== user.id) throw new Error("Unauthorized.");
+
         const updatedValues = {
           sport_type: input.sportType?.trim() ?? activity.sport_type,
           duration: input.duration ?? activity.duration,
@@ -519,12 +531,38 @@ const resolvers = {
         };
     
         await activity.update(updatedValues);
+        console.log("✅ Activity Updated:", activity.toJSON());
     
-        return activity;
+        const updatedTotalDuration = (session.SessionActivities || []).reduce((sum, act) => sum + (act.duration || 0), 0);
+        const updatedTotalDistance = (session.SessionActivities || []).reduce((sum, act) => sum + (act.distance || 0), 0);
+    
+        await session.update({
+          total_duration: updatedTotalDuration,
+          total_distance: updatedTotalDistance,
+        });
+    
+        console.log("✅ Session Updated After Activity Update:", session.toJSON());
+    
+        return {
+          id: activity.id,
+          sessionId: activity.session_id,
+          userId: activity.user_id,
+          sportType: activity.sport_type,
+          duration: activity.duration,
+          distance: activity.distance,
+          heartRateMin: activity.heart_rate_min,
+          heartRateMax: activity.heart_rate_max,
+          heartRateAvg: activity.heart_rate_avg,
+          cadence: activity.cadence,
+          power: activity.power,
+          created_at: activity.created_at.toISOString(),
+          updated_at: activity.updated_at.toISOString(),
+        };
       } catch (error) {
+        console.error("❌ Update Session Activity Error:", error);
         throw new Error("Failed to update session activity: " + error.message);
       }
-    },    
+    },       
   
     deleteSessionActivity: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
@@ -544,45 +582,50 @@ const resolvers = {
 
     createPersonalRecord: async (_, { input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-  
+    
       try {
-        if (!input.activityType || !input.sessionId) {
+        const { activityType, sessionId } = input;
+    
+        if (!activityType || !sessionId) {
           throw new Error("Activity Type and Session ID are required.");
         }
-  
-        const session = await Session.findByPk(input.sessionId);
+    
+        const session = await Session.findByPk(sessionId, {
+          include: [{ model: SessionActivity, as: "activities" }],
+        });
+    
         if (!session || session.user_id !== user.id) {
           throw new Error("Unauthorized: You can only add records to your own sessions.");
         }
-  
-        const activities = await SessionActivity.findAll({
-          where: { session_id: input.sessionId, sport_type: input.activityType.trim() },
-          order: [["distance", "ASC"], ["duration", "ASC"]],
-        });
-  
+    
+        const activities = session.SessionActivities.filter(act => act.sport_type.trim() === activityType.trim());
+    
         if (!activities.length) {
           throw new Error("No session activities found for the given sport type.");
         }
-  
+    
         const validDistances = {
           Running: [100, 200, 400, 1000, 5000, 10000, 21100, 42200],
           Cycling: [10000, 20000, 40000, 50000, 80000, 100000, 150000, 200000],
           Swimming: [100, 200, 400, 800, 1000, 1500, 2000],
         };
-  
+    
         const recordsToSave = [];
-        const existingRecords = await PersonalRecord.findAll({ where: { user_id: user.id, session_id: input.sessionId } });
-  
-        for (const dist of validDistances[input.activityType.trim()] || []) {
-          const bestAttempts = activities.filter(a => a.distance === dist).slice(0, 3);
-  
-          bestAttempts.forEach((activity) => {
+        const existingRecords = await PersonalRecord.findAll({ where: { user_id: user.id, session_id: sessionId } });
+    
+        for (const dist of validDistances[activityType.trim()] || []) {
+          const bestAttempts = activities
+            .filter(a => a.distance === dist)
+            .sort((a, b) => a.duration - b.duration) 
+            .slice(0, 3);
+    
+          bestAttempts.forEach(activity => {
             const alreadyExists = existingRecords.some(record => record.distance === activity.distance);
             if (!alreadyExists) {
               recordsToSave.push({
                 user_id: user.id,
                 session_activity_id: activity.id,
-                activity_type: input.activityType.trim(),
+                activity_type: activityType.trim(),
                 distance: activity.distance,
                 best_time: activity.duration,
                 record_date: session.date,
@@ -590,13 +633,15 @@ const resolvers = {
             }
           });
         }
-  
+    
         if (!recordsToSave.length) {
           throw new Error("No valid records found for predefined distances.");
         }
-  
+    
         const createdRecords = await PersonalRecord.bulkCreate(recordsToSave);
-  
+    
+        console.log("✅ Personal Records Created:", createdRecords.map(r => r.toJSON()));
+    
         return createdRecords.map(record => ({
           id: record.id,
           userId: record.user_id,
@@ -609,14 +654,14 @@ const resolvers = {
           updated_at: record.updated_at.toISOString(),
         }));
       } catch (error) {
-        console.error("Create Personal Record Error:", error);
+        console.error("❌ Create Personal Record Error:", error);
         throw new Error("Failed to create personal record: " + error.message);
       }
     },
-  
+    
     updatePersonalRecord: async (_, { id, input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-  
+    
       try {
         const record = await PersonalRecord.findByPk(id);
         if (!record) throw new Error("Personal Record not found");
@@ -624,16 +669,18 @@ const resolvers = {
         if (input.sessionActivityId && input.sessionActivityId !== record.session_activity_id) {
           throw new Error("Session Activity ID cannot be changed.");
         }
-  
+    
         const updatedValues = {
           activity_type: input.activityType?.trim() ?? record.activity_type,
           distance: input.distance ?? record.distance,
           best_time: input.bestTime ?? record.best_time,
           record_date: input.recordDate ? new Date(input.recordDate) : record.record_date,
         };
-  
+    
         await record.update(updatedValues);
-  
+    
+        console.log("✅ Personal Record Updated:", record.toJSON());
+    
         return {
           id: record.id,
           userId: record.user_id,
@@ -646,10 +693,10 @@ const resolvers = {
           updated_at: record.updated_at.toISOString(),
         };
       } catch (error) {
-        console.error("Update Personal Record Error:", error);
+        console.error("❌ Update Personal Record Error:", error);
         throw new Error("Failed to update personal record: " + error.message);
       }
-    },
+    },    
   
     deletePersonalRecord: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");

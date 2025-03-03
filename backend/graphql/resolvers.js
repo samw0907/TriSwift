@@ -221,6 +221,8 @@ const resolvers = {
       if (!user) throw new Error("Authentication required.");
     
       try {
+        console.log("🔍 Received Session Input:", input);
+    
         const {
           sessionType,
           date,
@@ -251,7 +253,7 @@ const resolvers = {
           weather_wind_speed: weatherWindSpeed ?? null,
         });
     
-        console.log("✅ Session Created:", session.toJSON());
+        console.log("✅ Session Created in DB:", session.toJSON()); // <-- Log session after creation
     
         return {
           id: session.id,
@@ -271,9 +273,8 @@ const resolvers = {
         console.error("❌ Create Session Error:", error);
         throw new Error("Failed to create session: " + error.message);
       }
-    },
-    
-    
+    },    
+     
     updateSession: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
     

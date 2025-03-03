@@ -17,22 +17,24 @@ const resolvers = {
 
     sessions: async (_, __, { user }) => {
       if (!user) throw new Error("Authentication required.");
-
+    
       const sessions = await Session.findAll({
         where: { user_id: user.id },
         include: [
-          { model: SessionActivity, as: "SessionActivities" },
-          { model: Transition, as: "Transitions" },
+          { model: SessionActivity },
+          { model: Transition },
         ],
       });
-
+    
       return sessions.map(session => {
-        const activities = session.SessionActivities || [];
-        const transitions = session.Transitions || [];
-
-        const totalDuration = activities.reduce((sum, activity) => sum + (activity.duration || 0), 0);
+        const activities = session.session_activities || [];
+        const transitions = session.is_multi_sport ? session.transitions || [] : [];
+    
+        const totalDuration = activities.reduce((sum, activity) => sum + (activity.duration || 0), 0)
+          + (session.is_multi_sport ? transitions.reduce((sum, t) => sum + (t.transition_time || 0), 0) : 0);
+    
         const totalDistance = activities.reduce((sum, activity) => sum + (activity.distance || 0), 0);
-
+    
         return {
           id: session.id,
           userId: session.user_id,
@@ -54,21 +56,24 @@ const resolvers = {
 
     session: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
+    
       const session = await Session.findByPk(id, {
         include: [
-          { model: SessionActivity, as: "SessionActivities" },
-          { model: Transition, as: "Transitions" }
+          { model: SessionActivity },
+          { model: Transition }
         ]
       });
-
+    
       if (!session || session.user_id !== user.id) throw new Error("Unauthorized");
-
-      const activities = session.SessionActivities || [];
-      const transitions = session.Transitions || [];
-
-      const totalDuration = activities.reduce((sum, activity) => sum + (activity.duration || 0), 0);
+    
+      const activities = session.session_activities || [];
+      const transitions = session.is_multi_sport ? session.transitions || [] : [];
+    
+      const totalDuration = activities.reduce((sum, activity) => sum + (activity.duration || 0), 0)
+        + (session.is_multi_sport ? transitions.reduce((sum, t) => sum + (t.transition_time || 0), 0) : 0);
+    
       const totalDistance = activities.reduce((sum, activity) => sum + (activity.distance || 0), 0);
-
+    
       return {
         id: session.id,
         userId: session.user_id,
@@ -89,11 +94,12 @@ const resolvers = {
 
     sessionActivities: async (_, { sessionId }, { user }) => {
       if (!user) throw new Error("Authentication required.");
+      
       const session = await Session.findByPk(sessionId);
       if (!session || session.user_id !== user.id) throw new Error("Unauthorized");
-
+    
       const activities = await SessionActivity.findAll({ where: { session_id: sessionId } });
-
+    
       return activities.map(activity => ({
         id: activity.id,
         sessionId: activity.session_id,
@@ -112,12 +118,14 @@ const resolvers = {
 
     transitions: async (_, { sessionId }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-
+    
       const session = await Session.findByPk(sessionId);
       if (!session) throw new Error("Session not found.");
       if (session.user_id !== user.id) throw new Error("Unauthorized");
-
+      if (!session.is_multi_sport) throw new Error("Transitions are only available for multi-sport sessions.");
+    
       const transitions = await Transition.findAll({ where: { session_id: sessionId } });
+    
       return transitions.map(t => ({
         id: t.id,
         sessionId: t.session_id,
@@ -200,8 +208,8 @@ const resolvers = {
           session_type: sessionType,
           date: new Date(date),
           is_multi_sport: isMultiSport,
-          total_duration: null,
-          total_distance: null,
+          total_duration: 0, // Defaulting to 0 instead of null
+          total_distance: 0, // Defaulting to 0 instead of null
           weather_temp: weatherTemp ?? null,
           weather_humidity: weatherHumidity ?? null,
           weather_wind_speed: weatherWindSpeed ?? null,
@@ -235,19 +243,19 @@ const resolvers = {
       try {
         const session = await Session.findByPk(id, {
           include: [
-            { model: SessionActivity, as: "SessionActivities" },
-            { model: Transition, as: "Transitions" }
+            { model: SessionActivity },
+            { model: Transition }
           ]
         });
 
         if (!session) throw new Error("Session not found.");
         if (session.user_id !== user.id) throw new Error("Unauthorized.");
 
-        const activities = session.SessionActivities || [];
-        const transitions = session.Transitions || [];
+        const activities = session.session_activities || [];
+        const transitions = session.is_multi_sport ? session.transitions || [] : [];
 
         const totalDuration = activities.reduce((sum, act) => sum + (act.duration || 0), 0) +
-          transitions.reduce((sum, trans) => sum + (trans.transition_time || 0), 0);
+          (session.is_multi_sport ? transitions.reduce((sum, trans) => sum + (trans.transition_time || 0), 0) : 0);
 
         const totalDistance = activities.reduce((sum, act) => sum + (act.distance || 0), 0);
 
@@ -333,9 +341,9 @@ const resolvers = {
         const updatedValues = {};
         if (input.email) {
           const normalizedEmail = input.email.toLowerCase().trim();
-          const existingUser = await User.findOne({ where: { email: normalizedEmail } });
-          if (existingUser && existingUser.id !== user.id) {
-            throw new Error("Email is already in use");
+          if (normalizedEmail !== user.email) {
+            const existingUser = await User.findOne({ where: { email: normalizedEmail } });
+            if (existingUser) throw new Error("Email is already in use");
           }
           updatedValues.email = normalizedEmail;
         }
@@ -371,7 +379,7 @@ const resolvers = {
         throw new Error("Failed to delete user: " + error.message);
       }
     },
-  
+
     createTransition: async (_, { input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
 
@@ -379,6 +387,7 @@ const resolvers = {
         const session = await Session.findByPk(input.sessionId);
         if (!session) throw new Error("Session not found.");
         if (session.user_id !== user.id) throw new Error("Unauthorized: You can only add transitions to your own sessions.");
+        if (!session.is_multi_sport) throw new Error("Transitions can only be added to multi-sport sessions.");
 
         const transition = await Transition.create({
           session_id: input.sessionId,
@@ -407,6 +416,7 @@ const resolvers = {
 
         const session = await Session.findByPk(transition.session_id);
         if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only update transitions in your own sessions.");
+        if (!session.is_multi_sport) throw new Error("Transitions can only be updated in multi-sport sessions.");
 
         const updatedValues = {
           previous_sport: input.previousSport?.trim() ?? transition.previous_sport,
@@ -436,6 +446,7 @@ const resolvers = {
 
         const session = await Session.findByPk(transition.session_id);
         if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only delete transitions from your own sessions.");
+        if (!session.is_multi_sport) throw new Error("Transitions can only be deleted from multi-sport sessions.");
 
         await transition.destroy();
         return { message: "Transition deleted successfully." };
@@ -455,34 +466,28 @@ const resolvers = {
         }
 
         const session = await Session.findByPk(sessionId, {
-          include: [{ model: SessionActivity, as: "SessionActivities" }]
+          include: [SessionActivity],
         });
 
         if (!session || session.user_id !== user.id) throw new Error("Unauthorized.");
-        
-        const formattedDuration = formatDuration(duration);
 
         const activity = await SessionActivity.create({
           session_id: sessionId,
           user_id: user.id,
-          sport_type: sportType,
-          duration: formattedDuration,
+          sport_type: sportType.trim(),
+          duration,
           distance,
         });
 
         console.log("✅ Activity Created:", activity.toJSON());
 
-        const updatedTotalDuration = session.SessionActivities
-          ? session.SessionActivities.reduce((sum, act) => sum + (act.duration || 0), duration)
-          : duration;
-          
-        const updatedTotalDistance = session.SessionActivities
-          ? session.SessionActivities.reduce((sum, act) => sum + (act.distance || 0), distance)
-          : distance;
+        // Recalculate session totals
+        const updatedTotalDuration = await SessionActivity.sum("duration", { where: { session_id: sessionId } });
+        const updatedTotalDistance = await SessionActivity.sum("distance", { where: { session_id: sessionId } });
 
         await session.update({
-          total_duration: updatedTotalDuration,
-          total_distance: updatedTotalDistance,
+          total_duration: updatedTotalDuration || 0,
+          total_distance: updatedTotalDistance || 0,
         });
 
         console.log("✅ Session Updated After Activity Addition:", session.toJSON());
@@ -511,14 +516,14 @@ const resolvers = {
         if (!activity) throw new Error("Session Activity not found");
 
         const session = await Session.findByPk(activity.session_id, {
-          include: [{ model: SessionActivity, as: "SessionActivities" }]
+          include: [SessionActivity],
         });
 
         if (!session || session.user_id !== user.id) throw new Error("Unauthorized.");
 
         const updatedValues = {
           sport_type: input.sportType?.trim() ?? activity.sport_type,
-          duration: formatDuration(input.duration ?? activity.duration),
+          duration: input.duration ?? activity.duration,
           distance: input.distance ?? activity.distance,
           heart_rate_min: input.heartRateMin ?? activity.heart_rate_min,
           heart_rate_max: input.heartRateMax ?? activity.heart_rate_max,
@@ -530,17 +535,13 @@ const resolvers = {
         await activity.update(updatedValues);
         console.log("✅ Activity Updated:", activity.toJSON());
 
-        const updatedTotalDuration = session.SessionActivities
-          ? session.SessionActivities.reduce((sum, act) => sum + (act.duration || 0), 0)
-          : 0;
-
-        const updatedTotalDistance = session.SessionActivities
-          ? session.SessionActivities.reduce((sum, act) => sum + (act.distance || 0), 0)
-          : 0;
+        // Recalculate session totals
+        const updatedTotalDuration = await SessionActivity.sum("duration", { where: { session_id: activity.session_id } });
+        const updatedTotalDistance = await SessionActivity.sum("distance", { where: { session_id: activity.session_id } });
 
         await session.update({
-          total_duration: updatedTotalDuration,
-          total_distance: updatedTotalDistance,
+          total_duration: updatedTotalDuration || 0,
+          total_distance: updatedTotalDistance || 0,
         });
 
         console.log("✅ Session Updated After Activity Update:", session.toJSON());
@@ -564,39 +565,34 @@ const resolvers = {
         console.error("❌ Update Session Activity Error:", error);
         throw new Error("Failed to update session activity: " + error.message);
       }
-    },      
-  
+    },
+
     deleteSessionActivity: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-      
+
       try {
         const activity = await SessionActivity.findByPk(id);
         if (!activity) throw new Error("Session Activity not found.");
-    
+
         const session = await Session.findByPk(activity.session_id, {
-          include: [{ model: SessionActivity, as: "SessionActivities" }]
+          include: [SessionActivity],
         });
-    
-        if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only delete activities from your own sessions.");
-    
+
+        if (!session || session.user_id !== user.id) throw new Error("Unauthorized.");
+
         await activity.destroy();
-    
+
         // Recalculate session totals
-        const updatedTotalDuration = session.SessionActivities
-          ? session.SessionActivities.reduce((sum, act) => sum + (act.duration || 0), 0)
-          : 0;
-    
-        const updatedTotalDistance = session.SessionActivities
-          ? session.SessionActivities.reduce((sum, act) => sum + (act.distance || 0), 0)
-          : 0;
-    
+        const updatedTotalDuration = await SessionActivity.sum("duration", { where: { session_id: activity.session_id } });
+        const updatedTotalDistance = await SessionActivity.sum("distance", { where: { session_id: activity.session_id } });
+
         await session.update({
-          total_duration: updatedTotalDuration,
-          total_distance: updatedTotalDistance,
+          total_duration: updatedTotalDuration || 0,
+          total_distance: updatedTotalDistance || 0,
         });
-    
+
         console.log("✅ Session Updated After Activity Deletion:", session.toJSON());
-    
+
         return { message: "Session Activity deleted successfully." };
       } catch (error) {
         console.error("❌ Delete Session Activity Error:", error);
@@ -606,48 +602,56 @@ const resolvers = {
     
     createPersonalRecord: async (_, { input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-    
+
       try {
         const { activityType, sessionId } = input;
-    
+
         if (!activityType || !sessionId) {
           throw new Error("Activity Type and Session ID are required.");
         }
-    
+
         const session = await Session.findByPk(sessionId, {
-          include: [{ model: SessionActivity, as: "SessionActivities" }]
+          include: [SessionActivity],
         });
-    
+
         if (!session || session.user_id !== user.id) {
           throw new Error("Unauthorized: You can only add records to your own sessions.");
         }
-    
-        const activities = session.SessionActivities.filter(act => act.sport_type.trim() === activityType.trim());
-    
+
+        const activities = session.SessionActivities.filter(
+          (act) => act.sport_type.trim().toLowerCase() === activityType.trim().toLowerCase()
+        );
+
         if (!activities.length) {
           throw new Error("No session activities found for the given sport type.");
         }
-    
+
         const validDistances = {
-          Running: [100, 200, 400, 1000, 5000, 10000, 21100, 42200],
-          Cycling: [10000, 20000, 40000, 50000, 80000, 100000, 150000, 200000],
-          Swimming: [100, 200, 400, 800, 1000, 1500, 2000],
+          running: [100, 200, 400, 1000, 5000, 10000, 21100, 42200],
+          cycling: [10000, 20000, 40000, 50000, 80000, 100000, 150000, 200000],
+          swimming: [100, 200, 400, 800, 1000, 1500, 2000],
         };
-    
+
         const recordsToSave = [];
-        const existingRecords = await PersonalRecord.findAll({ where: { user_id: user.id, session_id: sessionId } });
-    
-        for (const dist of validDistances[activityType.trim()] || []) {
+        const existingRecords = await PersonalRecord.findAll({
+          where: { user_id: user.id, session_id: sessionId },
+        });
+
+        for (const dist of validDistances[activityType.trim().toLowerCase()] || []) {
           const bestAttempts = activities
-            .filter(a => a.distance === dist)
+            .filter((a) => Number(a.distance) === Number(dist))
             .sort((a, b) => a.duration - b.duration)
             .slice(0, 3);
-    
-          bestAttempts.forEach(activity => {
-            const alreadyExists = existingRecords.some(record => record.distance === activity.distance);
+
+          bestAttempts.forEach((activity) => {
+            const alreadyExists = existingRecords.some(
+              (record) => Number(record.distance) === Number(activity.distance)
+            );
+
             if (!alreadyExists) {
               recordsToSave.push({
                 user_id: user.id,
+                session_id: sessionId,
                 session_activity_id: activity.id,
                 activity_type: activityType.trim(),
                 distance: activity.distance,
@@ -657,18 +661,19 @@ const resolvers = {
             }
           });
         }
-    
+
         if (!recordsToSave.length) {
           throw new Error("No valid records found for predefined distances.");
         }
-    
+
         const createdRecords = await PersonalRecord.bulkCreate(recordsToSave);
-    
-        console.log("✅ Personal Records Created:", createdRecords.map(r => r.toJSON()));
-    
-        return createdRecords.map(record => ({
+
+        console.log("✅ Personal Records Created:", createdRecords.map((r) => r.toJSON()));
+
+        return createdRecords.map((record) => ({
           id: record.id,
           userId: record.user_id,
+          sessionId: record.session_id,
           sessionActivityId: record.session_activity_id,
           activityType: record.activity_type,
           distance: record.distance,
@@ -682,10 +687,10 @@ const resolvers = {
         throw new Error("Failed to create personal record: " + error.message);
       }
     },
-    
+
     updatePersonalRecord: async (_, { id, input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-    
+
       try {
         const record = await PersonalRecord.findByPk(id);
         if (!record) throw new Error("Personal Record not found");
@@ -693,21 +698,22 @@ const resolvers = {
         if (input.sessionActivityId && input.sessionActivityId !== record.session_activity_id) {
           throw new Error("Session Activity ID cannot be changed.");
         }
-    
+
         const updatedValues = {
           activity_type: input.activityType?.trim() ?? record.activity_type,
           distance: input.distance ?? record.distance,
           best_time: input.bestTime ?? record.best_time,
           record_date: input.recordDate ? new Date(input.recordDate) : record.record_date,
         };
-    
+
         await record.update(updatedValues);
-    
+
         console.log("✅ Personal Record Updated:", record.toJSON());
-    
+
         return {
           id: record.id,
           userId: record.user_id,
+          sessionId: record.session_id,
           sessionActivityId: record.session_activity_id,
           activityType: record.activity_type,
           distance: record.distance,
@@ -721,23 +727,23 @@ const resolvers = {
         throw new Error("Failed to update personal record: " + error.message);
       }
     },
-    
+
     deletePersonalRecord: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-    
+
       try {
         const record = await PersonalRecord.findByPk(id);
         if (!record) throw new Error("Personal Record not found");
         if (record.user_id !== user.id) throw new Error("Unauthorized: You can only delete your own records.");
-    
+
         await record.destroy();
         return { message: `Personal Record ID ${id} deleted successfully.` };
       } catch (error) {
         console.error("❌ Delete Personal Record Error:", error);
         throw new Error("Failed to delete personal record: " + error.message);
       }
-    }
-  }    
-}
+    },
+  },
+};
 
 module.exports = resolvers;

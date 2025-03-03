@@ -27,15 +27,25 @@ PersonalRecord.init({
     },
     onDelete: "CASCADE"
   },
+  session_activity_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: "SessionActivities",
+      key: "id"
+    },
+    onDelete: "CASCADE"
+  },
   activity_type: {
     type: DataTypes.STRING,
     allowNull: false
   },
   distance: {
-    type: DataTypes.DECIMAL
+    type: DataTypes.DECIMAL,
+    allowNull: false
   },
   best_time: {
-    type: DataTypes.STRING,
+    type: DataTypes.INTEGER,
     allowNull: false
   },
   record_date: {
@@ -52,3 +62,4 @@ PersonalRecord.init({
 });
 
 module.exports = PersonalRecord;
+

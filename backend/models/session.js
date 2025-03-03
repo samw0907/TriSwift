@@ -32,8 +32,8 @@ Session.init({
     allowNull: false
   },
   total_duration: {
-    type: DataTypes.STRING,
-    allowNull: true
+    type: DataTypes.INTEGER,
+    allowNull: true,
   },
   total_distance: {
     type: DataTypes.DECIMAL,

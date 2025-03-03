@@ -19,7 +19,7 @@ const typeDefs = gql`
     totalDuration: Int
     totalDistance: Float
     activities: [SessionActivity!]!
-    transitions: [Transition!]!
+    transitions: [Transition!]! @deprecated(reason: "Only applicable for multi-sport sessions") 
     weatherTemp: Float
     weatherHumidity: Int
     weatherWindSpeed: Float
@@ -32,8 +32,8 @@ const typeDefs = gql`
     userId: ID!
     sessionId: ID!
     sportType: String!
-    duration: Int
-    distance: Float
+    duration: Int!
+    distance: Float!
     heartRateMin: Int
     heartRateMax: Int
     heartRateAvg: Int
@@ -57,9 +57,10 @@ const typeDefs = gql`
   type PersonalRecord {
     id: ID!
     userId: ID!
+    sessionId: ID!  # Added this field to match the database
     sessionActivityId: ID!
-    distance: Float
-    bestTime: Int
+    distance: Float!
+    bestTime: Int!
     recordDate: String!
     created_at: String!
     updated_at: String!
@@ -97,7 +98,7 @@ const typeDefs = gql`
   input SessionActivityInput {
     sessionId: ID!
     sportType: String!
-    duration: Int
+    duration: Int!
     distance: Float
     heartRateMin: Int
     heartRateMax: Int
@@ -108,7 +109,7 @@ const typeDefs = gql`
 
   input UpdateSessionActivityInput {
     sportType: String
-    duration: Int
+    duration: Int!
     distance: Float
     heartRateMin: Int
     heartRateMax: Int
@@ -116,7 +117,7 @@ const typeDefs = gql`
     cadence: Int
     power: Int
   }
-  
+
   input TransitionInput {
     sessionId: ID!
     previousSport: String!
@@ -133,6 +134,7 @@ const typeDefs = gql`
   }
 
   input PersonalRecordInput {
+    sessionId: ID!  # Added this for better query support
     sessionActivityId: ID!  
     distance: Float
     bestTime: Int!
@@ -140,9 +142,10 @@ const typeDefs = gql`
   }
 
   input UpdatePersonalRecordInput {
+    sessionId: ID!
     sessionActivityId: ID!
     distance: Float
-    bestTime: Int
+    bestTime: Int!
     recordDate: String
   }
 

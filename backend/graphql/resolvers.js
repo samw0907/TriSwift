@@ -21,8 +21,8 @@ const resolvers = {
       const sessions = await Session.findAll({
         where: { user_id: user.id },
         include: [
-          { model: SessionActivity, as: "activities" },
-          { model: Transition, as: "transitions" },
+          { model: SessionActivity },
+          { model: Transition },
         ],
       });
     
@@ -53,8 +53,8 @@ const resolvers = {
       if (!user) throw new Error("Authentication required.");
       const session = await Session.findByPk(id, {
         include: [
-          { model: SessionActivity, as: "activities" },
-          { model: Transition, as: "transitions" }
+          { model: SessionActivity },
+          { model: Transition }
         ]
       });
     
@@ -229,8 +229,8 @@ const resolvers = {
       try {
         const session = await Session.findByPk(id, {
           include: [
-            { model: SessionActivity, as: "activities" },
-            { model: Transition, as: "transitions" }
+            { model: SessionActivity },
+            { model: Transition }
           ]
         });
     
@@ -465,7 +465,7 @@ const resolvers = {
         }
     
         const session = await Session.findByPk(sessionId, {
-          include: [{ model: SessionActivity, as: "activities" }]
+          include: [{ model: SessionActivity }]
         });
     
         if (!session || session.user_id !== user.id) throw new Error("Unauthorized.");
@@ -514,7 +514,7 @@ const resolvers = {
         if (!activity) throw new Error("Session Activity not found");
     
         const session = await Session.findByPk(activity.session_id, {
-          include: [{ model: SessionActivity, as: "activities" }]
+          include: [{ model: SessionActivity }]
         });
     
         if (!session || session.user_id !== user.id) throw new Error("Unauthorized.");
@@ -591,7 +591,7 @@ const resolvers = {
         }
     
         const session = await Session.findByPk(sessionId, {
-          include: [{ model: SessionActivity, as: "activities" }],
+          include: [{ model: SessionActivity }],
         });
     
         if (!session || session.user_id !== user.id) {

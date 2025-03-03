@@ -36,7 +36,9 @@ const Dashboard: React.FC = () => {
   });
 
   const [activityForm, setActivityForm] = useState({
-    duration: '',
+    hours: '',
+    minutes: '',
+    seconds: '',
     distance: '',
     heartRateMin: '',
     heartRateMax: '',
@@ -76,13 +78,7 @@ const Dashboard: React.FC = () => {
       if (data) {
         setSessionId(data.createSession.id);
         setShowSessionForm(false);
-
-        if (sessionType === 'Multi-Sport') {
-          alert("Multi-Sport sessions coming soon!");
-          resetForms();
-        } else {
-          setShowActivityForm(true);
-        }
+        setShowActivityForm(true);
       }
     } catch (error) {
       console.error("❌ Error Creating Session:", error);
@@ -98,12 +94,17 @@ const Dashboard: React.FC = () => {
       return;
     }
 
+    const durationInSeconds =
+      (parseInt(activityForm.hours) || 0) * 3600 +
+      (parseInt(activityForm.minutes) || 0) * 60 +
+      (parseInt(activityForm.seconds) || 0);
+
     try {
       await addSessionActivity({
         variables: {
           sessionId,
           sportType: sessionType,
-          duration: parseInt(activityForm.duration),
+          duration: durationInSeconds,
           distance: parseFloat(activityForm.distance),
           heartRateMin: activityForm.heartRateMin ? parseInt(activityForm.heartRateMin) : null,
           heartRateMax: activityForm.heartRateMax ? parseInt(activityForm.heartRateMax) : null,
@@ -126,16 +127,13 @@ const Dashboard: React.FC = () => {
     setSessionType('');
     setSessionId(null);
     setSessionForm({ date: '', weatherTemp: '', weatherHumidity: '', weatherWindSpeed: '' });
-    setActivityForm({ duration: '', distance: '', heartRateMin: '', heartRateMax: '', heartRateAvg: '', cadence: '', power: '' });
+    setActivityForm({ hours: '', minutes: '', seconds: '', distance: '', heartRateMin: '', heartRateMax: '', heartRateAvg: '', cadence: '', power: '' });
   };
 
   return (
     <div className="dashboard">
       <h1>Session Dashboard</h1>
-
-      {!showSessionForm && !showActivityForm && (
-        <button onClick={() => setShowSessionForm(true)}>Add Session</button>
-      )}
+      {!showSessionForm && !showActivityForm && <button onClick={() => setShowSessionForm(true)}>Add Session</button>}
 
       {showSessionForm && (
         <form onSubmit={handleSessionSubmit} className="session-form">
@@ -150,16 +148,6 @@ const Dashboard: React.FC = () => {
 
           <label>Date:</label>
           <input type="date" name="date" value={sessionForm.date} onChange={(e) => setSessionForm({ ...sessionForm, date: e.target.value })} required />
-
-          <label>Weather Temperature (°C):</label>
-          <input type="number" name="weatherTemp" value={sessionForm.weatherTemp} onChange={(e) => setSessionForm({ ...sessionForm, weatherTemp: e.target.value })} />
-
-          <label>Weather Humidity (%):</label>
-          <input type="number" name="weatherHumidity" value={sessionForm.weatherHumidity} onChange={(e) => setSessionForm({ ...sessionForm, weatherHumidity: e.target.value })} />
-
-          <label>Weather Wind Speed (km/h):</label>
-          <input type="number" name="weatherWindSpeed" value={sessionForm.weatherWindSpeed} onChange={(e) => setSessionForm({ ...sessionForm, weatherWindSpeed: e.target.value })} />
-
           <button type="submit">Next</button>
           <button type="button" onClick={resetForms}>Cancel</button>
         </form>
@@ -168,13 +156,12 @@ const Dashboard: React.FC = () => {
       {showActivityForm && (
         <form onSubmit={handleActivitySubmit} className="activity-form">
           <h2>Add Session Activity</h2>
-
-          <label>Duration (seconds):</label>
-          <input type="number" name="duration" value={activityForm.duration} onChange={(e) => setActivityForm({ ...activityForm, duration: e.target.value })} required />
-
-          <label>Distance (km):</label>
-          <input type="number" name="distance" value={activityForm.distance} onChange={(e) => setActivityForm({ ...activityForm, distance: e.target.value })} required />
-
+          <label>Duration:</label>
+          <div className="duration-input">
+            <input type="number" placeholder="Hours" value={activityForm.hours} onChange={(e) => setActivityForm({ ...activityForm, hours: e.target.value })} />
+            <input type="number" placeholder="Minutes" value={activityForm.minutes} onChange={(e) => setActivityForm({ ...activityForm, minutes: e.target.value })} />
+            <input type="number" placeholder="Seconds" value={activityForm.seconds} onChange={(e) => setActivityForm({ ...activityForm, seconds: e.target.value })} />
+          </div>
           <button type="submit">Save Activity</button>
           <button type="button" onClick={resetForms}>Cancel</button>
         </form>

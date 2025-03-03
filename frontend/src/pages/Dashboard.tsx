@@ -23,7 +23,8 @@ const Dashboard: React.FC = () => {
   const [addSessionActivity] = useMutation(ADD_SESSION_ACTIVITY, { refetchQueries: [{ query: GET_SESSIONS }] });
   const [deleteSession] = useMutation(DELETE_SESSION, { refetchQueries: [{ query: GET_SESSIONS }] });
 
-  const [step, setStep] = useState(1);
+  const [showSessionForm, setShowSessionForm] = useState(false);
+  const [showActivityForm, setShowActivityForm] = useState(false);
   const [sessionType, setSessionType] = useState('');
   const [sessionId, setSessionId] = useState<string | null>(null);
 
@@ -58,25 +59,34 @@ const Dashboard: React.FC = () => {
       return;
     }
 
-    const { data } = await addSession({
-      variables: {
-        sessionType,
-        date: sessionForm.date,
-        isMultiSport: sessionType === 'Multi-Sport',
-        weatherTemp: sessionForm.weatherTemp ? parseFloat(sessionForm.weatherTemp) : null,
-        weatherHumidity: sessionForm.weatherHumidity ? parseInt(sessionForm.weatherHumidity, 10) : null,
-        weatherWindSpeed: sessionForm.weatherWindSpeed ? parseFloat(sessionForm.weatherWindSpeed) : null,
-      },
-    });
+    try {
+      const { data } = await addSession({
+        variables: {
+          sessionType,
+          date: sessionForm.date,
+          isMultiSport: sessionType === 'Multi-Sport',
+          totalDuration: 0,
+          totalDistance: 0,
+          weatherTemp: sessionForm.weatherTemp ? parseFloat(sessionForm.weatherTemp) : null,
+          weatherHumidity: sessionForm.weatherHumidity ? parseInt(sessionForm.weatherHumidity, 10) : null,
+          weatherWindSpeed: sessionForm.weatherWindSpeed ? parseFloat(sessionForm.weatherWindSpeed) : null,
+        },
+      });
 
-    if (data) {
-      setSessionId(data.createSession.id);
-      if (sessionType === 'Multi-Sport') {
-        alert("Multi-Sport sessions coming soon!");
-        resetForm();
-      } else {
-        setStep(2);
+      if (data) {
+        setSessionId(data.createSession.id);
+        setShowSessionForm(false);
+
+        if (sessionType === 'Multi-Sport') {
+          alert("Multi-Sport sessions coming soon!");
+          resetForms();
+        } else {
+          setShowActivityForm(true);
+        }
       }
+    } catch (error) {
+      console.error("❌ Error Creating Session:", error);
+      alert("Failed to create session. Please try again.");
     }
   };
 
@@ -88,25 +98,31 @@ const Dashboard: React.FC = () => {
       return;
     }
 
-    await addSessionActivity({
-      variables: {
-        sessionId,
-        sportType: sessionType,
-        duration: parseInt(activityForm.duration),
-        distance: parseFloat(activityForm.distance),
-        heartRateMin: activityForm.heartRateMin ? parseInt(activityForm.heartRateMin) : null,
-        heartRateMax: activityForm.heartRateMax ? parseInt(activityForm.heartRateMax) : null,
-        heartRateAvg: activityForm.heartRateAvg ? parseInt(activityForm.heartRateAvg) : null,
-        cadence: activityForm.cadence ? parseInt(activityForm.cadence) : null,
-        power: activityForm.power ? parseInt(activityForm.power) : null,
-      },
-    });
+    try {
+      await addSessionActivity({
+        variables: {
+          sessionId,
+          sportType: sessionType,
+          duration: parseInt(activityForm.duration),
+          distance: parseFloat(activityForm.distance),
+          heartRateMin: activityForm.heartRateMin ? parseInt(activityForm.heartRateMin) : null,
+          heartRateMax: activityForm.heartRateMax ? parseInt(activityForm.heartRateMax) : null,
+          heartRateAvg: activityForm.heartRateAvg ? parseInt(activityForm.heartRateAvg) : null,
+          cadence: activityForm.cadence ? parseInt(activityForm.cadence) : null,
+          power: activityForm.power ? parseInt(activityForm.power) : null,
+        },
+      });
 
-    resetForm();
+      resetForms();
+    } catch (error) {
+      console.error("❌ Error Creating Activity:", error);
+      alert("Failed to create activity. Please try again.");
+    }
   };
 
-  const resetForm = () => {
-    setStep(1);
+  const resetForms = () => {
+    setShowSessionForm(false);
+    setShowActivityForm(false);
     setSessionType('');
     setSessionId(null);
     setSessionForm({ date: '', weatherTemp: '', weatherHumidity: '', weatherWindSpeed: '' });
@@ -117,66 +133,51 @@ const Dashboard: React.FC = () => {
     <div className="dashboard">
       <h1>Session Dashboard</h1>
 
-      {step === 1 && (
-        <>
-          <button onClick={() => setStep(1)}>Add Session</button>
-          <form onSubmit={handleSessionSubmit} className="session-form">
-            <label>Session Type:</label>
-            <select value={sessionType} onChange={(e) => setSessionType(e.target.value)} required>
-              <option value="">Select Type</option>
-              <option value="Swim">Swim</option>
-              <option value="Bike">Bike</option>
-              <option value="Run">Run</option>
-              <option value="Multi-Sport">Multi-Sport</option>
-            </select>
-
-            <label>Date:</label>
-            <input type="date" name="date" value={sessionForm.date} onChange={(e) => setSessionForm({ ...sessionForm, date: e.target.value })} required />
-
-            <label>Weather Temperature (°C):</label>
-            <input type="number" name="weatherTemp" value={sessionForm.weatherTemp} onChange={(e) => setSessionForm({ ...sessionForm, weatherTemp: e.target.value })} />
-
-            <label>Weather Humidity (%):</label>
-            <input type="number" name="weatherHumidity" value={sessionForm.weatherHumidity} onChange={(e) => setSessionForm({ ...sessionForm, weatherHumidity: e.target.value })} />
-
-            <label>Weather Wind Speed (km/h):</label>
-            <input type="number" name="weatherWindSpeed" value={sessionForm.weatherWindSpeed} onChange={(e) => setSessionForm({ ...sessionForm, weatherWindSpeed: e.target.value })} />
-
-            <button type="submit">Next</button>
-            <button type="button" onClick={resetForm}>Cancel</button>
-          </form>
-        </>
+      {!showSessionForm && !showActivityForm && (
+        <button onClick={() => setShowSessionForm(true)}>Add Session</button>
       )}
 
-      {step === 2 && (
-        <>
+      {showSessionForm && (
+        <form onSubmit={handleSessionSubmit} className="session-form">
+          <label>Session Type:</label>
+          <select value={sessionType} onChange={(e) => setSessionType(e.target.value)} required>
+            <option value="">Select Type</option>
+            <option value="Swim">Swim</option>
+            <option value="Bike">Bike</option>
+            <option value="Run">Run</option>
+            <option value="Multi-Sport">Multi-Sport</option>
+          </select>
+
+          <label>Date:</label>
+          <input type="date" name="date" value={sessionForm.date} onChange={(e) => setSessionForm({ ...sessionForm, date: e.target.value })} required />
+
+          <label>Weather Temperature (°C):</label>
+          <input type="number" name="weatherTemp" value={sessionForm.weatherTemp} onChange={(e) => setSessionForm({ ...sessionForm, weatherTemp: e.target.value })} />
+
+          <label>Weather Humidity (%):</label>
+          <input type="number" name="weatherHumidity" value={sessionForm.weatherHumidity} onChange={(e) => setSessionForm({ ...sessionForm, weatherHumidity: e.target.value })} />
+
+          <label>Weather Wind Speed (km/h):</label>
+          <input type="number" name="weatherWindSpeed" value={sessionForm.weatherWindSpeed} onChange={(e) => setSessionForm({ ...sessionForm, weatherWindSpeed: e.target.value })} />
+
+          <button type="submit">Next</button>
+          <button type="button" onClick={resetForms}>Cancel</button>
+        </form>
+      )}
+
+      {showActivityForm && (
+        <form onSubmit={handleActivitySubmit} className="activity-form">
           <h2>Add Session Activity</h2>
-          <form onSubmit={handleActivitySubmit} className="activity-form">
-            <label>Duration (seconds):</label>
-            <input type="number" name="duration" value={activityForm.duration} onChange={(e) => setActivityForm({ ...activityForm, duration: e.target.value })} required />
 
-            <label>Distance (km):</label>
-            <input type="number" name="distance" value={activityForm.distance} onChange={(e) => setActivityForm({ ...activityForm, distance: e.target.value })} required />
+          <label>Duration (seconds):</label>
+          <input type="number" name="duration" value={activityForm.duration} onChange={(e) => setActivityForm({ ...activityForm, duration: e.target.value })} required />
 
-            <label>Heart Rate Min:</label>
-            <input type="number" name="heartRateMin" value={activityForm.heartRateMin} onChange={(e) => setActivityForm({ ...activityForm, heartRateMin: e.target.value })} />
+          <label>Distance (km):</label>
+          <input type="number" name="distance" value={activityForm.distance} onChange={(e) => setActivityForm({ ...activityForm, distance: e.target.value })} required />
 
-            <label>Heart Rate Max:</label>
-            <input type="number" name="heartRateMax" value={activityForm.heartRateMax} onChange={(e) => setActivityForm({ ...activityForm, heartRateMax: e.target.value })} />
-
-            <label>Heart Rate Avg:</label>
-            <input type="number" name="heartRateAvg" value={activityForm.heartRateAvg} onChange={(e) => setActivityForm({ ...activityForm, heartRateAvg: e.target.value })} />
-
-            <label>Cadence:</label>
-            <input type="number" name="cadence" value={activityForm.cadence} onChange={(e) => setActivityForm({ ...activityForm, cadence: e.target.value })} />
-
-            <label>Power:</label>
-            <input type="number" name="power" value={activityForm.power} onChange={(e) => setActivityForm({ ...activityForm, power: e.target.value })} />
-
-            <button type="submit">Save Activity</button>
-            <button type="button" onClick={resetForm}>Cancel</button>
-          </form>
-        </>
+          <button type="submit">Save Activity</button>
+          <button type="button" onClick={resetForms}>Cancel</button>
+        </form>
       )}
     </div>
   );

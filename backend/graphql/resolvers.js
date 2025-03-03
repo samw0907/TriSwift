@@ -17,7 +17,7 @@ const resolvers = {
 
     sessions: async (_, __, { user }) => {
       if (!user) throw new Error("Authentication required.");
-
+    
       const sessions = await Session.findAll({
         where: { user_id: user.id },
         include: [
@@ -25,19 +25,16 @@ const resolvers = {
           { model: Transition, as: "Transitions" }
         ]
       });
-
+    
       return sessions.map(session => {
-        const totalDuration = (session.SessionActivities || []).reduce((sum, activity) => sum + (activity.duration || 0), 0);
-        const totalDistance = (session.SessionActivities || []).reduce((sum, activity) => sum + (activity.distance || 0), 0);
-
         return {
           id: session.id,
           userId: session.user_id,
           sessionType: session.session_type,
           date: session.date ? session.date.toISOString() : null,
           isMultiSport: session.is_multi_sport,
-          totalDuration,
-          totalDistance,
+          totalDuration: session.total_duration ?? 0,
+          totalDistance: session.total_distance ?? 0,
           weatherTemp: session.weather_temp,
           weatherHumidity: session.weather_humidity,
           weatherWindSpeed: session.weather_wind_speed,
@@ -65,7 +62,7 @@ const resolvers = {
           }))
         };
       });
-    },
+    },    
 
     session: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
@@ -75,20 +72,17 @@ const resolvers = {
           { model: Transition, as: "Transitions" }
         ]
       });
-
+    
       if (!session || session.user_id !== user.id) throw new Error("Unauthorized");
-
-      const totalDuration = (session.SessionActivities || []).reduce((sum, activity) => sum + (activity.duration || 0), 0);
-      const totalDistance = (session.SessionActivities || []).reduce((sum, activity) => sum + (activity.distance || 0), 0);
-
+    
       return {
         id: session.id,
         userId: session.user_id,
         sessionType: session.session_type,
         date: session.date ? session.date.toISOString() : null,
         isMultiSport: session.is_multi_sport,
-        totalDuration,
-        totalDistance,
+        totalDuration: session.total_duration,
+        totalDistance: session.total_distance,
         weatherTemp: session.weather_temp,
         weatherHumidity: session.weather_humidity,
         weatherWindSpeed: session.weather_wind_speed,
@@ -115,7 +109,7 @@ const resolvers = {
           comments: transition.comments,
         }))
       };
-    },
+    },    
 
     sessionActivities: async (_, { sessionId }, { user }) => {
       if (!user) throw new Error("Authentication required.");
@@ -245,8 +239,8 @@ const resolvers = {
           user_id: user.id,
           session_type: sessionType,
           date: new Date(date),
-          total_duration: isMultiSport ? 0 : totalDuration,
-          total_distance: isMultiSport ? 0 : totalDistance,
+          total_duration: isMultiSport ? 0 : totalDuration ?? 0,
+          total_distance: isMultiSport ? 0 : totalDistance ?? 0,
           is_multi_sport: isMultiSport,
           weather_temp: weatherTemp ?? null,
           weather_humidity: weatherHumidity ?? null,
@@ -255,25 +249,12 @@ const resolvers = {
     
         console.log("✅ Session Created in DB:", session.toJSON());
     
-        return {
-          id: session.id,
-          userId: session.user_id,
-          sessionType: session.session_type,
-          date: session.date.toISOString(),
-          totalDuration: session.total_duration,
-          totalDistance: session.total_distance,
-          isMultiSport: session.is_multi_sport,
-          weatherTemp: session.weather_temp,
-          weatherHumidity: session.weather_humidity,
-          weatherWindSpeed: session.weather_wind_speed,
-          created_at: session.created_at.toISOString(),
-          updated_at: session.updated_at.toISOString(),
-        };
+        return session;
       } catch (error) {
         console.error("❌ Create Session Error:", error);
         throw new Error("Failed to create session: " + error.message);
       }
-    },    
+    },      
      
     updateSession: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
@@ -281,51 +262,33 @@ const resolvers = {
       try {
         const session = await Session.findByPk(id, {
           include: [
-            { model: SessionActivity, as: "activities" },
-            { model: Transition, as: "transitions" }
+            { model: SessionActivity, as: "SessionActivities" },
+            { model: Transition, as: "Transitions" }
           ]
         });
     
         if (!session) throw new Error("Session not found.");
         if (session.user_id !== user.id) throw new Error("Unauthorized.");
     
+        let totalDuration = session.total_duration;
+        let totalDistance = session.total_distance;
+    
         if (session.is_multi_sport) {
-          const totalDuration =
-            session.activities.reduce((sum, act) => sum + (act.duration || 0), 0) +
-            session.transitions.reduce((sum, trans) => sum + (trans.transition_time || 0), 0);
+          totalDuration =
+            (session.SessionActivities || []).reduce((sum, act) => sum + (act.duration || 0), 0) +
+            (session.Transitions || []).reduce((sum, trans) => sum + (trans.transition_time || 0), 0);
     
-          const totalDistance = session.activities.reduce((sum, act) => sum + (act.distance || 0), 0);
-    
-          await session.update({ total_duration: totalDuration, total_distance: totalDistance });
-        } else {
-          if (session.activities.length === 0) throw new Error("Single-sport sessions must have at least one activity.");
-          const activity = session.activities[0];
-    
-          await session.update({
-            total_duration: activity.duration,
-            total_distance: activity.distance,
-          });
+          totalDistance = (session.SessionActivities || []).reduce((sum, act) => sum + (act.distance || 0), 0);
         }
     
-        return {
-          id: session.id,
-          userId: session.user_id,
-          sessionType: session.session_type,
-          date: session.date.toISOString(),
-          totalDuration: session.total_duration,
-          totalDistance: session.total_distance,
-          isMultiSport: session.is_multi_sport,
-          weatherTemp: session.weather_temp,
-          weatherHumidity: session.weather_humidity,
-          weatherWindSpeed: session.weather_wind_speed,
-          created_at: session.created_at.toISOString(),
-          updated_at: session.updated_at.toISOString(),
-        };
+        await session.update({ total_duration: totalDuration, total_distance: totalDistance });
+    
+        return session;
       } catch (error) {
         console.error("❌ Update Session Error:", error);
         throw new Error("Failed to update session: " + error.message);
       }
-    },
+    },    
     
   
     deleteSession: async (_, { id }, { user }) => {
@@ -514,8 +477,8 @@ const resolvers = {
     
         const session = await Session.findByPk(sessionId, {
           include: [
-            { model: SessionActivity, as: "activities" },
-            { model: Transition, as: "transitions" }
+            { model: SessionActivity, as: "SessionActivities" },
+            { model: Transition, as: "Transitions" }
           ]
         });
     
@@ -530,47 +493,36 @@ const resolvers = {
     
         console.log("✅ Activity Created:", activity.toJSON());
     
+        let totalDuration = session.total_duration;
+        let totalDistance = session.total_distance;
+    
         if (session.is_multi_sport) {
-          const totalDuration =
-            session.activities.reduce((sum, act) => sum + (act.duration || 0), 0) +
-            duration +
-            session.transitions.reduce((sum, trans) => sum + (trans.transition_time || 0), 0);
-    
-          const totalDistance = session.activities.reduce((sum, act) => sum + (act.distance || 0), 0) + distance;
-    
-          await session.update({ total_duration: totalDuration, total_distance: totalDistance });
+          totalDuration += duration;
+          totalDistance += distance;
         } else {
-          await session.update({
-            total_duration: duration,
-            total_distance: distance,
-          });
+          totalDuration = duration;
+          totalDistance = distance;
         }
     
-        return {
-          id: activity.id,
-          sessionId: activity.session_id,
-          sportType: activity.sport_type,
-          duration: activity.duration,
-          distance: activity.distance,
-          created_at: activity.created_at.toISOString(),
-          updated_at: activity.updated_at.toISOString(),
-        };
+        await session.update({ total_duration: totalDuration, total_distance: totalDistance });
+    
+        return activity;
       } catch (error) {
         console.error("❌ Create Session Activity Error:", error);
         throw new Error("Failed to create session activity: " + error.message);
       }
-    },     
+    },    
   
     updateSessionActivity: async (_, { id, input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-  
+    
       try {
         const activity = await SessionActivity.findByPk(id);
         if (!activity) throw new Error("Session Activity not found");
-  
+    
         const session = await Session.findByPk(activity.session_id);
-        if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only update activities in your own sessions.");
-  
+        if (!session || session.user_id !== user.id) throw new Error("Unauthorized.");
+    
         const updatedValues = {
           sport_type: input.sportType?.trim() ?? activity.sport_type,
           duration: input.duration ?? activity.duration,
@@ -581,18 +533,14 @@ const resolvers = {
           cadence: input.cadence ?? activity.cadence,
           power: input.power ?? activity.power,
         };
-  
+    
         await activity.update(updatedValues);
-  
-        return {
-          ...activity.toJSON(),
-          created_at: activity.created_at.toISOString(),
-          updated_at: activity.updated_at.toISOString(),
-        };
+    
+        return activity;
       } catch (error) {
         throw new Error("Failed to update session activity: " + error.message);
       }
-    },
+    },    
   
     deleteSessionActivity: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");

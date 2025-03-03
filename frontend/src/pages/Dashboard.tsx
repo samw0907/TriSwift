@@ -56,21 +56,36 @@ const Dashboard = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
     const totalDuration =
       (Number(formState.hours) || 0) * 3600 +
       (Number(formState.minutes) || 0) * 60 +
       (Number(formState.seconds) || 0);
-
+  
     const convertedDistance = sessionType === 'Swim'
       ? Number(formState.totalDistance) / 1000
       : Number(formState.totalDistance);
-
+  
+    console.log("🚀 Submitting session:", {
+      sessionType,
+      date: formState.date,
+      totalDuration,
+      totalDistance: convertedDistance,
+      isMultiSport: sessionType === 'Multi-Sport',
+      weatherHumidity: null,
+      weatherWindSpeed: null
+    });
+    
     await addSession({
       variables: {
-        session_type: sessionType,
+        sessionType,
         date: formState.date,
-        total_duration: totalDuration,
-        total_distance: convertedDistance,
+        totalDuration,
+        totalDistance: convertedDistance,
+        isMultiSport: sessionType === 'Multi-Sport',
+        weatherTemp: null,
+        weatherHumidity: null,
+        weatherWindSpeed: null
       },
     });
 

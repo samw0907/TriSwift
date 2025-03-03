@@ -21,47 +21,38 @@ const resolvers = {
       const sessions = await Session.findAll({
         where: { user_id: user.id },
         include: [
-          { model: SessionActivity, as: "SessionActivities" },
-          { model: Transition, as: "Transitions" }
-        ]
+          { model: SessionActivity, as: "activities" },
+          { model: Transition, as: "transitions" },
+        ],
       });
     
-      return sessions.map(session => {
-        return {
-          id: session.id,
-          userId: session.user_id,
-          sessionType: session.session_type,
-          date: session.date ? session.date.toISOString() : null,
-          isMultiSport: session.is_multi_sport,
-          totalDuration: session.total_duration ?? 0,
-          totalDistance: session.total_distance ?? 0,
-          weatherTemp: session.weather_temp,
-          weatherHumidity: session.weather_humidity,
-          weatherWindSpeed: session.weather_wind_speed,
-          created_at: session.created_at.toISOString(),
-          updated_at: session.updated_at.toISOString(),
-          activities: (session.SessionActivities || []).map(activity => ({
-            id: activity.id,
-            sessionId: activity.session_id,
-            sportType: activity.sport_type,
-            duration: activity.duration,
-            distance: activity.distance,
-            heartRateMin: activity.heart_rate_min,
-            heartRateMax: activity.heart_rate_max,
-            heartRateAvg: activity.heart_rate_avg,
-            cadence: activity.cadence,
-            power: activity.power,
-          })),
-          transitions: (session.Transitions || []).map(transition => ({
-            id: transition.id,
-            sessionId: transition.session_id,
-            previousSport: transition.previous_sport,
-            nextSport: transition.next_sport,
-            transitionTime: transition.transition_time,
-            comments: transition.comments,
-          }))
-        };
-      });
+      return sessions.map(session => ({
+        id: session.id,
+        userId: session.user_id,
+        sessionType: session.session_type,
+        date: session.date.toISOString(),
+        isMultiSport: session.is_multi_sport,
+        weatherTemp: session.weather_temp,
+        weatherHumidity: session.weather_humidity,
+        weatherWindSpeed: session.weather_wind_speed,
+        created_at: session.created_at.toISOString(),
+        updated_at: session.updated_at.toISOString(),
+        activities: session.activities.map(activity => ({
+          id: activity.id,
+          sessionId: activity.session_id,
+          sportType: activity.sport_type,
+          duration: activity.duration,
+          distance: activity.distance,
+        })),
+        transitions: session.transitions.map(transition => ({
+          id: transition.id,
+          sessionId: transition.session_id,
+          previousSport: transition.previous_sport,
+          nextSport: transition.next_sport,
+          transitionTime: transition.transition_time,
+          comments: transition.comments,
+        })),
+      }));
     },    
 
     session: async (_, { id }, { user }) => {
@@ -215,46 +206,48 @@ const resolvers = {
       if (!user) throw new Error("Authentication required.");
     
       try {
-        console.log("🔍 Received Session Input:", input);
+        console.log("🔍 Creating Session:", input);
     
         const {
           sessionType,
           date,
           isMultiSport,
-          totalDuration,
-          totalDistance,
           weatherTemp,
           weatherHumidity,
           weatherWindSpeed
         } = input;
     
-        if (!sessionType || isMultiSport === undefined) {
-          throw new Error("Missing required fields: sessionType and isMultiSport are required.");
-        }
-    
-        const existingSession = await Session.findOne({ where: { user_id: user.id, date: new Date(date) } });
-        if (existingSession) throw new Error("A session on this date already exists. Please update the existing session.");
+        if (!sessionType) throw new Error("Session type is required.");
     
         const session = await Session.create({
           user_id: user.id,
           session_type: sessionType,
           date: new Date(date),
-          total_duration: isMultiSport ? 0 : totalDuration ?? 0,
-          total_distance: isMultiSport ? 0 : totalDistance ?? 0,
           is_multi_sport: isMultiSport,
           weather_temp: weatherTemp ?? null,
           weather_humidity: weatherHumidity ?? null,
           weather_wind_speed: weatherWindSpeed ?? null,
         });
     
-        console.log("✅ Session Created in DB:", session.toJSON());
+        console.log("✅ Session Created:", session.toJSON());
     
-        return session;
+        return {
+          id: session.id,
+          userId: session.user_id,
+          sessionType: session.session_type,
+          date: session.date.toISOString(),
+          isMultiSport: session.is_multi_sport,
+          weatherTemp: session.weather_temp,
+          weatherHumidity: session.weather_humidity,
+          weatherWindSpeed: session.weather_wind_speed,
+          created_at: session.created_at.toISOString(),
+          updated_at: session.updated_at.toISOString(),
+        };
       } catch (error) {
         console.error("❌ Create Session Error:", error);
         throw new Error("Failed to create session: " + error.message);
       }
-    },      
+    },    
      
     updateSession: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
@@ -475,17 +468,12 @@ const resolvers = {
           throw new Error("Session ID, sportType, duration, and distance are required.");
         }
     
-        const session = await Session.findByPk(sessionId, {
-          include: [
-            { model: SessionActivity, as: "SessionActivities" },
-            { model: Transition, as: "Transitions" }
-          ]
-        });
-    
+        const session = await Session.findByPk(sessionId);
         if (!session || session.user_id !== user.id) throw new Error("Unauthorized.");
     
         const activity = await SessionActivity.create({
           session_id: sessionId,
+          user_id: user.id,
           sport_type: sportType,
           duration,
           distance,
@@ -493,20 +481,16 @@ const resolvers = {
     
         console.log("✅ Activity Created:", activity.toJSON());
     
-        let totalDuration = session.total_duration;
-        let totalDistance = session.total_distance;
-    
-        if (session.is_multi_sport) {
-          totalDuration += duration;
-          totalDistance += distance;
-        } else {
-          totalDuration = duration;
-          totalDistance = distance;
-        }
-    
-        await session.update({ total_duration: totalDuration, total_distance: totalDistance });
-    
-        return activity;
+        return {
+          id: activity.id,
+          sessionId: activity.session_id,
+          userId: activity.user_id,
+          sportType: activity.sport_type,
+          duration: activity.duration,
+          distance: activity.distance,
+          created_at: activity.created_at.toISOString(),
+          updated_at: activity.updated_at.toISOString(),
+        };
       } catch (error) {
         console.error("❌ Create Session Activity Error:", error);
         throw new Error("Failed to create session activity: " + error.message);

@@ -16,8 +16,8 @@ const typeDefs = gql`
     sessionType: String!
     date: String!
     isMultiSport: Boolean!
-    totalDuration: Int! 
-    totalDistance: Float! 
+    totalDuration: Int
+    totalDistance: Float
     activities: [SessionActivity]
     transitions: [Transition]
     weatherTemp: Float

@@ -24,13 +24,14 @@ export const SIGNUP_USER = gql`
   }
 `;
 
+
 export const ADD_SESSION = gql`
   mutation AddSession(
     $sessionType: String!,
     $date: String!,
-    $totalDuration: Int!,
-    $totalDistance: Float!,
     $isMultiSport: Boolean!,
+    $totalDuration: Int,
+    $totalDistance: Float,
     $weatherTemp: Float,
     $weatherHumidity: Int,
     $weatherWindSpeed: Float
@@ -38,9 +39,9 @@ export const ADD_SESSION = gql`
     createSession(input: {
       sessionType: $sessionType,
       date: $date,
+      isMultiSport: $isMultiSport,
       totalDuration: $totalDuration,
       totalDistance: $totalDistance,
-      isMultiSport: $isMultiSport,
       weatherTemp: $weatherTemp,
       weatherHumidity: $weatherHumidity,
       weatherWindSpeed: $weatherWindSpeed
@@ -48,8 +49,6 @@ export const ADD_SESSION = gql`
       id
       sessionType
       date
-      totalDuration
-      totalDistance
       isMultiSport
       weatherTemp
       weatherHumidity
@@ -60,6 +59,44 @@ export const ADD_SESSION = gql`
   }
 `;
 
+export const ADD_SESSION_ACTIVITY = gql`
+  mutation AddSessionActivity(
+    $sessionId: ID!,
+    $sportType: String!,
+    $duration: Int!,
+    $distance: Float!,
+    $heartRateMin: Int,
+    $heartRateMax: Int,
+    $heartRateAvg: Int,
+    $cadence: Int,
+    $power: Int
+  ) {
+    createSessionActivity(input: {
+      sessionId: $sessionId,
+      sportType: $sportType,
+      duration: $duration,
+      distance: $distance,
+      heartRateMin: $heartRateMin,
+      heartRateMax: $heartRateMax,
+      heartRateAvg: $heartRateAvg,
+      cadence: $cadence,
+      power: $power
+    }) {
+      id
+      sessionId
+      sportType
+      duration
+      distance
+      heartRateMin
+      heartRateMax
+      heartRateAvg
+      cadence
+      power
+      created_at
+      updated_at
+    }
+  }
+`;
 
 export const DELETE_SESSION = gql`
   mutation DeleteSession($id: ID!) {

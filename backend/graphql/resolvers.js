@@ -221,10 +221,17 @@ const resolvers = {
       if (!user) throw new Error("Authentication required.");
     
       try {
-        const { sessionType, date, totalDuration, totalDistance, isMultiSport, weatherTemp, weatherHumidity, weatherWindSpeed } = input;
+        const {
+          sessionType,
+          date,
+          isMultiSport,
+          weatherTemp,
+          weatherHumidity,
+          weatherWindSpeed
+        } = input;
     
-        if (!sessionType || isMultiSport === undefined || totalDuration === undefined || totalDistance === undefined) {
-          throw new Error("Missing required fields: sessionType, isMultiSport, totalDuration, and totalDistance are required.");
+        if (!sessionType || isMultiSport === undefined) {
+          throw new Error("Missing required fields: sessionType and isMultiSport are required.");
         }
     
         const existingSession = await Session.findOne({ where: { user_id: user.id, date: new Date(date) } });
@@ -234,13 +241,15 @@ const resolvers = {
           user_id: user.id,
           session_type: sessionType,
           date: new Date(date),
-          total_duration: totalDuration,
-          total_distance: totalDistance,
+          total_duration: 0,
+          total_distance: 0,
           is_multi_sport: isMultiSport,
-          weather_temp: weatherTemp,
-          weather_humidity: weatherHumidity ? parseInt(weatherHumidity, 10) : null,
-          weather_wind_speed: weatherWindSpeed,
+          weather_temp: weatherTemp ?? null,
+          weather_humidity: weatherHumidity ?? null,
+          weather_wind_speed: weatherWindSpeed ?? null,
         });
+    
+        console.log("✅ Session Created:", session.toJSON());
     
         return {
           id: session.id,
@@ -257,38 +266,63 @@ const resolvers = {
           updated_at: session.updated_at.toISOString(),
         };
       } catch (error) {
-        console.error("Create Session Error:", error);
+        console.error("❌ Create Session Error:", error);
         throw new Error("Failed to create session: " + error.message);
       }
     },
-  
-    updateSession: async (_, { id, input }, { user }) => {
+    
+    updateSession: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-  
+    
       try {
-        const session = await Session.findByPk(id);
-        if (!session || session.user_id !== user.id) throw new Error("Unauthorized or session not found.");
-  
-        const updatedValues = {};
-        if (input.sessionType !== undefined) updatedValues.session_type = input.sessionType;
-        if (input.date !== undefined) updatedValues.date = new Date(input.date);
-        if (input.isMultiSport !== undefined) updatedValues.is_multi_sport = input.isMultiSport;
-        if (input.weatherTemp !== undefined) updatedValues.weather_temp = input.weatherTemp;
-        if (input.weatherHumidity !== undefined) updatedValues.weather_humidity = input.weatherHumidity;
-        if (input.weatherWindSpeed !== undefined) updatedValues.weather_wind_speed = input.weatherWindSpeed;
-  
-        await session.update(updatedValues);
-  
+        const session = await Session.findByPk(id, {
+          include: [
+            { model: SessionActivity, as: "activities" },
+            { model: Transition, as: "transitions" }
+          ]
+        });
+    
+        if (!session) throw new Error("Session not found.");
+        if (session.user_id !== user.id) throw new Error("Unauthorized.");
+    
+        if (session.is_multi_sport) {
+          const totalDuration =
+            session.activities.reduce((sum, act) => sum + (act.duration || 0), 0) +
+            session.transitions.reduce((sum, trans) => sum + (trans.transition_time || 0), 0);
+    
+          const totalDistance = session.activities.reduce((sum, act) => sum + (act.distance || 0), 0);
+    
+          await session.update({ total_duration: totalDuration, total_distance: totalDistance });
+        } else {
+          if (session.activities.length === 0) throw new Error("Single-sport sessions must have at least one activity.");
+          const activity = session.activities[0];
+    
+          await session.update({
+            total_duration: activity.duration,
+            total_distance: activity.distance,
+          });
+        }
+    
         return {
-          ...session.toJSON(),
+          id: session.id,
+          userId: session.user_id,
+          sessionType: session.session_type,
           date: session.date.toISOString(),
+          totalDuration: session.total_duration,
+          totalDistance: session.total_distance,
+          isMultiSport: session.is_multi_sport,
+          weatherTemp: session.weather_temp,
+          weatherHumidity: session.weather_humidity,
+          weatherWindSpeed: session.weather_wind_speed,
           created_at: session.created_at.toISOString(),
           updated_at: session.updated_at.toISOString(),
         };
       } catch (error) {
+        console.error("❌ Update Session Error:", error);
         throw new Error("Failed to update session: " + error.message);
       }
     },
+    
   
     deleteSession: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
@@ -466,36 +500,62 @@ const resolvers = {
   
     createSessionActivity: async (_, { input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-  
+    
       try {
-        const session = await Session.findByPk(input.sessionId);
-        if (!session) throw new Error("Session not found.");
-        if (session.user_id !== user.id) throw new Error("Unauthorized: You can only add activities to your own sessions.");
-        if (!input.sportType || !input.duration || !input.distance) {
-          throw new Error("Sport type, duration, and distance are required.");
+        const { sessionId, sportType, duration, distance } = input;
+    
+        if (!sessionId || !sportType || duration === undefined || distance === undefined) {
+          throw new Error("Session ID, sportType, duration, and distance are required.");
         }
+    
+        const session = await Session.findByPk(sessionId, {
+          include: [
+            { model: SessionActivity, as: "activities" },
+            { model: Transition, as: "transitions" }
+          ]
+        });
+    
+        if (!session || session.user_id !== user.id) throw new Error("Unauthorized.");
   
         const activity = await SessionActivity.create({
-          session_id: input.sessionId,
-          sport_type: input.sportType.trim(),
-          duration: input.duration,
-          distance: input.distance,
-          heart_rate_min: input.heartRateMin,
-          heart_rate_max: input.heartRateMax,
-          heart_rate_avg: input.heartRateAvg,
-          cadence: input.cadence,
-          power: input.power,
+          session_id: sessionId,
+          sport_type: sportType,
+          duration,
+          distance,
         });
-  
+    
+        console.log("✅ Activity Created:", activity.toJSON());
+
+        if (session.is_multi_sport) {
+          const totalDuration =
+            session.activities.reduce((sum, act) => sum + (act.duration || 0), 0) +
+            duration +
+            session.transitions.reduce((sum, trans) => sum + (trans.transition_time || 0), 0);
+    
+          const totalDistance = session.activities.reduce((sum, act) => sum + (act.distance || 0), 0) + distance;
+    
+          await session.update({ total_duration: totalDuration, total_distance: totalDistance });
+        } else {
+          await session.update({
+            total_duration: duration,
+            total_distance: distance,
+          });
+        }
+    
         return {
-          ...activity.toJSON(),
+          id: activity.id,
+          sessionId: activity.session_id,
+          sportType: activity.sport_type,
+          duration: activity.duration,
+          distance: activity.distance,
           created_at: activity.created_at.toISOString(),
           updated_at: activity.updated_at.toISOString(),
         };
       } catch (error) {
+        console.error("❌ Create Session Activity Error:", error);
         throw new Error("Failed to create session activity: " + error.message);
       }
-    },
+    },    
   
     updateSessionActivity: async (_, { id, input }, { user }) => {
       if (!user) throw new Error("Authentication required.");

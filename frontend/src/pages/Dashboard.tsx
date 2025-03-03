@@ -69,30 +69,31 @@ const Dashboard = () => {
     console.log("🚀 Submitting session:", {
       sessionType,
       date: formState.date,
-      totalDuration,
-      totalDistance: convertedDistance,
       isMultiSport: sessionType === 'Multi-Sport',
+      weatherTemp: null,
       weatherHumidity: null,
-      weatherWindSpeed: null
+      weatherWindSpeed: null,
+      totalDuration: sessionType !== 'Multi-Sport' ? totalDuration : undefined,
+      totalDistance: sessionType !== 'Multi-Sport' ? convertedDistance : undefined,
     });
-    
+  
     await addSession({
       variables: {
         sessionType,
         date: formState.date,
-        totalDuration,
-        totalDistance: convertedDistance,
         isMultiSport: sessionType === 'Multi-Sport',
         weatherTemp: null,
         weatherHumidity: null,
-        weatherWindSpeed: null
+        weatherWindSpeed: null,
+        totalDuration: sessionType !== 'Multi-Sport' ? totalDuration : undefined,
+        totalDistance: sessionType !== 'Multi-Sport' ? convertedDistance : undefined,
       },
     });
-
+  
     setShowForm(false);
     setSessionType('');
     setFormState({ date: '', hours: '0', minutes: '0', seconds: '0', totalDistance: '' });
-  };
+  };  
 
   if (loading) return <p>Loading sessions...</p>;
   if (error) return <p>Error loading sessions: {error.message}</p>;

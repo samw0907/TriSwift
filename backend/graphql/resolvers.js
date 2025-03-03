@@ -225,6 +225,8 @@ const resolvers = {
           sessionType,
           date,
           isMultiSport,
+          totalDuration,
+          totalDistance,
           weatherTemp,
           weatherHumidity,
           weatherWindSpeed
@@ -241,8 +243,8 @@ const resolvers = {
           user_id: user.id,
           session_type: sessionType,
           date: new Date(date),
-          total_duration: 0,
-          total_distance: 0,
+          total_duration: isMultiSport ? 0 : totalDuration,
+          total_distance: isMultiSport ? 0 : totalDistance,
           is_multi_sport: isMultiSport,
           weather_temp: weatherTemp ?? null,
           weather_humidity: weatherHumidity ?? null,
@@ -270,6 +272,7 @@ const resolvers = {
         throw new Error("Failed to create session: " + error.message);
       }
     },
+    
     
     updateSession: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
@@ -516,7 +519,7 @@ const resolvers = {
         });
     
         if (!session || session.user_id !== user.id) throw new Error("Unauthorized.");
-  
+    
         const activity = await SessionActivity.create({
           session_id: sessionId,
           sport_type: sportType,
@@ -525,7 +528,7 @@ const resolvers = {
         });
     
         console.log("✅ Activity Created:", activity.toJSON());
-
+    
         if (session.is_multi_sport) {
           const totalDuration =
             session.activities.reduce((sum, act) => sum + (act.duration || 0), 0) +
@@ -555,7 +558,7 @@ const resolvers = {
         console.error("❌ Create Session Activity Error:", error);
         throw new Error("Failed to create session activity: " + error.message);
       }
-    },    
+    },     
   
     updateSessionActivity: async (_, { id, input }, { user }) => {
       if (!user) throw new Error("Authentication required.");

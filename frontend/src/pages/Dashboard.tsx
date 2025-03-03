@@ -99,6 +99,11 @@ const Dashboard: React.FC = () => {
       (parseInt(activityForm.minutes) || 0) * 60 +
       (parseInt(activityForm.seconds) || 0);
 
+    if (!activityForm.distance) {
+      alert("Distance is required.");
+      return;
+    }
+
     try {
       await addSessionActivity({
         variables: {
@@ -156,12 +161,32 @@ const Dashboard: React.FC = () => {
       {showActivityForm && (
         <form onSubmit={handleActivitySubmit} className="activity-form">
           <h2>Add Session Activity</h2>
+
           <label>Duration:</label>
           <div className="duration-input">
             <input type="number" placeholder="Hours" value={activityForm.hours} onChange={(e) => setActivityForm({ ...activityForm, hours: e.target.value })} />
             <input type="number" placeholder="Minutes" value={activityForm.minutes} onChange={(e) => setActivityForm({ ...activityForm, minutes: e.target.value })} />
             <input type="number" placeholder="Seconds" value={activityForm.seconds} onChange={(e) => setActivityForm({ ...activityForm, seconds: e.target.value })} />
           </div>
+
+          <label>Distance (km):</label>
+          <input type="number" name="distance" value={activityForm.distance} onChange={(e) => setActivityForm({ ...activityForm, distance: e.target.value })} required />
+
+          <label>Heart Rate (Min):</label>
+          <input type="number" name="heartRateMin" value={activityForm.heartRateMin} onChange={(e) => setActivityForm({ ...activityForm, heartRateMin: e.target.value })} />
+
+          <label>Heart Rate (Max):</label>
+          <input type="number" name="heartRateMax" value={activityForm.heartRateMax} onChange={(e) => setActivityForm({ ...activityForm, heartRateMax: e.target.value })} />
+
+          <label>Heart Rate (Avg):</label>
+          <input type="number" name="heartRateAvg" value={activityForm.heartRateAvg} onChange={(e) => setActivityForm({ ...activityForm, heartRateAvg: e.target.value })} />
+
+          <label>Cadence:</label>
+          <input type="number" name="cadence" value={activityForm.cadence} onChange={(e) => setActivityForm({ ...activityForm, cadence: e.target.value })} />
+
+          <label>Power:</label>
+          <input type="number" name="power" value={activityForm.power} onChange={(e) => setActivityForm({ ...activityForm, power: e.target.value })} />
+
           <button type="submit">Save Activity</button>
           <button type="button" onClick={resetForms}>Cancel</button>
         </form>

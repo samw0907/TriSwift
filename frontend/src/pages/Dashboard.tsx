@@ -17,30 +17,16 @@ interface Session {
   updated_at: string;
 }
 
-const formatDuration = (totalSeconds: number): string => {
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-};
-
 const Dashboard: React.FC = () => {
   const { loading, error, data } = useQuery<{ sessions: Session[] }>(GET_SESSIONS);
-  const [addSession] = useMutation(ADD_SESSION, {
-    refetchQueries: [{ query: GET_SESSIONS }],
-  });
-
-  const [addSessionActivity] = useMutation(ADD_SESSION_ACTIVITY, {
-    refetchQueries: [{ query: GET_SESSIONS }],
-  });
-
-  const [deleteSession] = useMutation(DELETE_SESSION, {
-    refetchQueries: [{ query: GET_SESSIONS }],
-  });
+  const [addSession] = useMutation(ADD_SESSION, { refetchQueries: [{ query: GET_SESSIONS }] });
+  const [addSessionActivity] = useMutation(ADD_SESSION_ACTIVITY, { refetchQueries: [{ query: GET_SESSIONS }] });
+  const [deleteSession] = useMutation(DELETE_SESSION, { refetchQueries: [{ query: GET_SESSIONS }] });
 
   const [step, setStep] = useState(1);
   const [sessionType, setSessionType] = useState('');
   const [sessionId, setSessionId] = useState<string | null>(null);
+
   const [sessionForm, setSessionForm] = useState({
     date: '',
     weatherTemp: '',
@@ -49,7 +35,6 @@ const Dashboard: React.FC = () => {
   });
 
   const [activityForm, setActivityForm] = useState({
-    sportType: '',
     duration: '',
     distance: '',
     heartRateMin: '',
@@ -67,6 +52,12 @@ const Dashboard: React.FC = () => {
 
   const handleSessionSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!sessionType) {
+      alert("Please select a session type.");
+      return;
+    }
+
     const { data } = await addSession({
       variables: {
         sessionType,
@@ -82,7 +73,7 @@ const Dashboard: React.FC = () => {
       setSessionId(data.createSession.id);
       if (sessionType === 'Multi-Sport') {
         alert("Multi-Sport sessions coming soon!");
-        setStep(1);
+        resetForm();
       } else {
         setStep(2);
       }
@@ -91,6 +82,11 @@ const Dashboard: React.FC = () => {
 
   const handleActivitySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!sessionId) {
+      alert("Session ID is missing. Please create a session first.");
+      return;
+    }
 
     await addSessionActivity({
       variables: {
@@ -106,7 +102,15 @@ const Dashboard: React.FC = () => {
       },
     });
 
+    resetForm();
+  };
+
+  const resetForm = () => {
     setStep(1);
+    setSessionType('');
+    setSessionId(null);
+    setSessionForm({ date: '', weatherTemp: '', weatherHumidity: '', weatherWindSpeed: '' });
+    setActivityForm({ duration: '', distance: '', heartRateMin: '', heartRateMax: '', heartRateAvg: '', cadence: '', power: '' });
   };
 
   return (
@@ -139,6 +143,7 @@ const Dashboard: React.FC = () => {
             <input type="number" name="weatherWindSpeed" value={sessionForm.weatherWindSpeed} onChange={(e) => setSessionForm({ ...sessionForm, weatherWindSpeed: e.target.value })} />
 
             <button type="submit">Next</button>
+            <button type="button" onClick={resetForm}>Cancel</button>
           </form>
         </>
       )}
@@ -169,6 +174,7 @@ const Dashboard: React.FC = () => {
             <input type="number" name="power" value={activityForm.power} onChange={(e) => setActivityForm({ ...activityForm, power: e.target.value })} />
 
             <button type="submit">Save Activity</button>
+            <button type="button" onClick={resetForm}>Cancel</button>
           </form>
         </>
       )}

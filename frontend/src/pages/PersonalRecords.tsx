@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_PERSONAL_RECORDS } from '../graphql/queries';
 
@@ -14,21 +14,25 @@ const formatTime = (seconds: number) => {
   return `${minutes}:${sec < 10 ? '0' : ''}${sec}`;
 };
 
-const PersonalRecords = () => {
-  const [selectedSport, setSelectedSport] = useState<string | null>(null);
+const sportTypeMapping: { [key: string]: string } = {
+  Run: "Running",
+  Bike: "Cycling",
+  Swim: "Swimming",
+};
 
-  const sportTypeMapping: { [key: string]: string } = {
-    Run: "Running",
-    Bike: "Cycling",
-    Swim: "Swimming",
-  };
+const PersonalRecords: React.FC = () => {
+  const [selectedSport, setSelectedSport] = useState<string | null>(null);
 
   const mappedSportType = selectedSport ? sportTypeMapping[selectedSport] : null;
 
   const { loading, error, data } = useQuery(GET_PERSONAL_RECORDS, {
-    variables: { activity_type: mappedSportType },
+    variables: { sport_type: mappedSportType },
     skip: !mappedSportType,
   });
+
+  const handleSportSelection = useCallback((sport: string) => {
+    setSelectedSport(sport);
+  }, []);
 
   return (
     <div className="personal-records">
@@ -38,7 +42,7 @@ const PersonalRecords = () => {
           <button
             key={sport}
             className={`sport-button ${selectedSport === sport ? 'active' : ''}`}
-            onClick={() => setSelectedSport(sport)}
+            onClick={() => handleSportSelection(sport)}
             disabled={loading}
           >
             {sport}
@@ -51,7 +55,8 @@ const PersonalRecords = () => {
           <h2>{sportTypeMapping[selectedSport]} Records</h2>
           {loading && <p>Loading...</p>}
           {error && <p style={{ color: 'red' }}>Error fetching records. Please try again.</p>}
-          {data && (
+          
+          {data?.personalRecords && data.personalRecords.length > 0 ? (
             <ul>
               {distances[sportTypeMapping[selectedSport] as keyof typeof distances].map((dist) => {
                 const matchingRecords = data.personalRecords.filter((r: any) => r.distance === dist);
@@ -60,12 +65,16 @@ const PersonalRecords = () => {
                   <li key={dist}>
                     {dist}m - 
                     {matchingRecords.length > 0
-                      ? matchingRecords.map((r: any) => <span key={r.id}> {formatTime(r.best_time)}</span>)
+                      ? matchingRecords.map((r: any) => (
+                          <span key={r.id}> {formatTime(parseInt(r.best_time, 10))}</span>
+                        ))
                       : " No data"}
                   </li>
                 );
               })}
             </ul>
+          ) : (
+            <p>No personal records found for {sportTypeMapping[selectedSport]}.</p>
           )}
         </div>
       )}

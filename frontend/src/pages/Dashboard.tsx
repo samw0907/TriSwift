@@ -42,6 +42,7 @@ const Dashboard: React.FC = () => {
   const [sessionType, setSessionType] = useState('');
   const [activityType, setActivityType] = useState('');
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [isMultiSportActive, setIsMultiSportActive] = useState(false);
   const [sessions, setSessions] = useState<Session[]>([]);
 
   useEffect(() => {
@@ -117,6 +118,7 @@ const Dashboard: React.FC = () => {
         setSessionId(data.createSession.id);
         setShowSessionForm(false);
         setShowActivityForm(true);
+        setIsMultiSportActive(sessionType === 'Multi-Sport');
       }
     } catch (error) {
       console.error("❌ Error Creating Session:", error);
@@ -124,7 +126,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleActivitySubmit = async (e: React.FormEvent) => {
+  const handleActivitySubmit = async (e: React.FormEvent, isTransition: boolean = false) => {
     e.preventDefault();
 
     if (!sessionId) {
@@ -148,17 +150,24 @@ const Dashboard: React.FC = () => {
     }
 
     let convertedDistance = parseFloat(activityForm.distance);
-    const sport = sessionType === 'Multi-Sport' ? activityType : sessionType;
+    let sport = sessionType === 'Multi-Sport' ? activityType : sessionType;
   
     if (sport === 'Swim') {
       convertedDistance = convertedDistance / 1000;
     }
 
+    if (isTransition) {
+      sport = 'Transition';
+      convertedDistance = 0;
+    } else if (sport === 'Swim') {
+      convertedDistance = convertedDistance / 1000;
+    }
+
     try {
-      const { data } = await addSessionActivity({
+      await addSessionActivity({
         variables: {
           sessionId,
-          sportType: sessionType === 'Multi-Sport' ? activityType : sessionType,
+          sportType: sport,
           duration: durationInSeconds,
           distance: convertedDistance,
           heartRateMin: activityForm.heartRateMin ? parseInt(activityForm.heartRateMin) : null,
@@ -168,23 +177,13 @@ const Dashboard: React.FC = () => {
           power: activityForm.power ? parseInt(activityForm.power) : null,
         },
       });
-  
-      if (data?.createSessionActivity) {
-        setSessions((prevSessions) =>
-          prevSessions.map((session) =>
-            session.id === sessionId
-              ? {
-                  ...session,
-                  activities: session.activities ? [...session.activities, data.createSessionActivity] : [data.createSessionActivity],
-                  totalDistance: (session.totalDistance || 0) + data.createSessionActivity.distance,
-                  totalDuration: (session.totalDuration || 0) + data.createSessionActivity.duration,
-                }
-              : session
-          )
-        );
-      }
 
-      resetForms();
+      refetch();
+      setActivityForm({ hours: '', minutes: '', seconds: '', distance: '', heartRateMin: '', heartRateMax: '', heartRateAvg: '', cadence: '', power: '' });
+
+      if (!isMultiSportActive) {
+        setShowActivityForm(false);
+      }
     } catch (error) {
       console.error("❌ Error Creating Activity:", error);
       alert("Failed to create activity. Please try again.");
@@ -236,52 +235,105 @@ const Dashboard: React.FC = () => {
         </form>
       )}
   
-      {showActivityForm && (
-        <form onSubmit={handleActivitySubmit} className="activity-form">
-          {sessionType === 'Multi-Sport' && (
-            <>
-              <label>Activity Type:</label>
-              <select value={activityType} onChange={(e) => setActivityType(e.target.value)} required>
-                <option value="">Select Activity</option>
-                <option value="Swim">Swim</option>
-                <option value="Bike">Bike</option>
-                <option value="Run">Run</option>
-              </select>
-            </>
-          )}
-  
-          <label>Duration:</label>
-          <div>
-            <input type="number" placeholder="Hours" value={activityForm.hours} onChange={(e) => setActivityForm({ ...activityForm, hours: e.target.value })} />
-            <input type="number" placeholder="Minutes" value={activityForm.minutes} onChange={(e) => setActivityForm({ ...activityForm, minutes: e.target.value })} />
-            <input type="number" placeholder="Seconds" value={activityForm.seconds} onChange={(e) => setActivityForm({ ...activityForm, seconds: e.target.value })} />
-          </div>
-  
-          <label>Distance ({(sessionType === 'Swim' || activityType === 'Swim') ? 'm' : 'km'}):</label>
-          <input
-            type="number"
-            value={activityForm.distance}
-            onChange={(e) => setActivityForm({ ...activityForm, distance: e.target.value })}
-            required
-          />
-  
-          <label>Heart Rate (bpm):</label>
-          <div>
-            <input type="number" placeholder="Min" value={activityForm.heartRateMin} onChange={(e) => setActivityForm({ ...activityForm, heartRateMin: e.target.value })} />
-            <input type="number" placeholder="Max" value={activityForm.heartRateMax} onChange={(e) => setActivityForm({ ...activityForm, heartRateMax: e.target.value })} />
-            <input type="number" placeholder="Avg" value={activityForm.heartRateAvg} onChange={(e) => setActivityForm({ ...activityForm, heartRateAvg: e.target.value })} />
-          </div>
-  
-          <label>Cadence (rpm):</label>
-          <input type="number" value={activityForm.cadence} onChange={(e) => setActivityForm({ ...activityForm, cadence: e.target.value })} />
-  
-          <label>Power (watts):</label>
-          <input type="number" value={activityForm.power} onChange={(e) => setActivityForm({ ...activityForm, power: e.target.value })} />
-  
-          <button type="submit">Submit Activity</button>
-          <button type="button" onClick={() => setShowActivityForm(false)}>Cancel</button>
-        </form>
-      )}
+  {showActivityForm && (
+  <form className="activity-form">
+    {sessionType === 'Multi-Sport' && (
+      <>
+        <label>Activity Type:</label>
+        <select value={activityType} onChange={(e) => setActivityType(e.target.value)} required>
+          <option value="">Select Activity</option>
+          <option value="Swim">Swim</option>
+          <option value="Bike">Bike</option>
+          <option value="Run">Run</option>
+        </select>
+      </>
+    )}
+
+    <label>Duration:</label>
+    <div>
+      <input 
+        type="number" 
+        placeholder="Hours" 
+        value={activityForm.hours} 
+        onChange={(e) => setActivityForm({ ...activityForm, hours: e.target.value })} 
+      />
+      <input 
+        type="number" 
+        placeholder="Minutes" 
+        value={activityForm.minutes} 
+        onChange={(e) => setActivityForm({ ...activityForm, minutes: e.target.value })} 
+      />
+      <input 
+        type="number" 
+        placeholder="Seconds" 
+        value={activityForm.seconds} 
+        onChange={(e) => setActivityForm({ ...activityForm, seconds: e.target.value })} 
+      />
+    </div>
+
+    <label>Distance ({(sessionType === 'Swim' || activityType === 'Swim') ? 'm' : 'km'}):</label>
+    <input
+      type="number"
+      value={activityForm.distance}
+      onChange={(e) => setActivityForm({ ...activityForm, distance: e.target.value })}
+      required
+    />
+
+    <label>Heart Rate (bpm):</label>
+    <div>
+      <input 
+        type="number" 
+        placeholder="Min" 
+        value={activityForm.heartRateMin} 
+        onChange={(e) => setActivityForm({ ...activityForm, heartRateMin: e.target.value })} 
+      />
+      <input 
+        type="number" 
+        placeholder="Max" 
+        value={activityForm.heartRateMax} 
+        onChange={(e) => setActivityForm({ ...activityForm, heartRateMax: e.target.value })} 
+      />
+      <input 
+        type="number" 
+        placeholder="Avg" 
+        value={activityForm.heartRateAvg} 
+        onChange={(e) => setActivityForm({ ...activityForm, heartRateAvg: e.target.value })} 
+      />
+    </div>
+
+    <label>Cadence (rpm):</label>
+    <input 
+      type="number" 
+      value={activityForm.cadence} 
+      onChange={(e) => setActivityForm({ ...activityForm, cadence: e.target.value })} 
+    />
+
+    <label>Power (watts):</label>
+    <input 
+      type="number" 
+      value={activityForm.power} 
+      onChange={(e) => setActivityForm({ ...activityForm, power: e.target.value })} 
+    />
+
+    {isMultiSportActive ? (
+      <>
+        <button type="button" onClick={(e) => handleActivitySubmit(e, false)}>
+          Add Activity
+        </button>
+        <button type="button" onClick={(e) => handleActivitySubmit(e, true)}>
+          Add Transition
+        </button>
+        <button type="button" onClick={() => setShowActivityForm(false)}>
+          Next
+        </button>
+      </>
+    ) : (
+      <button type="submit">Submit Activity</button>
+    )}
+
+    <button type="button" onClick={() => setShowActivityForm(false)}>Cancel</button>
+  </form>
+)}
   
       <h2>Past Sessions</h2>
       {loading && <p>Loading sessions...</p>}

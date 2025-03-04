@@ -6,9 +6,12 @@ const router = express.Router();
 
 router.get("/sessions", authMiddleware, async (req, res) => {
   try {
-    const sessions = await Session.findAll({ 
-      where: { user_id: req.user.id }, 
-      include: [SessionActivity, Transition] 
+    const sessions = await Session.findAll({
+      where: { user_id: req.user.id },
+      include: [
+        { model: SessionActivity, as: "SessionActivities" },
+        { model: Transition, as: "Transitions" }
+      ],
     });
 
     res.json(sessions);
@@ -20,21 +23,21 @@ router.get("/sessions", authMiddleware, async (req, res) => {
 
 router.post("/sessions", authMiddleware, async (req, res) => {
   try {
-    const { session_type, date, total_duration, total_distance, weather_temp, weather_humidity, weather_wind_speed } = req.body;
+    const { session_type, date, weather_temp, weather_humidity, weather_wind_speed } = req.body;
 
-    if (!session_type || !date || total_duration === undefined || total_distance === undefined) {
-      return res.status(400).json({ error: "All required fields must be provided" });
+    if (!session_type || !date) {
+      return res.status(400).json({ error: "Session type and date are required." });
     }
 
     const session = await Session.create({
       user_id: req.user.id,
       session_type,
       date: new Date(date),
-      total_duration,
-      total_distance,
-      weather_temp,
-      weather_humidity,
-      weather_wind_speed,
+      total_duration: null,
+      total_distance: null,
+      weather_temp: weather_temp ?? null,
+      weather_humidity: weather_humidity ?? null,
+      weather_wind_speed: weather_wind_speed ?? null,
     });
 
     res.status(201).json(session);
@@ -61,13 +64,21 @@ router.post("/activities", authMiddleware, async (req, res) => {
   try {
     const { session_id, sport_type, duration, distance, heart_rate_min, heart_rate_max, heart_rate_avg, cadence, power } = req.body;
 
-    const session = await Session.findByPk(session_id);
+    if (!session_id || !sport_type || duration === undefined || distance === undefined) {
+      return res.status(400).json({ error: "Session ID, sport type, duration, and distance are required." });
+    }
+
+    const session = await Session.findByPk(session_id, {
+      include: [{ model: SessionActivity, as: "SessionActivities" }]
+    });
+
     if (!session || session.user_id !== req.user.id) {
       return res.status(403).json({ error: "Unauthorized: You can only add activities to your own sessions." });
     }
 
     const activity = await SessionActivity.create({
       session_id,
+      user_id: req.user.id,
       sport_type,
       duration,
       distance,
@@ -78,6 +89,19 @@ router.post("/activities", authMiddleware, async (req, res) => {
       power,
     });
 
+    const updatedTotalDuration = session.SessionActivities
+      ? session.SessionActivities.reduce((sum, act) => sum + (act.duration || 0), duration)
+      : duration;
+
+    const updatedTotalDistance = session.SessionActivities
+      ? session.SessionActivities.reduce((sum, act) => sum + (act.distance || 0), distance)
+      : distance;
+
+    await session.update({
+      total_duration: updatedTotalDuration,
+      total_distance: updatedTotalDistance,
+    });
+
     res.status(201).json(activity);
   } catch (error) {
     console.error("Error creating session activity:", error);
@@ -85,9 +109,15 @@ router.post("/activities", authMiddleware, async (req, res) => {
   }
 });
 
+
 router.get("/personal-records", authMiddleware, async (req, res) => {
   try {
-    const records = await PersonalRecord.findAll({ where: { user_id: req.user.id } });
+    const records = await PersonalRecord.findAll({
+      where: { user_id: req.user.id },
+      order: [["distance", "ASC"], ["best_time", "ASC"]],
+      limit: 3
+    });
+
     res.json(records);
   } catch (error) {
     console.error("Error fetching personal records:", error);

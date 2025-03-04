@@ -29,7 +29,12 @@ router.post("/signup", async (req, res) => {
 
     res.status(201).json({ 
       message: "User created successfully", 
-      user: { id: user.id, name: user.name, email: user.email } 
+      user: { 
+        id: user.id, 
+        name: user.name, 
+        email: user.email,
+        created_at: user.created_at.toISOString()
+      } 
     });
   } catch (error) {
     console.error("Signup Error:", error);
@@ -41,6 +46,10 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const { JWT_SECRET } = getConfig();
+
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required." });
+    }
 
     if (!JWT_SECRET) {
       console.error("🚨 JWT_SECRET is missing!");
@@ -61,15 +70,25 @@ router.post("/login", async (req, res) => {
 
     const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
 
-    res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
+    res.json({ 
+      token, 
+      user: { 
+        id: user.id, 
+        name: user.name, 
+        email: user.email,
+        created_at: user.created_at.toISOString()
+      } 
+    });
   } catch (error) {
     console.error("🚨 Login Error:", error);
     res.status(500).json({ error: "Login failed" });
   }
 });
 
+
 router.post("/logout", (req, res) => {
   res.status(200).json({ message: "Logged out successfully" });
 });
 
 module.exports = router;
+

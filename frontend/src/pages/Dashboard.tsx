@@ -203,11 +203,11 @@ const Dashboard: React.FC = () => {
   return (
     <div className="dashboard">
       <h1>Session Dashboard</h1>
-
+  
       {!showSessionForm && !showActivityForm && (
         <button onClick={() => setShowSessionForm(true)}>Add Session</button>
       )}
-
+  
       {showSessionForm && (
         <form onSubmit={handleSessionSubmit} className="session-form">
           <label>Session Type:</label>
@@ -218,24 +218,24 @@ const Dashboard: React.FC = () => {
             <option value="Run">Run</option>
             <option value="Multi-Sport">Multi-Sport</option>
           </select>
-
+  
           <label>Date:</label>
           <input type="date" name="date" value={sessionForm.date} onChange={(e) => setSessionForm({ ...sessionForm, date: e.target.value })} required />
-
+  
           <label>Weather Temp (°C):</label>
           <input type="number" name="weatherTemp" value={sessionForm.weatherTemp} onChange={(e) => setSessionForm({ ...sessionForm, weatherTemp: e.target.value })} />
-
+  
           <label>Weather Humidity (%):</label>
           <input type="number" name="weatherHumidity" value={sessionForm.weatherHumidity} onChange={(e) => setSessionForm({ ...sessionForm, weatherHumidity: e.target.value })} />
-
+  
           <label>Wind Speed (m/s):</label>
           <input type="number" name="weatherWindSpeed" value={sessionForm.weatherWindSpeed} onChange={(e) => setSessionForm({ ...sessionForm, weatherWindSpeed: e.target.value })} />
-
+  
           <button type="submit">Next</button>
           <button type="button" onClick={() => setShowSessionForm(false)}>Cancel</button>
         </form>
       )}
-
+  
       {showActivityForm && (
         <form onSubmit={handleActivitySubmit} className="activity-form">
           {sessionType === 'Multi-Sport' && (
@@ -249,29 +249,14 @@ const Dashboard: React.FC = () => {
               </select>
             </>
           )}
-
+  
           <label>Duration:</label>
           <div>
-            <input
-              type="number"
-              placeholder="Hours"
-              value={activityForm.hours}
-              onChange={(e) => setActivityForm({ ...activityForm, hours: e.target.value })}
-            />
-            <input
-              type="number"
-              placeholder="Minutes"
-              value={activityForm.minutes}
-              onChange={(e) => setActivityForm({ ...activityForm, minutes: e.target.value })}
-            />
-            <input
-              type="number"
-              placeholder="Seconds"
-              value={activityForm.seconds}
-              onChange={(e) => setActivityForm({ ...activityForm, seconds: e.target.value })}
-            />
-        </div>
-
+            <input type="number" placeholder="Hours" value={activityForm.hours} onChange={(e) => setActivityForm({ ...activityForm, hours: e.target.value })} />
+            <input type="number" placeholder="Minutes" value={activityForm.minutes} onChange={(e) => setActivityForm({ ...activityForm, minutes: e.target.value })} />
+            <input type="number" placeholder="Seconds" value={activityForm.seconds} onChange={(e) => setActivityForm({ ...activityForm, seconds: e.target.value })} />
+          </div>
+  
           <label>Distance ({(sessionType === 'Swim' || activityType === 'Swim') ? 'm' : 'km'}):</label>
           <input
             type="number"
@@ -279,98 +264,85 @@ const Dashboard: React.FC = () => {
             onChange={(e) => setActivityForm({ ...activityForm, distance: e.target.value })}
             required
           />
-
+  
           <label>Heart Rate (bpm):</label>
           <div>
-            <input
-              type="number"
-              placeholder="Min"
-              value={activityForm.heartRateMin}
-              onChange={(e) => setActivityForm({ ...activityForm, heartRateMin: e.target.value })}
-            />
-            <input
-              type="number"
-              placeholder="Max"
-              value={activityForm.heartRateMax}
-              onChange={(e) => setActivityForm({ ...activityForm, heartRateMax: e.target.value })}
-            />
-            <input
-              type="number"
-              placeholder="Avg"
-              value={activityForm.heartRateAvg}
-              onChange={(e) => setActivityForm({ ...activityForm, heartRateAvg: e.target.value })}
-            />
+            <input type="number" placeholder="Min" value={activityForm.heartRateMin} onChange={(e) => setActivityForm({ ...activityForm, heartRateMin: e.target.value })} />
+            <input type="number" placeholder="Max" value={activityForm.heartRateMax} onChange={(e) => setActivityForm({ ...activityForm, heartRateMax: e.target.value })} />
+            <input type="number" placeholder="Avg" value={activityForm.heartRateAvg} onChange={(e) => setActivityForm({ ...activityForm, heartRateAvg: e.target.value })} />
           </div>
-
+  
           <label>Cadence (rpm):</label>
-          <input
-            type="number"
-            value={activityForm.cadence}
-            onChange={(e) => setActivityForm({ ...activityForm, cadence: e.target.value })}
-          />
-
+          <input type="number" value={activityForm.cadence} onChange={(e) => setActivityForm({ ...activityForm, cadence: e.target.value })} />
+  
           <label>Power (watts):</label>
-          <input
-            type="number"
-            value={activityForm.power}
-            onChange={(e) => setActivityForm({ ...activityForm, power: e.target.value })}
-          />
-
+          <input type="number" value={activityForm.power} onChange={(e) => setActivityForm({ ...activityForm, power: e.target.value })} />
+  
           <button type="submit">Submit Activity</button>
           <button type="button" onClick={() => setShowActivityForm(false)}>Cancel</button>
-        </ form>
+        </form>
       )}
-
+  
       <h2>Past Sessions</h2>
       {loading && <p>Loading sessions...</p>}
       {error && <p style={{ color: 'red' }}>Error fetching sessions</p>}
       {sessions.length === 0 && <p>No sessions available.</p>}
-
+  
       <ul>
-        {sessions.map((session) => (
-          <li key={session.id}>
-            <strong>
-              {session.sessionType} {new Date(session.date).toLocaleDateString()} - 
-              {session.totalDistance ? ` ${session.totalDistance}km` : ''} 
-              {session.totalDuration ? ` - ${formatDuration(session.totalDuration)}` : ''}
-            </strong>
-            <br />
-            <button onClick={() => setExpandedSessionId(expandedSessionId === session.id ? null : session.id)}>
-              {expandedSessionId === session.id ? "Hide Details" : "Show Details"}
-            </button>
-            <button onClick={() => handleDelete(session.id)} style={{ marginLeft: '10px', color: 'red' }}>
-              Delete
-            </button>
-
-            {expandedSessionId === session.id && (
-              <div className="session-details">
-                <p>Temp - {session.weatherTemp ?? 'N/A'}°C</p>
-                <p>Humidity - {session.weatherHumidity ?? 'N/A'}%</p>
-                <p>Wind Speed - {session.weatherWindSpeed ?? 'N/A'}m/s</p>
-                
-                <h3>Activities</h3>
-                <ul>
-                  {Array.isArray(session.activities) && session.activities.length > 0 ? (
-                    session.activities.map((activity) => (
-                      <li key={activity.id}>
-                        <p><strong>{activity.sportType}</strong></p>
-                        <p>
-                          Distance: {activity.sportType === 'Swim' ? `${activity.distance * 1000} m` : `${activity.distance} km`}
-                        </p>
-                        <p>Duration: {formatDuration(activity.duration)}</p>
-                        {activity.heartRateAvg && <p>Avg HR: {activity.heartRateAvg} bpm</p>}
-                        {activity.cadence && <p>Cadence: {activity.cadence} rpm</p>}
-                        {activity.power && <p>Power: {activity.power} watts</p>}
-                      </li>
-                    ))
-                  ) : (
-                    <p>No activities recorded for this session.</p>
-                  )}
-                </ul>
-              </div>
-            )}
-          </li>
-        ))}
+        {sessions.map((session) => {
+          // Ensure activities is always an array
+          const activities = session.activities ?? [];
+          const isSingleSwim = session.sessionType === 'Swim' && activities.length === 1;
+  
+          return (
+            <li key={session.id}>
+              <strong>
+                {session.sessionType} {new Date(session.date).toLocaleDateString()} - 
+                {session.totalDistance !== null 
+                  ? isSingleSwim 
+                    ? ` ${session.totalDistance * 1000}m`
+                    : ` ${session.totalDistance}km`
+                  : ''}
+                {session.totalDuration ? ` - ${formatDuration(session.totalDuration)}` : ''}
+              </strong>
+              <br />
+              <button onClick={() => setExpandedSessionId(expandedSessionId === session.id ? null : session.id)}>
+                {expandedSessionId === session.id ? "Hide Details" : "Show Details"}
+              </button>
+              <button onClick={() => handleDelete(session.id)} style={{ marginLeft: '10px', color: 'red' }}>
+                Delete
+              </button>
+  
+              {expandedSessionId === session.id && (
+                <div className="session-details">
+                  <p>Temp - {session.weatherTemp ?? 'N/A'}°C</p>
+                  <p>Humidity - {session.weatherHumidity ?? 'N/A'}%</p>
+                  <p>Wind Speed - {session.weatherWindSpeed ?? 'N/A'}m/s</p>
+  
+                  <h3>Activities</h3>
+                  <ul>
+                    {activities.length > 0 ? (
+                      activities.map((activity) => (
+                        <li key={activity.id}>
+                          <p><strong>{activity.sportType}</strong></p>
+                          <p>
+                            Distance: {activity.sportType === 'Swim' ? `${activity.distance * 1000} m` : `${activity.distance} km`}
+                          </p>
+                          <p>Duration: {formatDuration(activity.duration)}</p>
+                          {activity.heartRateAvg && <p>Avg HR: {activity.heartRateAvg} bpm</p>}
+                          {activity.cadence && <p>Cadence: {activity.cadence} rpm</p>}
+                          {activity.power && <p>Power: {activity.power} watts</p>}
+                        </li>
+                      ))
+                    ) : (
+                      <p>No activities recorded for this session.</p>
+                    )}
+                  </ul>
+                </div>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

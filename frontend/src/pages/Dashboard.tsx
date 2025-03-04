@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_SESSIONS } from '../graphql/queries';
 import { ADD_SESSION, DELETE_SESSION, ADD_SESSION_ACTIVITY } from '../graphql/mutations';
@@ -31,7 +31,7 @@ interface Activity {
 }
 
 const Dashboard: React.FC = () => {
-  const { loading, error, data } = useQuery<{ sessions: Session[] }>(GET_SESSIONS);
+  const { loading, error, data, refetch } = useQuery<{ sessions: Session[] }>(GET_SESSIONS);
   const [addSession] = useMutation(ADD_SESSION, { refetchQueries: [{ query: GET_SESSIONS }] });
   const [addSessionActivity] = useMutation(ADD_SESSION_ACTIVITY, { refetchQueries: [{ query: GET_SESSIONS }] });
   const [deleteSession] = useMutation(DELETE_SESSION, { refetchQueries: [{ query: GET_SESSIONS }] });
@@ -41,6 +41,13 @@ const Dashboard: React.FC = () => {
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
   const [sessionType, setSessionType] = useState('');
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [sessions, setSessions] = useState<Session[]>([]);
+
+  useEffect(() => {
+    if (data?.sessions) {
+      setSessions(data.sessions);
+    }
+  }, [data]);
 
   const [sessionForm, setSessionForm] = useState({
     date: '',
@@ -63,7 +70,15 @@ const Dashboard: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this session?')) {
-      await deleteSession({ variables: { id } });
+      setSessions((prevSessions) => prevSessions.filter((session) => session.id !== id));
+
+      try {
+        await deleteSession({ variables: { id } });
+        refetch();
+      } catch (error) {
+        console.error("❌ Error Deleting Session:", error);
+        alert("Failed to delete session. Please try again.");
+      }
     }
   };
 
@@ -176,7 +191,6 @@ const Dashboard: React.FC = () => {
         </form>
       )}
 
-      {/* 🔥 Display Sessions Without Weather Details */}
       <h2>Past Sessions</h2>
       {loading && <p>Loading sessions...</p>}
       {error && <p style={{ color: 'red' }}>Error fetching sessions</p>}
@@ -189,6 +203,9 @@ const Dashboard: React.FC = () => {
             <br />
             <button onClick={() => setExpandedSessionId(expandedSessionId === session.id ? null : session.id)}>
               {expandedSessionId === session.id ? "Hide Details" : "Show Details"}
+            </button>
+            <button onClick={() => handleDelete(session.id)} style={{ marginLeft: '10px', color: 'red' }}>
+              Delete
             </button>
 
             {expandedSessionId === session.id && (

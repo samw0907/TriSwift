@@ -1,6 +1,6 @@
 const express = require("express");
 const { Op } = require("sequelize");
-const { Session, SessionActivity, Transition, PersonalRecord } = require("../models");
+const { Session, SessionActivity, Transition } = require("../models");
 const authMiddleware = require("../middlewares/authMiddleware");
 
 const router = express.Router();
@@ -57,11 +57,19 @@ router.get("/", authMiddleware, async (req, res) => {
 
     const sessions = await Session.findAll({
       where: sessionFilters,
-      include: [SessionActivity, Transition],
+      include: [
+        { model: SessionActivity },
+        { model: Transition }
+      ],
       order: sortingOptions.length ? sortingOptions : [["date", "DESC"]],
     });
 
-    res.json(sessions);
+    const formattedSessions = sessions.map(session => ({
+      ...session.toJSON(),
+      transitions: session.is_multi_sport ? session.Transitions : [],
+    }));
+
+    res.json(formattedSessions);
   } catch (error) {
     console.error("Error fetching sessions:", error);
     res.status(500).json({ error: "Failed to fetch sessions" });
@@ -74,14 +82,20 @@ router.get("/:sessionId", authMiddleware, async (req, res) => {
 
     const session = await Session.findOne({
       where: { id: sessionId, user_id: req.user.id },
-      include: [SessionActivity, Transition],
+      include: [
+        { model: SessionActivity },
+        { model: Transition }
+      ],
     });
 
     if (!session) {
       return res.status(404).json({ error: "Session not found or unauthorized" });
     }
 
-    res.json(session);
+    res.json({
+      ...session.toJSON(),
+      transitions: session.is_multi_sport ? session.Transitions : [],
+    });
   } catch (error) {
     console.error("Error fetching session:", error);
     res.status(500).json({ error: "Failed to fetch session" });
@@ -90,18 +104,19 @@ router.get("/:sessionId", authMiddleware, async (req, res) => {
 
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { session_type, date, total_duration, total_distance, weather_temp, weather_humidity, weather_wind_speed } = req.body;
+    const { session_type, date, is_multi_sport, weather_temp, weather_humidity, weather_wind_speed } = req.body;
 
-    if (!session_type || !date || total_duration === undefined || total_distance === undefined) {
-      return res.status(400).json({ error: "All required fields must be provided" });
+    if (!session_type || !date || is_multi_sport === undefined) {
+      return res.status(400).json({ error: "session_type, date, and is_multi_sport are required." });
     }
 
     const session = await Session.create({
       user_id: req.user.id,
       session_type,
       date: new Date(date),
-      total_duration,
-      total_distance,
+      is_multi_sport,
+      total_duration: null,
+      total_distance: null,
       weather_temp,
       weather_humidity,
       weather_wind_speed,
@@ -116,13 +131,33 @@ router.post("/", authMiddleware, async (req, res) => {
 
 router.put("/:sessionId", authMiddleware, async (req, res) => {
   try {
-    const session = await Session.findOne({ where: { id: req.params.sessionId, user_id: req.user.id } });
+    const session = await Session.findOne({ 
+      where: { id: req.params.sessionId, user_id: req.user.id },
+      include: [SessionActivity, Transition]
+    });
 
     if (!session) {
       return res.status(404).json({ error: "Session not found or unauthorized" });
     }
 
-    await session.update(req.body);
+    const { session_type, date, is_multi_sport, weather_temp, weather_humidity, weather_wind_speed } = req.body;
+
+    const totalDuration = session.SessionActivities.reduce((sum, act) => sum + (act.duration || 0), 0)
+      + (is_multi_sport ? session.Transitions.reduce((sum, t) => sum + (t.transition_time || 0), 0) : 0);
+
+    const totalDistance = session.SessionActivities.reduce((sum, act) => sum + (act.distance || 0), 0);
+
+    await session.update({
+      session_type,
+      date: date ? new Date(date) : session.date,
+      is_multi_sport: is_multi_sport ?? session.is_multi_sport,
+      total_duration: totalDuration,
+      total_distance: totalDistance,
+      weather_temp,
+      weather_humidity,
+      weather_wind_speed,
+    });
+
     res.json(session);
   } catch (error) {
     console.error("Error updating session:", error);

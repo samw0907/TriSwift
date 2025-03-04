@@ -2,6 +2,8 @@ const express = require("express");
 const { Op } = require("sequelize");
 const { Session, SessionActivity, PersonalRecord } = require("../models");
 const authMiddleware = require("../middlewares/authMiddleware");
+const { RECORD_DISTANCES } = require("../config/constants");
+
 
 const router = express.Router();
 
@@ -22,10 +24,10 @@ router.get("/:sessionId", authMiddleware, async (req, res) => {
       max_cadence, 
       min_power, 
       max_power, 
-      sort_duration, 
-      sort_distance, 
-      sort_sport_type, 
-      sort_date 
+      sort_duration = "desc", 
+      sort_distance = "desc", 
+      sort_sport_type = "asc", 
+      sort_date = "desc" 
     } = req.query;
 
     const session = await Session.findOne({ where: { id: sessionId, user_id: req.user.id } });
@@ -43,7 +45,7 @@ router.get("/:sessionId", authMiddleware, async (req, res) => {
     }
 
     if (sport_type) {
-      activityFilters.sport_type = { [Op.iLike]: sport_type };
+      activityFilters.sport_type = { [Op.iLike]: sport_type.trim() };
     }
 
     if (min_duration || max_duration) {
@@ -76,22 +78,14 @@ router.get("/:sessionId", authMiddleware, async (req, res) => {
       if (max_power) activityFilters.power[Op.lte] = parseInt(max_power, 10);
     }
 
-    if (sort_duration) {
-      sortingOptions.push(["duration", sort_duration.toLowerCase() === "asc" ? "ASC" : "DESC"]);
-    }
-    if (sort_distance) {
-      sortingOptions.push(["distance", sort_distance.toLowerCase() === "asc" ? "ASC" : "DESC"]);
-    }
-    if (sort_sport_type) {
-      sortingOptions.push(["sport_type", sort_sport_type.toLowerCase() === "asc" ? "ASC" : "DESC"]);
-    }
-    if (sort_date) {
-      sortingOptions.push(["created_at", sort_date.toLowerCase() === "asc" ? "ASC" : "DESC"]);
-    }
+    sortingOptions.push(["duration", sort_duration.toLowerCase() === "asc" ? "ASC" : "DESC"]);
+    sortingOptions.push(["distance", sort_distance.toLowerCase() === "asc" ? "ASC" : "DESC"]);
+    sortingOptions.push(["sport_type", sort_sport_type.toLowerCase() === "asc" ? "ASC" : "DESC"]);
+    sortingOptions.push(["created_at", sort_date.toLowerCase() === "asc" ? "ASC" : "DESC"]);
 
     const activities = await SessionActivity.findAll({
       where: activityFilters,
-      order: sortingOptions.length ? sortingOptions : [["created_at", "DESC"]],
+      order: sortingOptions,
     });
 
     res.json(activities);
@@ -117,9 +111,9 @@ router.post("/:sessionId", authMiddleware, async (req, res) => {
 
     const activity = await SessionActivity.create({
       session_id: session.id,
-      sport_type,
-      duration,
-      distance,
+      sport_type: sport_type.trim(),
+      duration: parseInt(duration, 10),
+      distance: parseFloat(distance),
       heart_rate_min,
       heart_rate_max,
       heart_rate_avg,
@@ -136,27 +130,24 @@ router.post("/:sessionId", authMiddleware, async (req, res) => {
   }
 });
 
-const PREDEFINED_DISTANCES = {
-  Swim: [100, 200, 400, 800, 1000, 1500, 2000],
-  Running: [100, 200, 400, 1000, 5000, 10000, 21100, 42200],
-  Cycling: [10000, 20000, 40000, 50000, 80000, 100000, 150000, 200000]
-};
-
 async function updatePersonalRecord(userId, sessionActivityId, sportType, distance, bestTime, recordDate) {
   try {
-    const normalizedSportType = sportType.charAt(0).toUpperCase() + sportType.slice(1).toLowerCase();
+    if (!sportType || !distance || !bestTime) return;
+
+    const normalizedSportType = sportType.trim().toLowerCase();
+    const capitalizedSportType = normalizedSportType.charAt(0).toUpperCase() + normalizedSportType.slice(1);
     
-    if (!PREDEFINED_DISTANCES[normalizedSportType]?.includes(distance)) {
-      console.log(`Skipping personal record update. ${distance} is not a predefined distance for ${normalizedSportType}`);
+    if (!RECORD_DISTANCES[capitalizedSportType]?.includes(distance)) {
+      console.log(`Skipping personal record update. ${distance} is not a predefined distance for ${capitalizedSportType}`);
       return;
     }
 
     const existingRecords = await PersonalRecord.findAll({
-      where: { user_id: userId, activity_type: normalizedSportType, distance: distance },
+      where: { user_id: userId, activity_type: capitalizedSportType, distance: distance },
       order: [["best_time", "ASC"]],
     });
 
-    if (existingRecords.length < 3 || parseInt(bestTime) < parseInt(existingRecords[existingRecords.length - 1].best_time)) {
+    if (existingRecords.length < 3 || parseInt(bestTime, 10) < parseInt(existingRecords[existingRecords.length - 1]?.best_time || Infinity, 10)) {
       if (existingRecords.length >= 3) {
         await existingRecords[existingRecords.length - 1].destroy();
       }
@@ -164,9 +155,9 @@ async function updatePersonalRecord(userId, sessionActivityId, sportType, distan
       await PersonalRecord.create({
         user_id: userId,
         session_activity_id: sessionActivityId,
-        activity_type: normalizedSportType,
+        activity_type: capitalizedSportType,
         distance: distance,
-        best_time: parseInt(bestTime),
+        best_time: parseInt(bestTime, 10),
         record_date: recordDate || new Date(),
       });
     }
@@ -174,5 +165,6 @@ async function updatePersonalRecord(userId, sessionActivityId, sportType, distan
     console.error("Error updating personal record:", error);
   }
 }
+
 
 module.exports = router;

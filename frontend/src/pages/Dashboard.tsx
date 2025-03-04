@@ -6,13 +6,13 @@ import '../styles/dashboard.css';
 
 interface Session {
   id: string;
-  session_type: string;
+  sessionType: string;
   date: string;
-  total_duration: number | null;
-  total_distance: number | null;
-  weather_temp?: number | null;
-  weather_humidity?: number | null;
-  weather_wind_speed?: number | null;
+  totalDuration: number | null;
+  totalDistance: number | null;
+  weatherTemp?: number | null;
+  weatherHumidity?: number | null;
+  weatherWindSpeed?: number | null;
   activities: Activity[];
   created_at: string;
   updated_at: string;
@@ -20,12 +20,12 @@ interface Session {
 
 interface Activity {
   id: string;
-  sport_type: string;
+  sportType: string;
   duration: number;
   distance: number;
-  heart_rate_min?: number;
-  heart_rate_max?: number;
-  heart_rate_avg?: number;
+  heartRateMin?: number;
+  heartRateMax?: number;
+  heartRateAvg?: number;
   cadence?: number;
   power?: number;
 }
@@ -39,14 +39,14 @@ const Dashboard: React.FC = () => {
   const [showSessionForm, setShowSessionForm] = useState(false);
   const [showActivityForm, setShowActivityForm] = useState(false);
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
-  const [session_type, setSessionType] = useState('');
+  const [sessionType, setSessionType] = useState('');
   const [sessionId, setSessionId] = useState<string | null>(null);
 
   const [sessionForm, setSessionForm] = useState({
     date: '',
-    weather_temp: '',
-    weather_humidity: '',
-    weather_wind_speed: '',
+    weatherTemp: '',
+    weatherHumidity: '',
+    weatherWindSpeed: '',
   });
 
   const [activityForm, setActivityForm] = useState({
@@ -54,9 +54,9 @@ const Dashboard: React.FC = () => {
     minutes: '',
     seconds: '',
     distance: '',
-    heart_rate_min: '',
-    heart_rate_max: '',
-    heart_rate_avg: '',
+    heartRateMin: '',
+    heartRateMax: '',
+    heartRateAvg: '',
     cadence: '',
     power: '',
   });
@@ -69,26 +69,26 @@ const Dashboard: React.FC = () => {
 
   const handleSessionSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    if (!session_type) {
+
+    if (!sessionType) {
       alert("Please select a session type.");
       return;
     }
-  
+
     try {
       const { data } = await addSession({
         variables: {
-          sessionType: session_type, // ✅ GraphQL expects camelCase
+          sessionType,
           date: sessionForm.date,
-          isMultiSport: session_type === 'Multi-Sport', // ✅ GraphQL expects camelCase
+          isMultiSport: sessionType === 'Multi-Sport',
           totalDuration: 0, // Defaults to 0
           totalDistance: 0,
-          weatherTemp: sessionForm.weather_temp ? parseFloat(sessionForm.weather_temp) : null,
-          weatherHumidity: sessionForm.weather_humidity ? parseInt(sessionForm.weather_humidity) : null,
-          weatherWindSpeed: sessionForm.weather_wind_speed ? parseFloat(sessionForm.weather_wind_speed) : null,
+          weatherTemp: sessionForm.weatherTemp ? parseFloat(sessionForm.weatherTemp) : null,
+          weatherHumidity: sessionForm.weatherHumidity ? parseInt(sessionForm.weatherHumidity) : null,
+          weatherWindSpeed: sessionForm.weatherWindSpeed ? parseFloat(sessionForm.weatherWindSpeed) : null,
         },
       });
-  
+
       if (data) {
         setSessionId(data.createSession.id);
         setShowSessionForm(false);
@@ -99,7 +99,6 @@ const Dashboard: React.FC = () => {
       alert("Failed to create session. Please try again.");
     }
   };
-  
 
   const handleActivitySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,13 +121,13 @@ const Dashboard: React.FC = () => {
     try {
       await addSessionActivity({
         variables: {
-          session_id: sessionId,
-          sport_type: session_type,
+          sessionId,
+          sportType: sessionType,
           duration: durationInSeconds,
           distance: parseFloat(activityForm.distance),
-          heart_rate_min: activityForm.heart_rate_min ? parseInt(activityForm.heart_rate_min) : null,
-          heart_rate_max: activityForm.heart_rate_max ? parseInt(activityForm.heart_rate_max) : null,
-          heart_rate_avg: activityForm.heart_rate_avg ? parseInt(activityForm.heart_rate_avg) : null,
+          heartRateMin: activityForm.heartRateMin ? parseInt(activityForm.heartRateMin) : null,
+          heartRateMax: activityForm.heartRateMax ? parseInt(activityForm.heartRateMax) : null,
+          heartRateAvg: activityForm.heartRateAvg ? parseInt(activityForm.heartRateAvg) : null,
           cadence: activityForm.cadence ? parseInt(activityForm.cadence) : null,
           power: activityForm.power ? parseInt(activityForm.power) : null,
         },
@@ -146,44 +145,63 @@ const Dashboard: React.FC = () => {
     setShowActivityForm(false);
     setSessionType('');
     setSessionId(null);
-    setSessionForm({ date: '', weather_temp: '', weather_humidity: '', weather_wind_speed: '' });
-    setActivityForm({ hours: '', minutes: '', seconds: '', distance: '', heart_rate_min: '', heart_rate_max: '', heart_rate_avg: '', cadence: '', power: '' });
+    setSessionForm({ date: '', weatherTemp: '', weatherHumidity: '', weatherWindSpeed: '' });
+    setActivityForm({ hours: '', minutes: '', seconds: '', distance: '', heartRateMin: '', heartRateMax: '', heartRateAvg: '', cadence: '', power: '' });
   };
 
   return (
     <div className="dashboard">
       <h1>Session Dashboard</h1>
-      {!showSessionForm && !showActivityForm && <button onClick={() => setShowSessionForm(true)}>Add Session</button>}
-
+      
+      {!showSessionForm && !showActivityForm && (
+        <button onClick={() => setShowSessionForm(true)}>Add Session</button>
+      )}
+  
       {showSessionForm && (
         <form onSubmit={handleSessionSubmit} className="session-form">
           <label>Session Type:</label>
-          <select value={session_type} onChange={(e) => setSessionType(e.target.value)} required>
+          <select value={sessionType} onChange={(e) => setSessionType(e.target.value)} required>
             <option value="">Select Type</option>
             <option value="Swim">Swim</option>
             <option value="Bike">Bike</option>
             <option value="Run">Run</option>
             <option value="Multi-Sport">Multi-Sport</option>
           </select>
-
+  
           <label>Date:</label>
           <input type="date" name="date" value={sessionForm.date} onChange={(e) => setSessionForm({ ...sessionForm, date: e.target.value })} required />
-
+  
           <label>Weather Temp (°C):</label>
-          <input type="number" name="weather_temp" value={sessionForm.weather_temp} onChange={(e) => setSessionForm({ ...sessionForm, weather_temp: e.target.value })} />
-
+          <input type="number" name="weatherTemp" value={sessionForm.weatherTemp} onChange={(e) => setSessionForm({ ...sessionForm, weatherTemp: e.target.value })} />
+  
           <label>Weather Humidity (%):</label>
-          <input type="number" name="weather_humidity" value={sessionForm.weather_humidity} onChange={(e) => setSessionForm({ ...sessionForm, weather_humidity: e.target.value })} />
-
+          <input type="number" name="weatherHumidity" value={sessionForm.weatherHumidity} onChange={(e) => setSessionForm({ ...sessionForm, weatherHumidity: e.target.value })} />
+  
           <label>Wind Speed (m/s):</label>
-          <input type="number" name="weather_wind_speed" value={sessionForm.weather_wind_speed} onChange={(e) => setSessionForm({ ...sessionForm, weather_wind_speed: e.target.value })} />
-
+          <input type="number" name="weatherWindSpeed" value={sessionForm.weatherWindSpeed} onChange={(e) => setSessionForm({ ...sessionForm, weatherWindSpeed: e.target.value })} />
+  
           <button type="submit">Next</button>
           <button type="button" onClick={resetForms}>Cancel</button>
         </form>
       )}
+  
+      {/* 🔥 Ensure sessions are displayed */}
+      <h2>Past Sessions</h2>
+      {loading && <p>Loading sessions...</p>}
+      {error && <p style={{ color: 'red' }}>Error fetching sessions</p>}
+      {data?.sessions.length === 0 && <p>No sessions available.</p>}
+      
+      <ul>
+        {data?.sessions.map((session) => (
+          <li key={session.id}>
+            <strong>{session.sessionType}</strong> on {new Date(session.date).toLocaleDateString()} 
+            <br />
+            <small>Temp: {session.weatherTemp ?? 'N/A'}°C, Humidity: {session.weatherHumidity ?? 'N/A'}%, Wind: {session.weatherWindSpeed ?? 'N/A'} m/s</small>
+          </li>
+        ))}
+      </ul>
     </div>
-  );
-};
+  ); 
+}
 
 export default Dashboard;

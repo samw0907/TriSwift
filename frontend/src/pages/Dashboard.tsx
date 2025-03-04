@@ -147,13 +147,20 @@ const Dashboard: React.FC = () => {
       return;
     }
 
+    let convertedDistance = parseFloat(activityForm.distance);
+    const sport = sessionType === 'Multi-Sport' ? activityType : sessionType;
+  
+    if (sport === 'Swim') {
+      convertedDistance = convertedDistance / 1000;
+    }
+
     try {
       const { data } = await addSessionActivity({
         variables: {
           sessionId,
           sportType: sessionType === 'Multi-Sport' ? activityType : sessionType,
           duration: durationInSeconds,
-          distance: parseFloat(activityForm.distance),
+          distance: convertedDistance,
           heartRateMin: activityForm.heartRateMin ? parseInt(activityForm.heartRateMin) : null,
           heartRateMax: activityForm.heartRateMax ? parseInt(activityForm.heartRateMax) : null,
           heartRateAvg: activityForm.heartRateAvg ? parseInt(activityForm.heartRateAvg) : null,
@@ -265,7 +272,7 @@ const Dashboard: React.FC = () => {
             />
         </div>
 
-          <label>Distance (km):</label>
+          <label>Distance ({(sessionType === 'Swim' || activityType === 'Swim') ? 'm' : 'km'}):</label>
           <input
             type="number"
             value={activityForm.distance}
@@ -343,11 +350,13 @@ const Dashboard: React.FC = () => {
                 
                 <h3>Activities</h3>
                 <ul>
-                  {(session.activities ?? []).length > 0 ? (
+                  {Array.isArray(session.activities) && session.activities.length > 0 ? (
                     session.activities.map((activity) => (
                       <li key={activity.id}>
                         <p><strong>{activity.sportType}</strong></p>
-                        <p>Distance: {activity.distance} km</p>
+                        <p>
+                          Distance: {activity.sportType === 'Swim' ? `${activity.distance * 1000} m` : `${activity.distance} km`}
+                        </p>
                         <p>Duration: {formatDuration(activity.duration)}</p>
                         {activity.heartRateAvg && <p>Avg HR: {activity.heartRateAvg} bpm</p>}
                         {activity.cadence && <p>Cadence: {activity.cadence} rpm</p>}

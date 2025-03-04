@@ -139,15 +139,15 @@ const Dashboard: React.FC = () => {
       return;
     }
 
-    const durationInSeconds =
-      (parseInt(activityForm.hours) || 0) * 3600 +
-      (parseInt(activityForm.minutes) || 0) * 60 +
-      (parseInt(activityForm.seconds) || 0);
-
     if (!activityForm.distance) {
       alert("Distance is required.");
       return;
     }
+
+    const durationInSeconds =
+    (parseInt(activityForm.hours) || 0) * 3600 +
+    (parseInt(activityForm.minutes) || 0) * 60 +
+    (parseInt(activityForm.seconds) || 0);
 
     let convertedDistance = parseFloat(activityForm.distance);
     let sport = sessionType === 'Multi-Sport' ? activityType : sessionType;
@@ -164,7 +164,7 @@ const Dashboard: React.FC = () => {
     }
 
     try {
-      await addSessionActivity({
+      const { data } = await addSessionActivity({
         variables: {
           sessionId,
           sportType: sport,
@@ -177,6 +177,21 @@ const Dashboard: React.FC = () => {
           power: activityForm.power ? parseInt(activityForm.power) : null,
         },
       });
+
+      if (data?.createSessionActivity) {
+        setSessions((prevSessions) =>
+          prevSessions.map((session) =>
+            session.id === sessionId
+              ? {
+                  ...session,
+                  activities: [...session.activities, data.createSessionActivity],
+                  totalDistance: (session.totalDistance || 0) + data.createSessionActivity.distance,
+                  totalDuration: (session.totalDuration || 0) + data.createSessionActivity.duration,
+                }
+              : session
+          )
+        );
+      }
 
       refetch();
       setActivityForm({ hours: '', minutes: '', seconds: '', distance: '', heartRateMin: '', heartRateMax: '', heartRateAvg: '', cadence: '', power: '' });
@@ -373,7 +388,7 @@ const Dashboard: React.FC = () => {
   
                   <h3>Activities</h3>
                   <ul>
-                    {activities.length > 0 ? (
+                    {activities && activities.length > 0 ? (
                       activities.map((activity) => (
                         <li key={activity.id}>
                           <p><strong>{activity.sportType}</strong></p>

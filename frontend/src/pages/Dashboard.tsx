@@ -6,10 +6,10 @@ import '../styles/dashboard.css';
 
 interface Session {
   id: string;
-  sessionType: string;
+  session_type: string;
   date: string;
-  totalDuration: number | null;
-  totalDistance: number | null;
+  total_duration: number | null;
+  total_distance: number | null;
   activities: Activity[];
   created_at: string;
   updated_at: string;
@@ -17,12 +17,12 @@ interface Session {
 
 interface Activity {
   id: string;
-  sportType: string;
+  sport_type: string;
   duration: number;
   distance: number;
-  heartRateMin?: number;
-  heartRateMax?: number;
-  heartRateAvg?: number;
+  heart_rate_min?: number;
+  heart_rate_max?: number;
+  heart_rate_avg?: number;
   cadence?: number;
   power?: number;
 }
@@ -36,7 +36,7 @@ const Dashboard: React.FC = () => {
   const [showSessionForm, setShowSessionForm] = useState(false);
   const [showActivityForm, setShowActivityForm] = useState(false);
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
-  const [sessionType, setSessionType] = useState('');
+  const [session_type, setSessionType] = useState('');
   const [sessionId, setSessionId] = useState<string | null>(null);
 
   const [sessionForm, setSessionForm] = useState({
@@ -48,9 +48,9 @@ const Dashboard: React.FC = () => {
     minutes: '',
     seconds: '',
     distance: '',
-    heartRateMin: '',
-    heartRateMax: '',
-    heartRateAvg: '',
+    heart_rate_min: '',
+    heart_rate_max: '',
+    heart_rate_avg: '',
     cadence: '',
     power: '',
   });
@@ -64,7 +64,7 @@ const Dashboard: React.FC = () => {
   const handleSessionSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!sessionType) {
+    if (!session_type) {
       alert("Please select a session type.");
       return;
     }
@@ -72,11 +72,11 @@ const Dashboard: React.FC = () => {
     try {
       const { data } = await addSession({
         variables: {
-          sessionType,
+          session_type,
           date: sessionForm.date,
-          isMultiSport: sessionType === 'Multi-Sport',
-          totalDuration: null,
-          totalDistance: null,
+          is_multi_sport: session_type === 'Multi-Sport',
+          total_duration: null,
+          total_distance: null,
         },
       });
 
@@ -112,13 +112,13 @@ const Dashboard: React.FC = () => {
     try {
       await addSessionActivity({
         variables: {
-          sessionId,
-          sportType: sessionType,
-          duration: durationInSeconds, // Pass as integer
+          session_id: sessionId,
+          sport_type: session_type,
+          duration: durationInSeconds,
           distance: parseFloat(activityForm.distance),
-          heartRateMin: activityForm.heartRateMin ? parseInt(activityForm.heartRateMin) : null,
-          heartRateMax: activityForm.heartRateMax ? parseInt(activityForm.heartRateMax) : null,
-          heartRateAvg: activityForm.heartRateAvg ? parseInt(activityForm.heartRateAvg) : null,
+          heart_rate_min: activityForm.heart_rate_min ? parseInt(activityForm.heart_rate_min) : null,
+          heart_rate_max: activityForm.heart_rate_max ? parseInt(activityForm.heart_rate_max) : null,
+          heart_rate_avg: activityForm.heart_rate_avg ? parseInt(activityForm.heart_rate_avg) : null,
           cadence: activityForm.cadence ? parseInt(activityForm.cadence) : null,
           power: activityForm.power ? parseInt(activityForm.power) : null,
         },
@@ -137,7 +137,7 @@ const Dashboard: React.FC = () => {
     setSessionType('');
     setSessionId(null);
     setSessionForm({ date: '' });
-    setActivityForm({ hours: '', minutes: '', seconds: '', distance: '', heartRateMin: '', heartRateMax: '', heartRateAvg: '', cadence: '', power: '' });
+    setActivityForm({ hours: '', minutes: '', seconds: '', distance: '', heart_rate_min: '', heart_rate_max: '', heart_rate_avg: '', cadence: '', power: '' });
   };
 
   return (
@@ -148,7 +148,7 @@ const Dashboard: React.FC = () => {
       {showSessionForm && (
         <form onSubmit={handleSessionSubmit} className="session-form">
           <label>Session Type:</label>
-          <select value={sessionType} onChange={(e) => setSessionType(e.target.value)} required>
+          <select value={session_type} onChange={(e) => setSessionType(e.target.value)} required>
             <option value="">Select Type</option>
             <option value="Swim">Swim</option>
             <option value="Bike">Bike</option>
@@ -178,13 +178,13 @@ const Dashboard: React.FC = () => {
           <input type="number" name="distance" value={activityForm.distance} onChange={(e) => setActivityForm({ ...activityForm, distance: e.target.value })} required />
 
           <label>Heart Rate (Min):</label>
-          <input type="number" name="heartRateMin" value={activityForm.heartRateMin} onChange={(e) => setActivityForm({ ...activityForm, heartRateMin: e.target.value })} />
+          <input type="number" name="heart_rate_min" value={activityForm.heart_rate_min} onChange={(e) => setActivityForm({ ...activityForm, heart_rate_min: e.target.value })} />
 
           <label>Heart Rate (Max):</label>
-          <input type="number" name="heartRateMax" value={activityForm.heartRateMax} onChange={(e) => setActivityForm({ ...activityForm, heartRateMax: e.target.value })} />
+          <input type="number" name="heart_rate_max" value={activityForm.heart_rate_max} onChange={(e) => setActivityForm({ ...activityForm, heart_rate_max: e.target.value })} />
 
           <label>Heart Rate (Avg):</label>
-          <input type="number" name="heartRateAvg" value={activityForm.heartRateAvg} onChange={(e) => setActivityForm({ ...activityForm, heartRateAvg: e.target.value })} />
+          <input type="number" name="heart_rate_avg" value={activityForm.heart_rate_avg} onChange={(e) => setActivityForm({ ...activityForm, heart_rate_avg: e.target.value })} />
 
           <label>Cadence:</label>
           <input type="number" name="cadence" value={activityForm.cadence} onChange={(e) => setActivityForm({ ...activityForm, cadence: e.target.value })} />

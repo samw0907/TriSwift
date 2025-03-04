@@ -40,6 +40,7 @@ const Dashboard: React.FC = () => {
   const [showActivityForm, setShowActivityForm] = useState(false);
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
   const [sessionType, setSessionType] = useState('');
+  const [activityType, setActivityType] = useState('');
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
 
@@ -108,7 +109,7 @@ const Dashboard: React.FC = () => {
         setSessions((prevSessions) => [...prevSessions, data.createSession]);
         setSessionId(data.createSession.id);
         setShowSessionForm(false);
-        setShowActivityForm(true);
+        setShowActivityForm(false);
       }
     } catch (error) {
       console.error("❌ Error Creating Session:", error);
@@ -121,6 +122,11 @@ const Dashboard: React.FC = () => {
 
     if (!sessionId) {
       alert("Session ID is missing. Please create a session first.");
+      return;
+    }
+
+    if (sessionType === 'Multi-Sport' && !activityType) {
+      alert("Please select an activity type for Multi-Sport sessions.");
       return;
     }
 
@@ -138,7 +144,7 @@ const Dashboard: React.FC = () => {
       await addSessionActivity({
         variables: {
           sessionId,
-          sportType: sessionType,
+          sportType: sessionType === 'Multi-Sport' ? activityType : sessionType,
           duration: durationInSeconds,
           distance: parseFloat(activityForm.distance),
           heartRateMin: activityForm.heartRateMin ? parseInt(activityForm.heartRateMin) : null,
@@ -187,8 +193,36 @@ const Dashboard: React.FC = () => {
           <label>Date:</label>
           <input type="date" name="date" value={sessionForm.date} onChange={(e) => setSessionForm({ ...sessionForm, date: e.target.value })} required />
 
+          <label>Weather Temp (°C):</label>
+          <input type="number" name="weatherTemp" value={sessionForm.weatherTemp} onChange={(e) => setSessionForm({ ...sessionForm, weatherTemp: e.target.value })} />
+
+          <label>Weather Humidity (%):</label>
+          <input type="number" name="weatherHumidity" value={sessionForm.weatherHumidity} onChange={(e) => setSessionForm({ ...sessionForm, weatherHumidity: e.target.value })} />
+
+          <label>Wind Speed (m/s):</label>
+          <input type="number" name="weatherWindSpeed" value={sessionForm.weatherWindSpeed} onChange={(e) => setSessionForm({ ...sessionForm, weatherWindSpeed: e.target.value })} />
+
           <button type="submit">Next</button>
           <button type="button" onClick={() => setShowSessionForm(false)}>Cancel</button>
+        </form>
+      )}
+
+      {showActivityForm && (
+        <form onSubmit={handleActivitySubmit} className="activity-form">
+          {sessionType === 'Multi-Sport' && (
+            <>
+              <label>Activity Type:</label>
+              <select value={activityType} onChange={(e) => setActivityType(e.target.value)} required>
+                <option value="">Select Activity</option>
+                <option value="Swim">Swim</option>
+                <option value="Bike">Bike</option>
+                <option value="Run">Run</option>
+              </select>
+            </>
+          )}
+
+          <button type="submit">Submit Activity</button>
+          <button type="button" onClick={() => setShowActivityForm(false)}>Cancel</button>
         </form>
       )}
 

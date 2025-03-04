@@ -104,7 +104,8 @@ const Dashboard: React.FC = () => {
         },
       });
 
-      if (data) {
+      if (data?.createSession) {
+        setSessions((prevSessions) => [...prevSessions, data.createSession]);
         setSessionId(data.createSession.id);
         setShowSessionForm(false);
         setShowActivityForm(true);
@@ -187,17 +188,17 @@ const Dashboard: React.FC = () => {
           <input type="date" name="date" value={sessionForm.date} onChange={(e) => setSessionForm({ ...sessionForm, date: e.target.value })} required />
 
           <button type="submit">Next</button>
-          <button type="button" onClick={resetForms}>Cancel</button>
+          <button type="button" onClick={() => setShowSessionForm(false)}>Cancel</button>
         </form>
       )}
 
       <h2>Past Sessions</h2>
       {loading && <p>Loading sessions...</p>}
       {error && <p style={{ color: 'red' }}>Error fetching sessions</p>}
-      {data?.sessions.length === 0 && <p>No sessions available.</p>}
+      {sessions.length === 0 && <p>No sessions available.</p>}
 
       <ul>
-        {data?.sessions.map((session) => (
+        {sessions.map((session) => (
           <li key={session.id}>
             <strong>{session.sessionType}</strong> {new Date(session.date).toLocaleDateString()}
             <br />

@@ -69,6 +69,13 @@ const Dashboard: React.FC = () => {
     power: '',
   });
 
+  const formatDuration = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${h}h ${m}m ${s}s`;
+  };
+
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this session?')) {
       setSessions((prevSessions) => prevSessions.filter((session) => session.id !== id));
@@ -141,7 +148,7 @@ const Dashboard: React.FC = () => {
     }
 
     try {
-      await addSessionActivity({
+      const { data } = await addSessionActivity({
         variables: {
           sessionId,
           sportType: sessionType === 'Multi-Sport' ? activityType : sessionType,
@@ -154,6 +161,21 @@ const Dashboard: React.FC = () => {
           power: activityForm.power ? parseInt(activityForm.power) : null,
         },
       });
+  
+      if (data?.createSessionActivity) {
+        setSessions((prevSessions) =>
+          prevSessions.map((session) =>
+            session.id === sessionId
+              ? {
+                  ...session,
+                  activities: session.activities ? [...session.activities, data.createSessionActivity] : [data.createSessionActivity],
+                  totalDistance: (session.totalDistance || 0) + data.createSessionActivity.distance,
+                  totalDuration: (session.totalDuration || 0) + data.createSessionActivity.duration,
+                }
+              : session
+          )
+        );
+      }
 
       resetForms();
     } catch (error) {
@@ -300,7 +322,11 @@ const Dashboard: React.FC = () => {
       <ul>
         {sessions.map((session) => (
           <li key={session.id}>
-            <strong>{session.sessionType}</strong> {new Date(session.date).toLocaleDateString()}
+            <strong>
+              {session.sessionType} {new Date(session.date).toLocaleDateString()} - 
+              {session.totalDistance ? ` ${session.totalDistance}km` : ''} 
+              {session.totalDuration ? ` - ${formatDuration(session.totalDuration)}` : ''}
+            </strong>
             <br />
             <button onClick={() => setExpandedSessionId(expandedSessionId === session.id ? null : session.id)}>
               {expandedSessionId === session.id ? "Hide Details" : "Show Details"}
@@ -311,9 +337,27 @@ const Dashboard: React.FC = () => {
 
             {expandedSessionId === session.id && (
               <div className="session-details">
-                <p>Weather Temp: {session.weatherTemp ?? 'N/A'}°C</p>
-                <p>Weather Humidity: {session.weatherHumidity ?? 'N/A'}%</p>
-                <p>Wind Speed: {session.weatherWindSpeed ?? 'N/A'} m/s</p>
+                <p>Temp - {session.weatherTemp ?? 'N/A'}°C</p>
+                <p>Humidity - {session.weatherHumidity ?? 'N/A'}%</p>
+                <p>Wind Speed - {session.weatherWindSpeed ?? 'N/A'}m/s</p>
+                
+                <h3>Activities</h3>
+                <ul>
+                  {(session.activities ?? []).length > 0 ? (
+                    session.activities.map((activity) => (
+                      <li key={activity.id}>
+                        <p><strong>{activity.sportType}</strong></p>
+                        <p>Distance: {activity.distance} km</p>
+                        <p>Duration: {formatDuration(activity.duration)}</p>
+                        {activity.heartRateAvg && <p>Avg HR: {activity.heartRateAvg} bpm</p>}
+                        {activity.cadence && <p>Cadence: {activity.cadence} rpm</p>}
+                        {activity.power && <p>Power: {activity.power} watts</p>}
+                      </li>
+                    ))
+                  ) : (
+                    <p>No activities recorded for this session.</p>
+                  )}
+                </ul>
               </div>
             )}
           </li>

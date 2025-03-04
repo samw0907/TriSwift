@@ -81,7 +81,7 @@ const Dashboard: React.FC = () => {
           sessionType,
           date: sessionForm.date,
           isMultiSport: sessionType === 'Multi-Sport',
-          totalDuration: 0, // Defaults to 0
+          totalDuration: 0,
           totalDistance: 0,
           weatherTemp: sessionForm.weatherTemp ? parseFloat(sessionForm.weatherTemp) : null,
           weatherHumidity: sessionForm.weatherHumidity ? parseInt(sessionForm.weatherHumidity) : null,
@@ -152,11 +152,11 @@ const Dashboard: React.FC = () => {
   return (
     <div className="dashboard">
       <h1>Session Dashboard</h1>
-      
+
       {!showSessionForm && !showActivityForm && (
         <button onClick={() => setShowSessionForm(true)}>Add Session</button>
       )}
-  
+
       {showSessionForm && (
         <form onSubmit={handleSessionSubmit} className="session-form">
           <label>Session Type:</label>
@@ -167,41 +167,42 @@ const Dashboard: React.FC = () => {
             <option value="Run">Run</option>
             <option value="Multi-Sport">Multi-Sport</option>
           </select>
-  
+
           <label>Date:</label>
           <input type="date" name="date" value={sessionForm.date} onChange={(e) => setSessionForm({ ...sessionForm, date: e.target.value })} required />
-  
-          <label>Weather Temp (°C):</label>
-          <input type="number" name="weatherTemp" value={sessionForm.weatherTemp} onChange={(e) => setSessionForm({ ...sessionForm, weatherTemp: e.target.value })} />
-  
-          <label>Weather Humidity (%):</label>
-          <input type="number" name="weatherHumidity" value={sessionForm.weatherHumidity} onChange={(e) => setSessionForm({ ...sessionForm, weatherHumidity: e.target.value })} />
-  
-          <label>Wind Speed (m/s):</label>
-          <input type="number" name="weatherWindSpeed" value={sessionForm.weatherWindSpeed} onChange={(e) => setSessionForm({ ...sessionForm, weatherWindSpeed: e.target.value })} />
-  
+
           <button type="submit">Next</button>
           <button type="button" onClick={resetForms}>Cancel</button>
         </form>
       )}
-  
-      {/* 🔥 Ensure sessions are displayed */}
+
+      {/* 🔥 Display Sessions Without Weather Details */}
       <h2>Past Sessions</h2>
       {loading && <p>Loading sessions...</p>}
       {error && <p style={{ color: 'red' }}>Error fetching sessions</p>}
       {data?.sessions.length === 0 && <p>No sessions available.</p>}
-      
+
       <ul>
         {data?.sessions.map((session) => (
           <li key={session.id}>
-            <strong>{session.sessionType}</strong> on {new Date(session.date).toLocaleDateString()} 
+            <strong>{session.sessionType}</strong> {new Date(session.date).toLocaleDateString()}
             <br />
-            <small>Temp: {session.weatherTemp ?? 'N/A'}°C, Humidity: {session.weatherHumidity ?? 'N/A'}%, Wind: {session.weatherWindSpeed ?? 'N/A'} m/s</small>
+            <button onClick={() => setExpandedSessionId(expandedSessionId === session.id ? null : session.id)}>
+              {expandedSessionId === session.id ? "Hide Details" : "Show Details"}
+            </button>
+
+            {expandedSessionId === session.id && (
+              <div className="session-details">
+                <p>Weather Temp: {session.weatherTemp ?? 'N/A'}°C</p>
+                <p>Weather Humidity: {session.weatherHumidity ?? 'N/A'}%</p>
+                <p>Wind Speed: {session.weatherWindSpeed ?? 'N/A'} m/s</p>
+              </div>
+            )}
           </li>
         ))}
       </ul>
     </div>
-  ); 
-}
+  );
+};
 
 export default Dashboard;

@@ -109,7 +109,7 @@ const Dashboard: React.FC = () => {
         setSessions((prevSessions) => [...prevSessions, data.createSession]);
         setSessionId(data.createSession.id);
         setShowSessionForm(false);
-        setShowActivityForm(false);
+        setShowActivityForm(true);
       }
     } catch (error) {
       console.error("❌ Error Creating Session:", error);

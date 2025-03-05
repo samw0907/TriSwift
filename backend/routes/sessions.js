@@ -94,7 +94,7 @@ router.get("/:sessionId", authMiddleware, async (req, res) => {
 
     res.json({
       ...session.toJSON(),
-      transitions: session.is_multi_sport ? session.Transitions : [],
+      transitions: session.is_multi_sport ? session.transitions : [],
     });
   } catch (error) {
     console.error("Error fetching session:", error);
@@ -142,10 +142,10 @@ router.put("/:sessionId", authMiddleware, async (req, res) => {
 
     const { session_type, date, is_multi_sport, weather_temp, weather_humidity, weather_wind_speed } = req.body;
 
-    const totalDuration = session.SessionActivities.reduce((sum, act) => sum + (act.duration || 0), 0)
-      + (is_multi_sport ? session.Transitions.reduce((sum, t) => sum + (t.transition_time || 0), 0) : 0);
+    const totalDuration = session.session_activities.reduce((sum, act) => sum + (act.duration || 0), 0)
+      + (is_multi_sport ? session.transitions.reduce((sum, t) => sum + (t.transition_time || 0), 0) : 0);
 
-    const totalDistance = session.SessionActivities.reduce((sum, act) => sum + (act.distance || 0), 0);
+    const totalDistance = session.session_activities.reduce((sum, act) => sum + (act.distance || 0), 0);
 
     await session.update({
       session_type,

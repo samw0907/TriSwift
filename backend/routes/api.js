@@ -9,8 +9,8 @@ router.get("/sessions", authMiddleware, async (req, res) => {
     const sessions = await Session.findAll({
       where: { user_id: req.user.id },
       include: [
-        { model: SessionActivity, as: "SessionActivities" },
-        { model: Transition, as: "Transitions" }
+        { model: SessionActivity },
+        { model: Transition }
       ],
     });
 
@@ -69,7 +69,7 @@ router.post("/activities", authMiddleware, async (req, res) => {
     }
 
     const session = await Session.findByPk(session_id, {
-      include: [{ model: SessionActivity, as: "SessionActivities" }]
+      include: [{ model: SessionActivity }]
     });
 
     if (!session || session.user_id !== req.user.id) {
@@ -89,12 +89,12 @@ router.post("/activities", authMiddleware, async (req, res) => {
       power,
     });
 
-    const updatedTotalDuration = session.SessionActivities
-      ? session.SessionActivities.reduce((sum, act) => sum + (act.duration || 0), duration)
+    const updatedTotalDuration = session.session_activities
+      ? session.session_activities.reduce((sum, act) => sum + (act.duration || 0), duration)
       : duration;
 
-    const updatedTotalDistance = session.SessionActivities
-      ? session.SessionActivities.reduce((sum, act) => sum + (act.distance || 0), distance)
+    const updatedTotalDistance = session.session_activities
+      ? session.session_activities.reduce((sum, act) => sum + (act.distance || 0), distance)
       : distance;
 
     await session.update({

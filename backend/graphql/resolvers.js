@@ -248,7 +248,7 @@ const resolvers = {
       }
     },
 
-    updateSession: async (_, { id }, { user }) => {
+    updateSession: async (_, { id, input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
 
       try {
@@ -271,8 +271,14 @@ const resolvers = {
         const totalDistance = activities.reduce((sum, act) => sum + (act.distance || 0), 0);
 
         await session.update({
+          session_type: input.sessionType ?? session.session_type,
+          date: input.date ? new Date(input.date) : session.date,
+          is_multi_sport: input.isMultiSport ?? session.is_multi_sport,
           total_duration: totalDuration,
-          total_distance: totalDistance
+          total_distance: totalDistance,
+          weather_temp: input.weatherTemp ?? session.weather_temp,
+          weather_humidity: input.weatherHumidity ?? session.weather_humidity,
+          weather_wind_speed: input.weatherWindSpeed ?? session.weather_wind_speed,
         });
 
         console.log("✅ Session Updated:", session.toJSON());
@@ -591,7 +597,6 @@ const resolvers = {
 
         await activity.destroy();
 
-        // Recalculate session totals
         const updatedTotalDuration = await SessionActivity.sum("duration", { where: { session_id: activity.session_id } });
         const updatedTotalDistance = await SessionActivity.sum("distance", { where: { session_id: activity.session_id } });
 

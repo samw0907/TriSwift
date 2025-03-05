@@ -29,7 +29,10 @@ SessionActivity.init({
   },
   sport_type: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
+    get() {
+      return this.getDataValue("sport_type") || "Unknown";
+    }
   },
   duration: {
     type: DataTypes.INTEGER,

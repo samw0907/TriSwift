@@ -31,7 +31,7 @@ const typeDefs = gql`
     id: ID!
     userId: ID!
     sessionId: ID!
-    sportType: String!
+    sportType: String
     duration: Int!
     distance: Float!
     heartRateMin: Int

@@ -17,7 +17,7 @@ const resolvers = {
 
     sessions: async (_, __, { user }) => {
       if (!user) throw new Error("Authentication required.");
-
+    
       const sessions = await Session.findAll({
         where: { user_id: user.id },
         include: [
@@ -25,16 +25,36 @@ const resolvers = {
           { model: Transition, as: "transitions" },
         ],
       });
-
+    
+      console.log("🔥 DEBUG: Retrieved Sessions:", JSON.stringify(sessions, null, 2)); // ✅ Log raw data
+      sessions.forEach(session => {
+        console.log("🔥 DEBUG: Activities in session:", JSON.stringify(session.activities, null, 2)); // ✅ Log activities
+      });
+    
       return sessions.map(session => {
-        const activities = session.activities || [];
+        const activities = (session.activities || []).map(activity => ({
+          id: activity.id,
+          sessionId: activity.session_id,
+          userId: activity.user_id,
+          sportType: activity.sport_type ? String(activity.sport_type).trim() : "Unknown",
+          duration: activity.duration,
+          distance: activity.distance,
+          heartRateMin: activity.heart_rate_min,
+          heartRateMax: activity.heart_rate_max,
+          heartRateAvg: activity.heart_rate_avg,
+          cadence: activity.cadence,
+          power: activity.power,
+          created_at: activity.created_at.toISOString(),
+          updated_at: activity.updated_at.toISOString(),
+        }));
+    
         const transitions = session.is_multi_sport ? session.transitions || [] : [];
-
+    
         const totalDuration = activities.reduce((sum, activity) => sum + (activity.duration || 0), 0)
           + (session.is_multi_sport ? transitions.reduce((sum, t) => sum + (t.transition_time || 0), 0) : 0);
-
+    
         const totalDistance = activities.reduce((sum, activity) => sum + (activity.distance || 0), 0);
-
+    
         return {
           id: session.id,
           userId: session.user_id,
@@ -52,7 +72,7 @@ const resolvers = {
           transitions,
         };
       });
-    },
+    },    
 
     session: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");

@@ -100,6 +100,32 @@ export const ADD_SESSION_ACTIVITY = gql`
   }
 `;
 
+export const ADD_SESSION_TRANSITION = gql`
+  mutation AddSessionTransition(
+    $sessionId: ID!,
+    $previousSport: String!,
+    $nextSport: String!,
+    $transitionTime: Int!,
+    $comments: String
+  ) {
+    createSessionTransition(input: {
+      sessionId: $sessionId,
+      previousSport: $previousSport,
+      nextSport: $nextSport,
+      transitionTime: $transitionTime,
+      comments: $comments
+    }) {
+      id
+      sessionId
+      previousSport
+      nextSport
+      transitionTime
+      comments
+      created_at
+      updated_at
+    }
+  }
+`;
 
 export const DELETE_SESSION = gql`
   mutation DeleteSession($id: ID!) {

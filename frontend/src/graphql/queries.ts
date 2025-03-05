@@ -58,6 +58,20 @@ export const GET_SESSION_ACTIVITIES = gql`
   }
 `;
 
+export const GET_SESSION_TRANSITIONS = gql`
+  query GetSessionTransitions($sessionId: ID!) {
+    sessionTransitions(sessionId: $sessionId) {
+      id
+      previousSport
+      nextSport
+      transitionTime
+      comments
+      created_at
+      updated_at
+    }
+  }
+`;
+
 export const GET_PERSONAL_RECORDS = gql`
   query GetPersonalRecords($sportType: String!) {
     personalRecords(sportType: $sportType) {

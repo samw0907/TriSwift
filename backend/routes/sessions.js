@@ -66,7 +66,7 @@ router.get("/", authMiddleware, async (req, res) => {
 
     const formattedSessions = sessions.map(session => ({
       ...session.toJSON(),
-      transitions: session.is_multi_sport ? session.Transitions : [],
+      transitions: session.is_multi_sport ? session.transitions : [],
     }));
 
     res.json(formattedSessions);

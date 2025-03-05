@@ -27,7 +27,7 @@ const resolvers = {
       });
     
       return sessions.map(session => {
-        const activities = session.session_activities || [];
+        const activities = session.activities || [];
         const transitions = session.is_multi_sport ? session.transitions || [] : [];
     
         const totalDuration = activities.reduce((sum, activity) => sum + (activity.duration || 0), 0)

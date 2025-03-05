@@ -351,7 +351,6 @@ const Dashboard: React.FC = () => {
   
       <ul>
         {sessions.map((session) => {
-          // Ensure activities is always an array
           const activities = session.activities ?? [];
           const isSingleSwim = session.sessionType === 'Swim' && activities.length === 1;
   

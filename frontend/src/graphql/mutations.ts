@@ -108,7 +108,7 @@ export const ADD_SESSION_TRANSITION = gql`
     $transitionTime: Int!,
     $comments: String
   ) {
-    createSessionTransition(input: {
+    createTransition(input: {
       sessionId: $sessionId,
       previousSport: $previousSport,
       nextSport: $nextSport,

@@ -46,8 +46,8 @@ const typeDefs = gql`
   type Transition {
     id: ID!
     sessionId: ID!
-    previousSport: String!
-    nextSport: String!
+    previousSport: String
+    nextSport: String
     transitionTime: Int!
     comments: String
     created_at: String!

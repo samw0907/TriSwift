@@ -43,7 +43,18 @@ const resolvers = {
           updated_at: activity.updated_at.toISOString(),
         }));
     
-        const transitions = session.is_multi_sport ? session.transitions || [] : [];
+        const transitions = session.is_multi_sport 
+          ? (session.transitions || []).map(t => ({
+          id: t.id,
+            sessionId: t.session_id,
+            previousSport: t.previous_sport || "Unknown",
+            nextSport: t.next_sport || "Unknown", 
+            transitionTime: t.transition_time || 0,
+            comments: t.comments || "",
+            created_at: t.created_at.toISOString(),
+            updated_at: t.updated_at.toISOString(),
+          })) 
+        : [];
     
         const totalDuration = activities.reduce((sum, activity) => sum + (activity.duration || 0), 0)
           + (session.is_multi_sport ? transitions.reduce((sum, t) => sum + (t.transition_time || 0), 0) : 0);

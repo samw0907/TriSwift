@@ -128,41 +128,34 @@ const Dashboard: React.FC = () => {
 
   const handleActivitySubmit = async (e: React.FormEvent, isTransition: boolean = false) => {
     e.preventDefault();
-
+  
     if (!sessionId) {
       alert("Session ID is missing. Please create a session first.");
       return;
     }
-
-    if (sessionType === 'Multi-Sport' && !activityType) {
+  
+    if (sessionType === 'Multi-Sport' && !activityType && !isTransition) {
       alert("Please select an activity type for Multi-Sport sessions.");
       return;
     }
-
-    if (!activityForm.distance) {
+  
+    if (!activityForm.distance && !isTransition) {
       alert("Distance is required.");
       return;
     }
-
-    const durationInSeconds =
-    (parseInt(activityForm.hours) || 0) * 3600 +
-    (parseInt(activityForm.minutes) || 0) * 60 +
-    (parseInt(activityForm.seconds) || 0);
-
-    let convertedDistance = parseFloat(activityForm.distance);
-    let sport = sessionType === 'Multi-Sport' ? activityType : sessionType;
   
-    if (sport === 'Swim') {
+    const durationInSeconds =
+      (parseInt(activityForm.hours) || 0) * 3600 +
+      (parseInt(activityForm.minutes) || 0) * 60 +
+      (parseInt(activityForm.seconds) || 0);
+  
+    let convertedDistance = isTransition ? 0 : parseFloat(activityForm.distance);
+    let sport = isTransition ? "Transition" : sessionType === 'Multi-Sport' ? activityType : sessionType;
+  
+    if (sport === 'Swim' && !isTransition) {
       convertedDistance = convertedDistance / 1000;
     }
-
-    if (isTransition) {
-      sport = 'Transition';
-      convertedDistance = 0;
-    } else if (sport === 'Swim') {
-      convertedDistance = convertedDistance / 1000;
-    }
-
+  
     try {
       const { data } = await addSessionActivity({
         variables: {
@@ -177,14 +170,14 @@ const Dashboard: React.FC = () => {
           power: activityForm.power ? parseInt(activityForm.power) : null,
         },
       });
-
+  
       if (data?.createSessionActivity) {
         setSessions((prevSessions) =>
           prevSessions.map((session) =>
             session.id === sessionId
               ? {
                   ...session,
-                  activities: [...session.activities, data.createSessionActivity],
+                  activities: [...(session.activities || []), data.createSessionActivity],
                   totalDistance: (session.totalDistance || 0) + data.createSessionActivity.distance,
                   totalDuration: (session.totalDuration || 0) + data.createSessionActivity.duration,
                 }
@@ -192,10 +185,11 @@ const Dashboard: React.FC = () => {
           )
         );
       }
-
-      refetch();
+  
+      await refetch();
+  
       setActivityForm({ hours: '', minutes: '', seconds: '', distance: '', heartRateMin: '', heartRateMax: '', heartRateAvg: '', cadence: '', power: '' });
-
+  
       if (!isMultiSportActive) {
         setShowActivityForm(false);
       }
@@ -203,7 +197,7 @@ const Dashboard: React.FC = () => {
       console.error("❌ Error Creating Activity:", error);
       alert("Failed to create activity. Please try again.");
     }
-  };
+  };  
 
   const resetForms = () => {
     setShowSessionForm(false);

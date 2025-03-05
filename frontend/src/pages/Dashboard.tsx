@@ -394,38 +394,76 @@ const Dashboard: React.FC = () => {
               <button onClick={() => handleDelete(session.id)} style={{ marginLeft: '10px', color: 'red' }}>
                 Delete
               </button>
-
+          
               {expandedSessionId === session.id && (
                 <div className="session-details">
                   <p>Temp - {session.weatherTemp ?? 'N/A'}°C</p>
                   <p>Humidity - {session.weatherHumidity ?? 'N/A'}%</p>
                   <p>Wind Speed - {session.weatherWindSpeed ?? 'N/A'}m/s</p>
-
-                  <h3>Activities</h3>
-                    <ul>
-                      {(session.activities ?? []).length > 0 ? (
-                        (session.activities ?? []).map((activity) => (
-                          <li key={activity.id}>
-                            <p><strong>{activity.sportType}</strong></p>
-                            <p>
-                              Distance: {activity.sportType === 'Swim' 
-                              ? `${(activity.distance * 1000).toFixed(0)} m` 
-                              : `${activity.distance.toFixed(2)} km`}
-                            </p>
-                            <p>Duration: {formatDuration(activity.duration)}</p>
-                            {activity.heartRateAvg && <p>Avg HR: {activity.heartRateAvg} bpm</p>}
-                            {activity.cadence && <p>Cadence: {activity.cadence} rpm</p>}
-                            {activity.power && <p>Power: {activity.power} watts</p>}
-                          </li>
-                        ))
-                      ) : (
-                        <p>No activities recorded for this session.</p>
-                      )}
-                    </ul>
-                  </div>
-                )}
-              </li>
-            );
+          
+                  <h3>Session Timeline</h3>
+                  <ul>
+                    {(() => {
+                      let orderedItems: (Activity | Transition)[] = [];
+                      let remainingTransitions = [...session.transitions];
+          
+                      // Start with the first activity
+                      let currentActivity: Activity | undefined = session.activities.length > 0 ? session.activities[0] : undefined;
+          
+                      while (currentActivity) {
+                        orderedItems.push(currentActivity);
+                        
+                        // Find the transition after this activity
+                        let nextTransitionIndex = remainingTransitions.findIndex(
+                          (t) => t.previousSport === currentActivity!.sportType
+                        );
+          
+                        if (nextTransitionIndex !== -1) {
+                          const transition = remainingTransitions.splice(nextTransitionIndex, 1)[0];
+                          orderedItems.push(transition);
+          
+                          // Find the next activity that matches the transition's nextSport
+                          currentActivity = session.activities.find(
+                            (act) => act.sportType === transition.nextSport
+                          ) || undefined; // Ensure it's explicitly undefined if not found
+                        } else {
+                          currentActivity = undefined; // No further transition found
+                        }
+                      }
+          
+                      return orderedItems.map((item) => {
+                        if ("sportType" in item) {
+                          return (
+                            <li key={item.id}>
+                              <p><strong>{item.sportType}</strong></p>
+                              <p>
+                                Distance: {item.sportType === 'Swim' 
+                                  ? `${(item.distance * 1000).toFixed(0)} m` 
+                                  : `${item.distance.toFixed(2)} km`}
+                              </p>
+                              <p>Duration: {formatDuration(item.duration)}</p>
+                              {item.heartRateAvg && <p>Avg HR: {item.heartRateAvg} bpm</p>}
+                              {item.cadence && <p>Cadence: {item.cadence} rpm</p>}
+                              {item.power && <p>Power: {item.power} watts</p>}
+                            </li>
+                          );
+                        } else {
+                          return (
+                            <li key={item.id} className="transition">
+                              <p><strong>Transition: {item.previousSport} → {item.nextSport}</strong></p>
+                              <p>Transition Time: {formatDuration(item.transitionTime)}</p>
+                              {item.comments && <p>Notes: {item.comments}</p>}
+                            </li>
+                          );
+                        }
+                      });
+                    })()}
+                  </ul>
+                </div>
+              )}
+            </li>
+          );
+          
           })}
         </ul>
       </div>

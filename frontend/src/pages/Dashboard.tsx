@@ -199,15 +199,6 @@ const Dashboard: React.FC = () => {
     }
   };  
 
-  const resetForms = () => {
-    setShowSessionForm(false);
-    setShowActivityForm(false);
-    setSessionType('');
-    setSessionId(null);
-    setSessionForm({ date: '', weatherTemp: '', weatherHumidity: '', weatherWindSpeed: '' });
-    setActivityForm({ hours: '', minutes: '', seconds: '', distance: '', heartRateMin: '', heartRateMax: '', heartRateAvg: '', cadence: '', power: '' });
-  };
-
   return (
     <div className="dashboard">
       <h1>Session Dashboard</h1>

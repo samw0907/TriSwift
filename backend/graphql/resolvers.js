@@ -12,29 +12,29 @@ const resolvers = {
 
     user: async (_, __, { user }) => {
       if (!user) throw new Error("Authentication required.");
-      return await User.findByPk(user.id, { include: Session });
+      return await User.findByPk(user.id, { include: Session, as: "sessions" });
     },
 
     sessions: async (_, __, { user }) => {
       if (!user) throw new Error("Authentication required.");
-    
+
       const sessions = await Session.findAll({
         where: { user_id: user.id },
         include: [
-          { model: SessionActivity },
-          { model: Transition },
+          { model: SessionActivity, as: "activities" },
+          { model: Transition, as: "transitions" },
         ],
       });
-    
+
       return sessions.map(session => {
         const activities = session.activities || [];
         const transitions = session.is_multi_sport ? session.transitions || [] : [];
-    
+
         const totalDuration = activities.reduce((sum, activity) => sum + (activity.duration || 0), 0)
           + (session.is_multi_sport ? transitions.reduce((sum, t) => sum + (t.transition_time || 0), 0) : 0);
-    
+
         const totalDistance = activities.reduce((sum, activity) => sum + (activity.distance || 0), 0);
-    
+
         return {
           id: session.id,
           userId: session.user_id,
@@ -56,24 +56,24 @@ const resolvers = {
 
     session: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-    
+
       const session = await Session.findByPk(id, {
         include: [
-          { model: SessionActivity },
-          { model: Transition }
-        ]
+          { model: SessionActivity, as: "activities" },
+          { model: Transition, as: "transitions" },
+        ],
       });
-    
+
       if (!session || session.user_id !== user.id) throw new Error("Unauthorized");
-    
-      const activities = session.session_activities || [];
+
+      const activities = session.activities || [];
       const transitions = session.is_multi_sport ? session.transitions || [] : [];
-    
+
       const totalDuration = activities.reduce((sum, activity) => sum + (activity.duration || 0), 0)
         + (session.is_multi_sport ? transitions.reduce((sum, t) => sum + (t.transition_time || 0), 0) : 0);
-    
+
       const totalDistance = activities.reduce((sum, activity) => sum + (activity.distance || 0), 0);
-    
+
       return {
         id: session.id,
         userId: session.user_id,
@@ -94,12 +94,12 @@ const resolvers = {
 
     sessionActivities: async (_, { sessionId }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-      
+
       const session = await Session.findByPk(sessionId);
       if (!session || session.user_id !== user.id) throw new Error("Unauthorized");
-    
+
       const activities = await SessionActivity.findAll({ where: { session_id: sessionId } });
-    
+
       return activities.map(activity => ({
         id: activity.id,
         sessionId: activity.session_id,
@@ -118,14 +118,14 @@ const resolvers = {
 
     transitions: async (_, { sessionId }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-    
+
       const session = await Session.findByPk(sessionId);
       if (!session) throw new Error("Session not found.");
       if (session.user_id !== user.id) throw new Error("Unauthorized");
       if (!session.is_multi_sport) throw new Error("Transitions are only available for multi-sport sessions.");
-    
+
       const transitions = await Transition.findAll({ where: { session_id: sessionId } });
-    
+
       return transitions.map(t => ({
         id: t.id,
         sessionId: t.session_id,
@@ -254,15 +254,15 @@ const resolvers = {
       try {
         const session = await Session.findByPk(id, {
           include: [
-            { model: SessionActivity },
-            { model: Transition }
+            { model: SessionActivity, as: "activities" },
+            { model: Transition, as: "transitions" },
           ]
         });
 
         if (!session) throw new Error("Session not found.");
         if (session.user_id !== user.id) throw new Error("Unauthorized.");
 
-        const activities = session.session_activities || [];
+        const activities = session.activities || [];
         const transitions = session.is_multi_sport ? session.transitions || [] : [];
 
         const totalDuration = activities.reduce((sum, act) => sum + (act.duration || 0), 0) +
@@ -296,6 +296,8 @@ const resolvers = {
           weatherWindSpeed: session.weather_wind_speed,
           created_at: session.created_at.toISOString(),
           updated_at: session.updated_at.toISOString(),
+          activities,
+          transitions,
         };
       } catch (error) {
         console.error("❌ Update Session Error:", error);
@@ -307,7 +309,13 @@ const resolvers = {
       if (!user) throw new Error("Authentication required.");
 
       try {
-        const session = await Session.findByPk(id);
+        const session = await Session.findByPk(id, {
+          include: [
+            { model: SessionActivity, as: "activities" },
+            { model: Transition, as: "transitions" },
+          ]
+        });
+
         if (!session || session.user_id !== user.id) throw new Error("Unauthorized or session not found.");
 
         await session.destroy();
@@ -315,6 +323,7 @@ const resolvers = {
       } catch (error) {
         throw new Error("Failed to delete session: " + error.message);
       }
+    },
     },
 
     createUser: async (_, { input }) => {
@@ -401,7 +410,10 @@ const resolvers = {
       if (!user) throw new Error("Authentication required.");
 
       try {
-        const session = await Session.findByPk(input.sessionId);
+        const session = await Session.findByPk(input.sessionId, {
+          include: [{ model: Transition, as: "transitions" }],
+        });
+
         if (!session) throw new Error("Session not found.");
         if (session.user_id !== user.id) throw new Error("Unauthorized: You can only add transitions to your own sessions.");
         if (!session.is_multi_sport) throw new Error("Transitions can only be added to multi-sport sessions.");
@@ -415,7 +427,12 @@ const resolvers = {
         });
 
         return {
-          ...transition.toJSON(),
+          id: transition.id,
+          sessionId: transition.session_id,
+          previousSport: transition.previous_sport,
+          nextSport: transition.next_sport,
+          transitionTime: transition.transition_time,
+          comments: transition.comments,
           created_at: transition.created_at.toISOString(),
           updated_at: transition.updated_at.toISOString(),
         };
@@ -428,12 +445,14 @@ const resolvers = {
       if (!user) throw new Error("Authentication required.");
 
       try {
-        const transition = await Transition.findByPk(id);
-        if (!transition) throw new Error("Transition not found.");
+        const transition = await Transition.findByPk(id, {
+          include: [{ model: Session, as: "session" }],
+        });
 
-        const session = await Session.findByPk(transition.session_id);
-        if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only update transitions in your own sessions.");
-        if (!session.is_multi_sport) throw new Error("Transitions can only be updated in multi-sport sessions.");
+        if (!transition) throw new Error("Transition not found.");
+        if (!transition.session) throw new Error("Session not found.");
+        if (transition.session.user_id !== user.id) throw new Error("Unauthorized: You can only update transitions in your own sessions.");
+        if (!transition.session.is_multi_sport) throw new Error("Transitions can only be updated in multi-sport sessions.");
 
         const updatedValues = {
           previous_sport: input.previousSport?.trim() ?? transition.previous_sport,
@@ -445,7 +464,12 @@ const resolvers = {
         await transition.update(updatedValues);
 
         return {
-          ...transition.toJSON(),
+          id: transition.id,
+          sessionId: transition.session_id,
+          previousSport: transition.previous_sport,
+          nextSport: transition.next_sport,
+          transitionTime: transition.transition_time,
+          comments: transition.comments,
           created_at: transition.created_at.toISOString(),
           updated_at: transition.updated_at.toISOString(),
         };
@@ -458,12 +482,14 @@ const resolvers = {
       if (!user) throw new Error("Authentication required.");
 
       try {
-        const transition = await Transition.findByPk(id);
-        if (!transition) throw new Error("Transition not found.");
+        const transition = await Transition.findByPk(id, {
+          include: [{ model: Session, as: "session" }],
+        });
 
-        const session = await Session.findByPk(transition.session_id);
-        if (!session || session.user_id !== user.id) throw new Error("Unauthorized: You can only delete transitions from your own sessions.");
-        if (!session.is_multi_sport) throw new Error("Transitions can only be deleted from multi-sport sessions.");
+        if (!transition) throw new Error("Transition not found.");
+        if (!transition.session) throw new Error("Session not found.");
+        if (transition.session.user_id !== user.id) throw new Error("Unauthorized: You can only delete transitions from your own sessions.");
+        if (!transition.session.is_multi_sport) throw new Error("Transitions can only be deleted from multi-sport sessions.");
 
         await transition.destroy();
         return { message: "Transition deleted successfully." };
@@ -757,7 +783,6 @@ const resolvers = {
         throw new Error("Failed to delete personal record: " + error.message);
       }
     },
-  },
-};
+  };
 
 module.exports = resolvers;

@@ -27,7 +27,7 @@ const resolvers = {
       });
     
       return sessions.map(session => {
-        const activities = session.SessionActivities || [];
+        const activities = session.session_activities || [];
         const transitions = session.is_multi_sport ? session.transitions || [] : [];
     
         const totalDuration = activities.reduce((sum, activity) => sum + (activity.duration || 0), 0)
@@ -66,7 +66,7 @@ const resolvers = {
     
       if (!session || session.user_id !== user.id) throw new Error("Unauthorized");
     
-      const activities = session.SessionActivities || [];
+      const activities = session.session_activities || [];
       const transitions = session.is_multi_sport ? session.transitions || [] : [];
     
       const totalDuration = activities.reduce((sum, activity) => sum + (activity.duration || 0), 0)
@@ -156,7 +156,18 @@ const resolvers = {
         }
       });
 
-      return Array.from(uniqueRecords.values()).flat();
+      return Array.from(uniqueRecords.values()).flat().map(record => ({
+        id: record.id,
+        userId: record.user_id,
+        sessionId: record.session_id,
+        sessionActivityId: record.session_activity_id,
+        activityType: record.activity_type,
+        distance: record.distance,
+        bestTime: record.best_time,
+        recordDate: record.record_date ? record.record_date.toISOString() : null,
+        created_at: record.created_at.toISOString(),
+        updated_at: record.updated_at.toISOString(),
+      }));
     },
   },
   Mutation: {
@@ -251,7 +262,7 @@ const resolvers = {
         if (!session) throw new Error("Session not found.");
         if (session.user_id !== user.id) throw new Error("Unauthorized.");
 
-        const activities = session.SessionActivities || [];
+        const activities = session.session_activities || [];
         const transitions = session.is_multi_sport ? session.transitions || [] : [];
 
         const totalDuration = activities.reduce((sum, act) => sum + (act.duration || 0), 0) +

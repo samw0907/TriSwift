@@ -47,6 +47,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     if (data?.sessions) {
+      console.log("✅ GraphQL Data:", data.sessions);
       setSessions(data.sessions);
     }
   }, [data]);

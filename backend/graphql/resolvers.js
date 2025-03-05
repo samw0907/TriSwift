@@ -324,7 +324,6 @@ const resolvers = {
         throw new Error("Failed to delete session: " + error.message);
       }
     },
-    },
 
     createUser: async (_, { input }) => {
       try {
@@ -783,6 +782,7 @@ const resolvers = {
         throw new Error("Failed to delete personal record: " + error.message);
       }
     },
-  };
+  }
+};
 
 module.exports = resolvers;

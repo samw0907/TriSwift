@@ -50,6 +50,8 @@ export const ADD_SESSION = gql`
       sessionType
       date
       isMultiSport
+      totalDuration
+      totalDistance
       weatherTemp
       weatherHumidity
       weatherWindSpeed
@@ -98,6 +100,7 @@ export const ADD_SESSION_ACTIVITY = gql`
   }
 `;
 
+
 export const DELETE_SESSION = gql`
   mutation DeleteSession($id: ID!) {
     deleteSession(id: $id) {
@@ -105,3 +108,4 @@ export const DELETE_SESSION = gql`
     }
   }
 `;
+

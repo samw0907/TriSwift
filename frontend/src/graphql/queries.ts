@@ -6,6 +6,7 @@ export const GET_SESSIONS = gql`
       id
       sessionType
       date
+      isMultiSport
       totalDuration
       totalDistance
       weatherTemp
@@ -13,17 +14,27 @@ export const GET_SESSIONS = gql`
       weatherWindSpeed
       created_at
       updated_at
-      activities { # Add activities to query
-        id
-        sportType
-        duration
-        distance
-        heartRateMin
-        heartRateMax
-        heartRateAvg
-        cadence
-        power
-      }
+activities { 
+  id
+  sportType
+  duration
+  distance
+  heartRateMin
+  heartRateMax
+  heartRateAvg
+  cadence
+  power
+  created_at
+  updated_at
+}
+transitions 
+  id
+  previousSport
+  nextSport
+  transitionTime
+  comments
+  created_at
+  updated_at
     }
   }
 `;
@@ -49,9 +60,17 @@ export const GET_SESSION_ACTIVITIES = gql`
 export const GET_PERSONAL_RECORDS = gql`
   query GetPersonalRecords($sportType: String!) {
     personalRecords(sportType: $sportType) {
+      id
+      userId
+      sessionId
+      sessionActivityId
+      activityType
       distance
-      best_time
-      record_date
+      bestTime
+      recordDate 
+      created_at
+      updated_at
     }
   }
 `;
+

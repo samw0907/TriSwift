@@ -27,7 +27,7 @@ activities {
   created_at
   updated_at
 }
-transitions 
+transitions @skip(if: false) {
   id
   previousSport
   nextSport
@@ -37,6 +37,7 @@ transitions
   updated_at
     }
   }
+}
 `;
 
 export const GET_SESSION_ACTIVITIES = gql`

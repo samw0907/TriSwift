@@ -26,11 +26,6 @@ const resolvers = {
         ],
       });
     
-      console.log("🔥 DEBUG: Retrieved Sessions:", JSON.stringify(sessions, null, 2)); // ✅ Log raw data
-      sessions.forEach(session => {
-        console.log("🔥 DEBUG: Activities in session:", JSON.stringify(session.activities, null, 2)); // ✅ Log activities
-      });
-    
       return sessions.map(session => {
         const activities = (session.activities || []).map(activity => ({
           id: activity.id,
@@ -53,7 +48,11 @@ const resolvers = {
         const totalDuration = activities.reduce((sum, activity) => sum + (activity.duration || 0), 0)
           + (session.is_multi_sport ? transitions.reduce((sum, t) => sum + (t.transition_time || 0), 0) : 0);
     
-        const totalDistance = activities.reduce((sum, activity) => sum + (activity.distance || 0), 0);
+          const totalDistance = activities.reduce((sum, activity) => {
+            const correctedDistance =
+              activity.sportType === "Swim" ? activity.distance / 1000 : activity.distance;
+            return sum + correctedDistance;
+          }, 0);
     
         return {
           id: session.id,

@@ -180,7 +180,11 @@ const Dashboard: React.FC = () => {
               ? {
                   ...session,
                   activities: [...(session.activities || []), data.createSessionActivity],
-                  totalDistance: (session.totalDistance || 0) + data.createSessionActivity.distance,
+                  totalDistance:
+                    (session.totalDistance || 0) +
+                    (data.createSessionActivity.sportType === "Swim"
+                      ? data.createSessionActivity.distance
+                      : data.createSessionActivity.distance),
                   totalDuration: (session.totalDuration || 0) + data.createSessionActivity.duration,
                 }
               : session
@@ -335,7 +339,7 @@ const Dashboard: React.FC = () => {
 
     <button type="button" onClick={() => setShowActivityForm(false)}>Cancel</button>
   </form>
-)}
+  )}
   
       <h2>Past Sessions</h2>
       {loading && <p>Loading sessions...</p>}
@@ -344,19 +348,15 @@ const Dashboard: React.FC = () => {
   
       <ul>
         {sessions.map((session) => {
-          const activities = session.activities ?? [];
-          const isSingleSwim = session.sessionType === 'Swim' && activities.length === 1;
-  
+          const computedTotalDistance = (session.activities ?? []).reduce((sum, activity) => {
+            return sum + (activity.distance || 0);
+          }, 0);
+
           return (
             <li key={session.id}>
               <strong>
                 {session.sessionType} {new Date(session.date).toLocaleDateString()} - 
-                {session.totalDistance !== null 
-                  ? isSingleSwim 
-                    ? ` ${session.totalDistance * 1000}m`
-                    : ` ${session.totalDistance}km`
-                  : ''}
-                {session.totalDuration ? ` - ${formatDuration(session.totalDuration)}` : ''}
+                {computedTotalDistance.toFixed(2)} km
               </strong>
               <br />
               <button onClick={() => setExpandedSessionId(expandedSessionId === session.id ? null : session.id)}>
@@ -365,40 +365,42 @@ const Dashboard: React.FC = () => {
               <button onClick={() => handleDelete(session.id)} style={{ marginLeft: '10px', color: 'red' }}>
                 Delete
               </button>
-  
+
               {expandedSessionId === session.id && (
                 <div className="session-details">
                   <p>Temp - {session.weatherTemp ?? 'N/A'}°C</p>
                   <p>Humidity - {session.weatherHumidity ?? 'N/A'}%</p>
                   <p>Wind Speed - {session.weatherWindSpeed ?? 'N/A'}m/s</p>
-  
+
                   <h3>Activities</h3>
-                  <ul>
-                    {activities && activities.length > 0 ? (
-                      activities.map((activity) => (
-                        <li key={activity.id}>
-                          <p><strong>{activity.sportType}</strong></p>
-                          <p>
-                            Distance: {activity.sportType === 'Swim' ? `${activity.distance * 1000} m` : `${activity.distance} km`}
-                          </p>
-                          <p>Duration: {formatDuration(activity.duration)}</p>
-                          {activity.heartRateAvg && <p>Avg HR: {activity.heartRateAvg} bpm</p>}
-                          {activity.cadence && <p>Cadence: {activity.cadence} rpm</p>}
-                          {activity.power && <p>Power: {activity.power} watts</p>}
-                        </li>
-                      ))
-                    ) : (
-                      <p>No activities recorded for this session.</p>
-                    )}
-                  </ul>
-                </div>
-              )}
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-};
+                    <ul>
+                      {(session.activities ?? []).length > 0 ? (
+                        (session.activities ?? []).map((activity) => (
+                          <li key={activity.id}>
+                            <p><strong>{activity.sportType}</strong></p>
+                            <p>
+                              Distance: {activity.sportType === 'Swim' 
+                              ? `${(activity.distance * 1000).toFixed(0)} m` 
+                              : `${activity.distance.toFixed(2)} km`}
+                            </p>
+                            <p>Duration: {formatDuration(activity.duration)}</p>
+                            {activity.heartRateAvg && <p>Avg HR: {activity.heartRateAvg} bpm</p>}
+                            {activity.cadence && <p>Cadence: {activity.cadence} rpm</p>}
+                            {activity.power && <p>Power: {activity.power} watts</p>}
+                          </li>
+                        ))
+                      ) : (
+                        <p>No activities recorded for this session.</p>
+                      )}
+                    </ul>
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    );
+  };
 
 export default Dashboard;

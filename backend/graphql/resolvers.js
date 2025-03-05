@@ -208,8 +208,8 @@ const resolvers = {
           session_type: sessionType,
           date: new Date(date),
           is_multi_sport: isMultiSport,
-          total_duration: 0, // Defaulting to 0 instead of null
-          total_distance: 0, // Defaulting to 0 instead of null
+          total_duration: 0,
+          total_distance: 0,
           weather_temp: weatherTemp ?? null,
           weather_humidity: weatherHumidity ?? null,
           weather_wind_speed: weatherWindSpeed ?? null,
@@ -481,7 +481,6 @@ const resolvers = {
 
         console.log("✅ Activity Created:", activity.toJSON());
 
-        // Recalculate session totals
         const updatedTotalDuration = await SessionActivity.sum("duration", { where: { session_id: sessionId } });
         const updatedTotalDistance = await SessionActivity.sum("distance", { where: { session_id: sessionId } });
 
@@ -535,7 +534,6 @@ const resolvers = {
         await activity.update(updatedValues);
         console.log("✅ Activity Updated:", activity.toJSON());
 
-        // Recalculate session totals
         const updatedTotalDuration = await SessionActivity.sum("duration", { where: { session_id: activity.session_id } });
         const updatedTotalDistance = await SessionActivity.sum("distance", { where: { session_id: activity.session_id } });
 

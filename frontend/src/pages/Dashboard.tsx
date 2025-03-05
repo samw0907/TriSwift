@@ -151,7 +151,8 @@ const Dashboard: React.FC = () => {
       (parseInt(activityForm.seconds) || 0);
   
     let convertedDistance = isTransition ? 0 : parseFloat(activityForm.distance);
-    let sport = isTransition ? "Transition" : sessionType === 'Multi-Sport' ? activityType : sessionType;
+    let sport = sessionType === 'Multi-Sport' ? activityType : sessionType;
+
   
     if (sport === 'Swim' && !isTransition) {
       convertedDistance = convertedDistance / 1000;

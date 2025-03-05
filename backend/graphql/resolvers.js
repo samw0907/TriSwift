@@ -507,8 +507,15 @@ const resolvers = {
           throw new Error("Session ID, sportType, duration, and distance are required.");
         }
 
+        if (sportType.toLowerCase() === "transition") {
+          throw new Error('Invalid sport type: "Transition" should be added as a transition, not an activity.');
+        }
+
         const session = await Session.findByPk(sessionId, {
-          include: [SessionActivity],
+          include: [
+            { model: SessionActivity, as: "activities" },
+            { model: Transition, as: "transitions" },
+          ],
         });
 
         if (!session || session.user_id !== user.id) throw new Error("Unauthorized.");
@@ -523,12 +530,19 @@ const resolvers = {
 
         console.log("✅ Activity Created:", activity.toJSON());
 
-        const updatedTotalDuration = await SessionActivity.sum("duration", { where: { session_id: sessionId } });
-        const updatedTotalDistance = await SessionActivity.sum("distance", { where: { session_id: sessionId } });
-
+        const updatedTotalDuration = 
+        (await SessionActivity.sum("duration", { where: { session_id: sessionId } })) || 0;
+  
+        const updatedTotalDistance = 
+        (await SessionActivity.sum("distance", { where: { session_id: sessionId } })) || 0;
+  
+        const updatedTotalTransitionTime = session.is_multi_sport
+        ? (await Transition.sum("transition_time", { where: { session_id: sessionId } })) || 0
+        : 0;
+  
         await session.update({
-          total_duration: updatedTotalDuration || 0,
-          total_distance: updatedTotalDistance || 0,
+          total_duration: updatedTotalDuration + updatedTotalTransitionTime,
+          total_distance: updatedTotalDistance,
         });
 
         console.log("✅ Session Updated After Activity Addition:", session.toJSON());

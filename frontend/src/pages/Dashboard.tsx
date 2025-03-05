@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_SESSIONS } from '../graphql/queries';
-import { ADD_SESSION, DELETE_SESSION, ADD_SESSION_ACTIVITY } from '../graphql/mutations';
+import { ADD_SESSION, DELETE_SESSION, ADD_SESSION_ACTIVITY, ADD_SESSION_TRANSITION } from '../graphql/mutations';
 import '../styles/dashboard.css';
 
 interface Session {
@@ -14,12 +14,12 @@ interface Session {
   weatherHumidity?: number | null;
   weatherWindSpeed?: number | null;
   activities: Activity[];
+  transitions: Transition[];
   created_at: string;
   updated_at: string;
 }
-
 interface Activity {
-  id: string;
+  id: string
   sportType: string;
   duration: number;
   distance: number;
@@ -30,15 +30,25 @@ interface Activity {
   power?: number;
 }
 
+interface Transition {
+  id: string;
+  previousSport: string;
+  nextSport: string;
+  transitionTime: number;
+  comments?: string;
+}
+
+
 const Dashboard: React.FC = () => {
   const { loading, error, data, refetch } = useQuery<{ sessions: Session[] }>(GET_SESSIONS);
   const [addSession] = useMutation(ADD_SESSION, { refetchQueries: [{ query: GET_SESSIONS }] });
   const [addSessionActivity] = useMutation(ADD_SESSION_ACTIVITY, { refetchQueries: [{ query: GET_SESSIONS }] });
+  const [addSessionTransition] = useMutation(ADD_SESSION_TRANSITION, { refetchQueries: [{ query: GET_SESSIONS }] });
   const [deleteSession] = useMutation(DELETE_SESSION, { refetchQueries: [{ query: GET_SESSIONS }] });
 
   const [showSessionForm, setShowSessionForm] = useState(false);
-  const [showActivityForm, setShowActivityForm] = useState(false);
-  const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
+  const [showInputForm, setShowInputForm] = useState(false);
+  const [selectedFormType, setSelectedFormType] = useState<'activity' | 'transition'>('activity');
   const [sessionType, setSessionType] = useState('');
   const [activityType, setActivityType] = useState('');
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -47,7 +57,6 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     if (data?.sessions) {
-      console.log("✅ GraphQL Data:", data.sessions);
       setSessions(data.sessions);
     }
   }, [data]);
@@ -69,6 +78,13 @@ const Dashboard: React.FC = () => {
     heartRateAvg: '',
     cadence: '',
     power: '',
+  });
+
+  const [transitionForm, setTransitionForm] = useState({
+    previousSport: '',
+    nextSport: '',
+    transitionTime: '',
+    comments: '',
   });
 
   const formatDuration = (seconds: number) => {
@@ -118,7 +134,7 @@ const Dashboard: React.FC = () => {
         setSessions((prevSessions) => [...prevSessions, data.createSession]);
         setSessionId(data.createSession.id);
         setShowSessionForm(false);
-        setShowActivityForm(true);
+        setShowInputForm(true);
         setIsMultiSportActive(sessionType === 'Multi-Sport');
       }
     } catch (error) {

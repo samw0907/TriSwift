@@ -577,6 +577,8 @@ const resolvers = {
 
         console.log("✅ Session Updated After Activity Addition:", session.toJSON());
 
+        await createOrUpdatePersonalRecords(user.id, sportType, sessionId);
+
         return {
           id: activity.id,
           sessionId: activity.session_id,
@@ -683,133 +685,80 @@ const resolvers = {
       }
     },
     
-    createPersonalRecord: async (_, { input }, { user }) => {
-      if (!user) throw new Error("Authentication required.");
-
-      try {
-        const { activityType, sessionId } = input;
-
-        if (!activityType || !sessionId) {
-          throw new Error("Activity Type and Session ID are required.");
-        }
-
-        const session = await Session.findByPk(sessionId, {
-          include: [SessionActivity],
-        });
-
-        if (!session || session.user_id !== user.id) {
-          throw new Error("Unauthorized: You can only add records to your own sessions.");
-        }
-
-        const activities = session.SessionActivities.filter(
-          (act) => act.sport_type.trim().toLowerCase() === activityType.trim().toLowerCase()
-        );
-
-        if (!activities.length) {
-          throw new Error("No session activities found for the given sport type.");
-        }
-
-        const validDistances = {
-          running: [100, 200, 400, 1000, 5000, 10000, 21100, 42200],
-          cycling: [10000, 20000, 40000, 50000, 80000, 100000, 150000, 200000],
-          swimming: [100, 200, 400, 800, 1000, 1500, 2000],
-        };
-
-        const recordsToSave = [];
-        const existingRecords = await PersonalRecord.findAll({
-          where: { user_id: user.id, session_id: sessionId },
-        });
-
-        for (const dist of validDistances[activityType.trim().toLowerCase()] || []) {
-          const bestAttempts = activities
-            .filter((a) => Number(a.distance) === Number(dist))
-            .sort((a, b) => a.duration - b.duration)
-            .slice(0, 3);
-
-          bestAttempts.forEach((activity) => {
-            const alreadyExists = existingRecords.some(
-              (record) => Number(record.distance) === Number(activity.distance)
-            );
-
-            if (!alreadyExists) {
-              recordsToSave.push({
-                user_id: user.id,
-                session_id: sessionId,
-                session_activity_id: activity.id,
-                activity_type: activityType.trim(),
-                distance: activity.distance,
-                best_time: activity.duration,
-                record_date: session.date,
-              });
-            }
+    createOrUpdatePersonalRecords = async (userId, sportType, sessionId) => {
+      console.log("🔍 Checking for personal records update...");
+    
+      const activities = await SessionActivity.findAll({
+        where: { user_id: userId, sport_type: sportType },
+        order: [["distance", "ASC"], ["duration", "ASC"]],
+      });
+    
+      if (!activities.length) {
+        console.log("⚠️ No activities found for personal records.");
+        return;
+      }
+    
+      const validDistances = {
+        Run: [100, 200, 400, 1000, 5000, 10000, 21100, 42200],
+        Bike: [10000, 20000, 40000, 50000, 80000, 100000, 150000, 200000],
+        Swim: [100, 200, 400, 800, 1000, 1500, 2000],
+      };
+    
+      const distancesForSport = validDistances[sportType];
+    
+      if (!distancesForSport) {
+        console.log(`⚠️ No valid distances found for sport type: ${sportType}`);
+        return;
+      }
+    
+      const recordsToSave = [];
+    
+      for (const dist of distancesForSport) {
+        const bestAttempts = activities
+          .filter((a) => Number(a.distance) === Number(dist))
+          .sort((a, b) => a.duration - b.duration)
+          .slice(0, 3);
+    
+        for (const attempt of bestAttempts) {
+          const existingRecord = await PersonalRecord.findOne({
+            where: {
+              user_id: userId,
+              activity_type: sportType,
+              distance: dist,
+            },
           });
+    
+          if (existingRecord) {
+            if (attempt.duration < existingRecord.best_time) {
+              await existingRecord.update({
+                best_time: attempt.duration,
+                record_date: new Date(),
+                session_id: sessionId,
+                session_activity_id: attempt.id,
+              });
+              console.log("✅ Updated personal record:", existingRecord.toJSON());
+            }
+          } else {
+            recordsToSave.push({
+              user_id: userId,
+              session_id: sessionId,
+              session_activity_id: attempt.id,
+              activity_type: sportType,
+              distance: attempt.distance,
+              best_time: attempt.duration,
+              record_date: new Date(),
+            });
+          }
         }
-
-        if (!recordsToSave.length) {
-          throw new Error("No valid records found for predefined distances.");
-        }
-
-        const createdRecords = await PersonalRecord.bulkCreate(recordsToSave);
-
-        console.log("✅ Personal Records Created:", createdRecords.map((r) => r.toJSON()));
-
-        return createdRecords.map((record) => ({
-          id: record.id,
-          userId: record.user_id,
-          sessionId: record.session_id,
-          sessionActivityId: record.session_activity_id,
-          activityType: record.activity_type,
-          distance: record.distance,
-          bestTime: record.best_time,
-          recordDate: record.record_date ? record.record_date.toISOString() : null,
-          created_at: record.created_at.toISOString(),
-          updated_at: record.updated_at.toISOString(),
-        }));
-      } catch (error) {
-        console.error("❌ Create Personal Record Error:", error);
-        throw new Error("Failed to create personal record: " + error.message);
       }
-    },
-
-    updatePersonalRecord: async (_, { id, input }, { user }) => {
-      if (!user) throw new Error("Authentication required.");
-
-      try {
-        const record = await PersonalRecord.findByPk(id);
-        if (!record) throw new Error("Personal Record not found");
-        if (record.user_id !== user.id) throw new Error("Unauthorized: You can only update your own records.");
-        if (input.sessionActivityId && input.sessionActivityId !== record.session_activity_id) {
-          throw new Error("Session Activity ID cannot be changed.");
-        }
-
-        const updatedValues = {
-          activity_type: input.activityType?.trim() ?? record.activity_type,
-          distance: input.distance ?? record.distance,
-          best_time: input.bestTime ?? record.best_time,
-          record_date: input.recordDate ? new Date(input.recordDate) : record.record_date,
-        };
-
-        await record.update(updatedValues);
-
-        console.log("✅ Personal Record Updated:", record.toJSON());
-
-        return {
-          id: record.id,
-          userId: record.user_id,
-          sessionId: record.session_id,
-          sessionActivityId: record.session_activity_id,
-          activityType: record.activity_type,
-          distance: record.distance,
-          bestTime: record.best_time,
-          recordDate: record.record_date ? record.record_date.toISOString() : null,
-          created_at: record.created_at.toISOString(),
-          updated_at: record.updated_at.toISOString(),
-        };
-      } catch (error) {
-        console.error("❌ Update Personal Record Error:", error);
-        throw new Error("Failed to update personal record: " + error.message);
+    
+      if (recordsToSave.length) {
+        await PersonalRecord.bulkCreate(recordsToSave);
+        console.log("✅ New personal records added.");
+      } else {
+        console.log("⚠️ No new personal records to add.");
       }
-    },
+    },    
 
     deletePersonalRecord: async (_, { id }, { user }) => {
       if (!user) throw new Error("Authentication required.");

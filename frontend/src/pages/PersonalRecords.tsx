@@ -15,9 +15,9 @@ const formatTime = (seconds: number) => {
 };
 
 const sportTypeMapping: { [key: string]: string } = {
-  Run: "Running",
-  Bike: "Cycling",
-  Swim: "Swimming",
+  Run: "Run",
+  Bike: "Bike",
+  Swim: "Swim",
 };
 
 const PersonalRecords: React.FC = () => {
@@ -30,13 +30,12 @@ const PersonalRecords: React.FC = () => {
     skip: !mappedSportType,
   });
   
-
   const handleSportSelection = useCallback((sport: string) => {
     setSelectedSport(sport);
     if (refetch) {
       refetch({ sportType: sportTypeMapping[sport] });
     }
-  }, [refetch]);
+  }, [refetch, sportTypeMapping]);
 
   return (
     <div className="personal-records">
@@ -63,11 +62,10 @@ const PersonalRecords: React.FC = () => {
           {data?.personalRecords && data.personalRecords.length > 0 ? (
             <ul>
               {distances[sportTypeMapping[selectedSport] as keyof typeof distances].map((dist) => {
-                const matchingRecords = data.personalRecords.filter((r: any) => r.distance === dist)
+                const matchingRecords = data.personalRecords
                 .filter((r: any) => r.distance === dist)
                 .sort((a: any, b: any) => a.bestTime - b.bestTime)
                 .slice(0, 3);
-
                 return (
                   <li key={dist}>
                     <strong>{dist}m</strong> - 

@@ -31,7 +31,7 @@ const typeDefs = gql`
     id: ID!
     userId: ID!
     sessionId: ID!
-    sportType: String
+    sportType: String!
     duration: Int!
     distance: Float!
     heartRateMin: Int
@@ -57,7 +57,7 @@ const typeDefs = gql`
   type PersonalRecord {
     id: ID!
     userId: ID!
-    sessionId: ID!  # Added this field to match the database
+    sessionId: ID!
     sessionActivityId: ID!
     activityType: String!
     distance: Float!
@@ -135,7 +135,7 @@ const typeDefs = gql`
   }
 
   input PersonalRecordInput {
-    sessionId: ID!  # Added this for better query support
+    sessionId: ID! 
     sessionActivityId: ID!
     activityType: String!
     distance: Float
@@ -183,7 +183,7 @@ const typeDefs = gql`
     createSession(input: SessionInput!): Session
     createSessionActivity(input: SessionActivityInput!): SessionActivity
     createTransition(input: TransitionInput!): Transition
-    createPersonalRecord(input: PersonalRecordInput!): PersonalRecord
+    createOrUpdatePersonalRecords(sessionActivityId: ID!): [PersonalRecord!]!
     createUser(input: CreateUserInput!): User
 
     updateSession(id: ID!, input: UpdateSessionInput!): Session

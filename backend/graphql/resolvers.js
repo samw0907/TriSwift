@@ -685,7 +685,7 @@ const resolvers = {
       }
     },
     
-    createOrUpdatePersonalRecords = async (userId, sportType, sessionId) => {
+    createOrUpdatePersonalRecords: async (userId, sportType, sessionId) => {
       console.log("🔍 Checking for personal records update...");
     
       const activities = await SessionActivity.findAll({

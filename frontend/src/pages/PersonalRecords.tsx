@@ -72,10 +72,11 @@ const PersonalRecords: React.FC = () => {
               </thead>
               <tbody>
                 {distances[selectedSport as keyof typeof distances].map((dist) => {
-                  const matchingRecords = data.personalRecords
+                  let matchingRecords = data.personalRecords
                     .filter((r: any) => Number(r.distance) === Number(dist))
                     .sort((a: any, b: any) => Number(a.bestTime) - Number(b.bestTime))
-                    .slice(0, 3);
+
+                    matchingRecords = [...matchingRecords, null, null].slice(0, 3);
 
                   return (
                     <tr key={dist}>

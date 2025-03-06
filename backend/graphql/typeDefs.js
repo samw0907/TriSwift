@@ -59,6 +59,7 @@ const typeDefs = gql`
     userId: ID!
     sessionId: ID!  # Added this field to match the database
     sessionActivityId: ID!
+    activityType: String!
     distance: Float!
     bestTime: Int!
     recordDate: String!
@@ -135,7 +136,8 @@ const typeDefs = gql`
 
   input PersonalRecordInput {
     sessionId: ID!  # Added this for better query support
-    sessionActivityId: ID!  
+    sessionActivityId: ID!
+    activityType: String!
     distance: Float
     bestTime: Int!
     recordDate: String
@@ -144,6 +146,7 @@ const typeDefs = gql`
   input UpdatePersonalRecordInput {
     sessionId: ID!
     sessionActivityId: ID!
+    activityType: String!
     distance: Float
     bestTime: Int!
     recordDate: String

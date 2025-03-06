@@ -25,14 +25,18 @@ const PersonalRecords: React.FC = () => {
 
   const mappedSportType = selectedSport ? sportTypeMapping[selectedSport] : null;
 
-  const { loading, error, data } = useQuery(GET_PERSONAL_RECORDS, {
-    variables: { sport_type: mappedSportType },
+  const { loading, error, data, refetch } = useQuery(GET_PERSONAL_RECORDS, {
+    variables: { sportType: mappedSportType },
     skip: !mappedSportType,
   });
+  
 
   const handleSportSelection = useCallback((sport: string) => {
     setSelectedSport(sport);
-  }, []);
+    if (refetch) {
+      refetch({ sportType: sportTypeMapping[sport] });
+    }
+  }, [refetch]);
 
   return (
     <div className="personal-records">
@@ -59,17 +63,24 @@ const PersonalRecords: React.FC = () => {
           {data?.personalRecords && data.personalRecords.length > 0 ? (
             <ul>
               {distances[sportTypeMapping[selectedSport] as keyof typeof distances].map((dist) => {
-                const matchingRecords = data.personalRecords.filter((r: any) => r.distance === dist);
+                const matchingRecords = data.personalRecords.filter((r: any) => r.distance === dist)
+                .filter((r: any) => r.distance === dist)
+                .sort((a: any, b: any) => a.bestTime - b.bestTime)
+                .slice(0, 3);
 
                 return (
                   <li key={dist}>
-                    {dist}m - 
-                    {matchingRecords.length > 0
-                      ? matchingRecords.map((r: any) => (
-                          <span key={r.id}> {formatTime(parseInt(r.best_time, 10))}</span>
+                    <strong>{dist}m</strong> - 
+                      {matchingRecords.length > 0 ? (
+                        matchingRecords.map((r: any) => (
+                          <span key={r.id}> 
+                            {formatTime(parseInt(r.bestTime, 10))} ({r.activityType}) 
+                          </span>
                         ))
-                      : " No data"}
-                  </li>
+                      ) : (
+                        " No data"
+                      )}
+                    </li>
                 );
               })}
             </ul>

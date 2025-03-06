@@ -35,7 +35,7 @@ const PersonalRecords: React.FC = () => {
     if (refetch) {
       refetch({ sportType: sportTypeMapping[sport] });
     }
-  }, [refetch, sportTypeMapping]);
+  }, [refetch]);
 
   return (
     <div className="personal-records">
@@ -61,24 +61,25 @@ const PersonalRecords: React.FC = () => {
           
           {data?.personalRecords && data.personalRecords.length > 0 ? (
             <ul>
-              {distances[sportTypeMapping[selectedSport] as keyof typeof distances].map((dist) => {
+              {distances[selectedSport as keyof typeof distances].map((dist) => {
                 const matchingRecords = data.personalRecords
-                .filter((r: any) => r.distance === dist && r.activityType === selectedSport)
-                .sort((a: any, b: any) => a.bestTime - b.bestTime)
-                .slice(0, 3);
+                  .filter((r: any) => Number(r.distance) === Number(dist))
+                  .sort((a: any, b: any) => Number(a.bestTime) - Number(b.bestTime))
+                  .slice(0, 3);
+
                 return (
                   <li key={dist}>
-                    <strong>{dist}m</strong> - 
-                      {matchingRecords.length > 0 ? (
-                        matchingRecords.map((r: any) => (
-                          <span key={r.id}> 
-                            {formatTime(parseInt(r.bestTime, 10))} ({r.activityType}) 
-                          </span>
-                        ))
-                      ) : (
-                        " No data"
-                      )}
-                    </li>
+                    <strong>{selectedSport === "Swim" ? `${dist * 1000}m` : `${dist}km`}</strong> - 
+                    {matchingRecords.length > 0 ? (
+                      matchingRecords.map((r: any) => (
+                        <span key={r.id}> 
+                          {formatTime(Number(r.bestTime))} 
+                        </span>
+                      ))
+                    ) : (
+                      " No data"
+                    )}
+                  </li>
                 );
               })}
             </ul>

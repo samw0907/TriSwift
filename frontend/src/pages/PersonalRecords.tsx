@@ -3,9 +3,9 @@ import { useQuery } from '@apollo/client';
 import { GET_PERSONAL_RECORDS } from '../graphql/queries';
 
 const distances = {
-  Running: [100, 200, 400, 1000, 5000, 10000, 21100, 42200],
-  Cycling: [10000, 20000, 40000, 50000, 80000, 100000, 150000, 200000],
-  Swimming: [100, 200, 400, 800, 1000, 1500, 2000],
+  Run: [0.1, 0.2, 0.4, 1, 5, 10, 21.1, 42.2],
+  Bike: [10, 20, 40, 50, 80, 100, 150, 200],
+  Swim: [0.1, 0.2, 0.4, 0.8, 1, 1.5, 2],
 };
 
 const formatTime = (seconds: number) => {

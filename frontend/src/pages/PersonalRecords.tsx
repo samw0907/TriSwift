@@ -29,6 +29,7 @@ const PersonalRecords: React.FC = () => {
   const { loading, error, data, refetch } = useQuery(GET_PERSONAL_RECORDS, {
     variables: { sportType: mappedSportType },
     skip: !mappedSportType,
+    fetchPolicy: "network-only"
   });
   
   const handleSportSelection = useCallback((sport: string) => {
@@ -76,14 +77,16 @@ const PersonalRecords: React.FC = () => {
                     .filter((r: any) => Number(r.distance) === Number(dist))
                     .sort((a: any, b: any) => Number(a.bestTime) - Number(b.bestTime))
 
-                    matchingRecords = [...matchingRecords, null, null].slice(0, 3);
+                  let recordTimes = Array.from(new Set(matchingRecords.map((r: { bestTime: number }) => r.bestTime)));
+
+                  recordTimes = [...recordTimes, null, null].slice(0, 3);
 
                   return (
                     <tr key={dist}>
                       <td>{selectedSport === "Swim" ? `${dist * 1000}m` : `${dist}km`}</td>
                       {[0, 1, 2].map((index) => (
                         <td key={index}>
-                          {matchingRecords[index] ? formatTime(Number(matchingRecords[index].bestTime)) : "-"}
+                          {recordTimes[index] ? formatTime(Number(recordTimes[index])) : "-"}
                         </td>
                       ))}
                     </tr>

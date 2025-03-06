@@ -137,12 +137,6 @@ const Dashboard: React.FC = () => {
         setShowSessionForm(false);
         setShowInputForm(true);
         setIsMultiSportActive(sessionType === 'Multi-Sport');
-
-        if (sessionType === 'Multi-Sport') {
-          setShowInputForm(true);
-        } else {
-          await handleSingleActivitySubmission(data.createSession.id, sessionType);
-        }
       }
     } catch (error) {
       console.error("❌ Error Creating Session:", error);
@@ -151,6 +145,22 @@ const Dashboard: React.FC = () => {
   };
 
   const handleSingleActivitySubmission = async (sessionId: string, sportType: string) => {
+    
+    if (!sessionId) {
+      alert("Session ID is missing. Please create a session first.");
+      return;
+    }
+  
+    if (!sessionType) {
+      alert("Sport Type is required.");
+      return;
+    }
+  
+    if (!activityForm.distance) {
+      alert("Distance is required.");
+      return;
+    }
+
     const durationInSeconds =
       (parseInt(activityForm.hours) || 0) * 3600 +
       (parseInt(activityForm.minutes) || 0) * 60 +
@@ -273,7 +283,6 @@ const Dashboard: React.FC = () => {
         alert("Failed to create activity. Please try again.");
       }
     } else {
-
       if (!transitionForm.previousSport || !transitionForm.nextSport) {
         alert("Previous and Next sports are required for a transition.");
         return;
@@ -466,13 +475,12 @@ const Dashboard: React.FC = () => {
                       let orderedItems: (Activity | Transition)[] = [];
                       let remainingTransitions = [...session.transitions];
           
-                      // Start with the first activity
                       let currentActivity: Activity | undefined = session.activities.length > 0 ? session.activities[0] : undefined;
           
                       while (currentActivity) {
                         orderedItems.push(currentActivity);
                         
-                        // Find the transition after this activity
+
                         let nextTransitionIndex = remainingTransitions.findIndex(
                           (t) => t.previousSport === currentActivity!.sportType
                         );
@@ -480,13 +488,12 @@ const Dashboard: React.FC = () => {
                         if (nextTransitionIndex !== -1) {
                           const transition = remainingTransitions.splice(nextTransitionIndex, 1)[0];
                           orderedItems.push(transition);
-          
-                          // Find the next activity that matches the transition's nextSport
+    
                           currentActivity = session.activities.find(
                             (act) => act.sportType === transition.nextSport
-                          ) || undefined; // Ensure it's explicitly undefined if not found
+                          ) || undefined;
                         } else {
-                          currentActivity = undefined; // No further transition found
+                          currentActivity = undefined;
                         }
                       }
           

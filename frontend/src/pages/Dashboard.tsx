@@ -150,6 +150,59 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleSingleActivitySubmission = async (sessionId: string, sportType: string) => {
+    const durationInSeconds =
+      (parseInt(activityForm.hours) || 0) * 3600 +
+      (parseInt(activityForm.minutes) || 0) * 60 +
+      (parseInt(activityForm.seconds) || 0);
+  
+    let convertedDistance = parseFloat(activityForm.distance);
+    if (sportType === 'Swim') {
+      convertedDistance = convertedDistance / 1000;
+    }
+  
+    try {
+      const { data } = await addSessionActivity({
+        variables: {
+          sessionId,
+          sportType,
+          duration: durationInSeconds,
+          distance: convertedDistance,
+          heartRateMin: activityForm.heartRateMin ? parseInt(activityForm.heartRateMin) : null,
+          heartRateMax: activityForm.heartRateMax ? parseInt(activityForm.heartRateMax) : null,
+          heartRateAvg: activityForm.heartRateAvg ? parseInt(activityForm.heartRateAvg) : null,
+          cadence: activityForm.cadence ? parseInt(activityForm.cadence) : null,
+          power: activityForm.power ? parseInt(activityForm.power) : null,
+        },
+      });
+  
+      if (data?.createSessionActivity) {
+        setSessions((prevSessions) =>
+          prevSessions.map((session) =>
+            session.id === sessionId
+              ? {
+                  ...session,
+                  activities: [...(session.activities || []), data.createSessionActivity],
+                  totalDistance:
+                    (session.totalDistance || 0) +
+                    (sportType === "Swim"
+                      ? data.createSessionActivity.distance
+                      : data.createSessionActivity.distance),
+                  totalDuration: (session.totalDuration || 0) + data.createSessionActivity.duration,
+                }
+              : session
+          )
+        );
+      }
+  
+      await refetch();
+    } catch (error) {
+      console.error("❌ Error Creating Activity:", error);
+      alert("Failed to create activity. Please try again.");
+    }
+  };
+  
+
   const handleInputSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   

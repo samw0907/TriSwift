@@ -19,8 +19,8 @@ Date            Hours    Topic
 03.03.2025      9        Backend, refactoring routes
 04.03.2025      2        Backend, refactoring routes
                 6.5      Frontend pages, fetching & refetching
-05.03.2025
+05.03.2025      9        Adding fronted functionality, ammendments to backend
 06.03.2025
 07.03.2025  
-                (17.5)
-TOTAL HOURS     93    
+                (26.5)
+TOTAL HOURS     102    

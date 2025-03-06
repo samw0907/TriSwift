@@ -137,6 +137,12 @@ const Dashboard: React.FC = () => {
         setShowSessionForm(false);
         setShowInputForm(true);
         setIsMultiSportActive(sessionType === 'Multi-Sport');
+
+        if (sessionType === 'Multi-Sport') {
+          setShowInputForm(true);
+        } else {
+          await handleSingleActivitySubmission(data.createSession.id, sessionType);
+        }
       }
     } catch (error) {
       console.error("❌ Error Creating Session:", error);

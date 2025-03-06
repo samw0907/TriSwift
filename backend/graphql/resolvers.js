@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const { User, Session, SessionActivity, PersonalRecord, Transition } = require("../models");
 const { JWT_SECRET } = require("../util/config");
 
-async function createOrUpdatePersonalRecords (userId, sportType, sessionId) {
+async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
   console.log("🔍 Checking for personal records update...");
 
   const activities = await SessionActivity.findAll({
@@ -17,8 +17,8 @@ async function createOrUpdatePersonalRecords (userId, sportType, sessionId) {
   }
 
   const validDistances = {
-    Run: [100, 200, 400, 1000, 5000, 10000, 21100, 42200],
-    Bike: [10000, 20000, 40000, 50000, 80000, 100000, 150000, 200000],
+    Run: [0.1, 0.2, 0.4, 1, 5, 10, 21.1, 42.2],
+    Bike: [10, 20, 40, 50, 80, 100, 150, 200],
     Swim: [100, 200, 400, 800, 1000, 1500, 2000],
   };
 
@@ -29,34 +29,58 @@ async function createOrUpdatePersonalRecords (userId, sportType, sessionId) {
     return;
   }
 
-  const recordsToSave = [];
+  console.log(`🏁 Found ${activities.length} activities for sport: ${sportType}`);
+
+  let recordsToSave = [];
 
   for (const dist of distancesForSport) {
     const bestAttempts = activities
-      .filter((a) => Number(a.distance) === Number(dist))
+      .filter((a) => {
+        const storedDistance = sportType === "Swim" ? a.distance : parseFloat(a.distance.toFixed(1));
+        return Number(storedDistance) === Number(dist);
+      })
       .sort((a, b) => a.duration - b.duration)
       .slice(0, 3);
 
+    console.log(`🎯 Checking records for ${dist} ${sportType === "Swim" ? "m" : "km"} (${bestAttempts.length} valid entries found)`);
+
+    if (!bestAttempts.length) continue;
+
     for (const attempt of bestAttempts) {
-      const existingRecord = await PersonalRecord.findOne({
+      const existingRecords = await PersonalRecord.findAll({
         where: {
           user_id: userId,
           activity_type: sportType,
           distance: dist,
         },
+        order: [["best_time", "ASC"]],
       });
 
-      if (existingRecord) {
-        if (attempt.duration < existingRecord.best_time) {
-          await existingRecord.update({
+      if (existingRecords.length > 0) {
+        const slowestRecord = existingRecords[existingRecords.length - 1];
+
+        if (existingRecords.length < 3) {
+          console.log(`➕ Adding new record: ${dist} ${sportType === "Swim" ? "m" : "km"}, Time: ${attempt.duration}`);
+          recordsToSave.push({
+            user_id: userId,
+            session_id: sessionId,
+            session_activity_id: attempt.id,
+            activity_type: sportType,
+            distance: attempt.distance,
+            best_time: attempt.duration,
+            record_date: new Date(),
+          });
+        } else if (attempt.duration < slowestRecord.best_time) {
+          console.log(`✅ Replacing slowest record for ${dist} km, New best time: ${attempt.duration}`);
+          await slowestRecord.update({
             best_time: attempt.duration,
             record_date: new Date(),
             session_id: sessionId,
             session_activity_id: attempt.id,
           });
-          console.log("✅ Updated personal record:", existingRecord.toJSON());
         }
       } else {
+        console.log(`➕ Adding first-time record for ${dist} km, Time: ${attempt.duration}`);
         recordsToSave.push({
           user_id: userId,
           session_id: sessionId,

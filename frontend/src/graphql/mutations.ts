@@ -127,6 +127,23 @@ export const ADD_SESSION_TRANSITION = gql`
   }
 `;
 
+export const CREATE_OR_UPDATE_PERSONAL_RECORDS = gql`
+  mutation CreateOrUpdatePersonalRecords($sessionActivityId: ID!) {
+    createOrUpdatePersonalRecords(sessionActivityId: $sessionActivityId) {
+      id
+      userId
+      sessionId
+      sessionActivityId
+      activityType
+      distance
+      bestTime
+      recordDate
+      created_at
+      updated_at
+    }
+  }
+`;
+
 export const DELETE_SESSION = gql`
   mutation DeleteSession($id: ID!) {
     deleteSession(id: $id) {

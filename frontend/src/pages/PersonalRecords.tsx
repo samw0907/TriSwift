@@ -63,7 +63,7 @@ const PersonalRecords: React.FC = () => {
             <ul>
               {distances[sportTypeMapping[selectedSport] as keyof typeof distances].map((dist) => {
                 const matchingRecords = data.personalRecords
-                .filter((r: any) => r.distance === dist)
+                .filter((r: any) => r.distance === dist && r.activityType === selectedSport)
                 .sort((a: any, b: any) => a.bestTime - b.bestTime)
                 .slice(0, 3);
                 return (

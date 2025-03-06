@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_SESSIONS } from '../graphql/queries';
-import { ADD_SESSION, DELETE_SESSION, ADD_SESSION_ACTIVITY, ADD_SESSION_TRANSITION } from '../graphql/mutations';
+import { ADD_SESSION, DELETE_SESSION, ADD_SESSION_ACTIVITY, ADD_SESSION_TRANSITION, CREATE_OR_UPDATE_PERSONAL_RECORDS } from '../graphql/mutations';
 import '../styles/dashboard.css';
 
 interface Session {
@@ -44,6 +44,7 @@ const Dashboard: React.FC = () => {
   const [addSession] = useMutation(ADD_SESSION, { refetchQueries: [{ query: GET_SESSIONS }] });
   const [addSessionActivity] = useMutation(ADD_SESSION_ACTIVITY, { refetchQueries: [{ query: GET_SESSIONS }] });
   const [addSessionTransition] = useMutation(ADD_SESSION_TRANSITION, { refetchQueries: [{ query: GET_SESSIONS }] });
+  const [updatePersonalRecords] = useMutation(CREATE_OR_UPDATE_PERSONAL_RECORDS);
   const [deleteSession] = useMutation(DELETE_SESSION, { refetchQueries: [{ query: GET_SESSIONS }] });
 
   const [showSessionForm, setShowSessionForm] = useState(false);
@@ -187,6 +188,14 @@ const Dashboard: React.FC = () => {
       });
   
       if (data?.createSessionActivity) {
+        console.log("✅ Activity Created:", data.createSessionActivity);
+
+        await updatePersonalRecords({
+          variables: { sessionActivityId: data.createSessionActivity.id },
+        });
+
+        console.log("✅ Personal Records Updated");
+  
         setSessions((prevSessions) =>
           prevSessions.map((session) =>
             session.id === sessionId

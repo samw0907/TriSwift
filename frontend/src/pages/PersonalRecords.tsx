@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_PERSONAL_RECORDS } from '../graphql/queries';
+import '../styles/personalRecords.css';
 
 const distances = {
   Run: [0.1, 0.2, 0.4, 1, 5, 10, 21.1, 42.2],
@@ -58,31 +59,37 @@ const PersonalRecords: React.FC = () => {
           <h2>{sportTypeMapping[selectedSport]} Records</h2>
           {loading && <p>Loading...</p>}
           {error && <p style={{ color: 'red' }}>Error fetching records. Please try again.</p>}
-          
-          {data?.personalRecords && data.personalRecords.length > 0 ? (
-            <ul>
-              {distances[selectedSport as keyof typeof distances].map((dist) => {
-                const matchingRecords = data.personalRecords
-                  .filter((r: any) => Number(r.distance) === Number(dist))
-                  .sort((a: any, b: any) => Number(a.bestTime) - Number(b.bestTime))
-                  .slice(0, 3);
 
-                return (
-                  <li key={dist}>
-                    <strong>{selectedSport === "Swim" ? `${dist * 1000}m` : `${dist}km`}</strong> - 
-                    {matchingRecords.length > 0 ? (
-                      matchingRecords.map((r: any) => (
-                        <span key={r.id}> 
-                          {formatTime(Number(r.bestTime))} 
-                        </span>
-                      ))
-                    ) : (
-                      " No data"
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
+          {data?.personalRecords && data.personalRecords.length > 0 ? (
+            <table className="records-table">
+              <thead>
+                <tr>
+                  <th>Distance</th>
+                  <th>1st</th>
+                  <th>2nd</th>
+                  <th>3rd</th>
+                </tr>
+              </thead>
+              <tbody>
+                {distances[selectedSport as keyof typeof distances].map((dist) => {
+                  const matchingRecords = data.personalRecords
+                    .filter((r: any) => Number(r.distance) === Number(dist))
+                    .sort((a: any, b: any) => Number(a.bestTime) - Number(b.bestTime))
+                    .slice(0, 3);
+
+                  return (
+                    <tr key={dist}>
+                      <td>{selectedSport === "Swim" ? `${dist * 1000}m` : `${dist}km`}</td>
+                      {[0, 1, 2].map((index) => (
+                        <td key={index}>
+                          {matchingRecords[index] ? formatTime(Number(matchingRecords[index].bestTime)) : "-"}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           ) : (
             <p>No personal records found for {sportTypeMapping[selectedSport]}.</p>
           )}

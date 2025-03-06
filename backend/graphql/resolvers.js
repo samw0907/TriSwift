@@ -36,11 +36,14 @@ async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
   for (const dist of distancesForSport) {
     const bestAttempts = activities
       .filter((a) => {
-        const storedDistance = sportType === "Swim" ? a.distance : parseFloat(a.distance.toFixed(1));
+        const storedDistance = sportType === "Swim" 
+          ? Number(a.distance)
+          : Number(a.distance).toFixed(1);
+        
         return Number(storedDistance) === Number(dist);
       })
-      .sort((a, b) => a.duration - b.duration)
-      .slice(0, 3);
+      .sort((a, b) => a.duration - b.duration) 
+      .slice(0, 3); 
 
     console.log(`🎯 Checking records for ${dist} ${sportType === "Swim" ? "m" : "km"} (${bestAttempts.length} valid entries found)`);
 

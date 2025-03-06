@@ -380,10 +380,25 @@ const Dashboard: React.FC = () => {
           </div>
         )}
 
-        <form onSubmit={handleInputSubmit} className="input-form">
-          {selectedFormType === 'activity' ? (
-            <>
-              {sessionType === 'Multi-Sport' && (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (isMultiSportActive) {
+              handleInputSubmit(e);
+            } else {
+              if (sessionId) {
+                handleSingleActivitySubmission(sessionId, sessionType);
+              } else {
+                console.error("Session ID is null. Cannot submit activity.");
+                alert("Session creation failed. Please try again.");
+              }
+            }
+          }}
+              className="input-form"
+            >
+              {selectedFormType === 'activity' ? (
+                <>
+                  {sessionType === 'Multi-Sport' && (
                 <>
                   <label>Activity Type:</label>
                   <select value={activityType} onChange={(e) => setActivityType(e.target.value)} required>

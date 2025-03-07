@@ -435,6 +435,21 @@ const handleInputSubmit = async (e: React.FormEvent) => {
 
               <label>Distance ({(sessionType === 'Swim' || activityType === 'Swim') ? 'm' : 'km'}):</label>
               <input type="number" value={activityForm.distance} onChange={(e) => setActivityForm({ ...activityForm, distance: e.target.value })} required />
+              
+              <label>Heart Rate Min (bpm):</label>
+              <input type="number" value={activityForm.heartRateMin} onChange={(e) => setActivityForm({ ...activityForm, heartRateMin: e.target.value })} />
+
+              <label>Heart Rate Max (bpm):</label>
+              <input type="number" value={activityForm.heartRateMax} onChange={(e) => setActivityForm({ ...activityForm, heartRateMax: e.target.value })} />
+
+              <label>Heart Rate Avg (bpm):</label>
+              <input type="number" value={activityForm.heartRateAvg} onChange={(e) => setActivityForm({ ...activityForm, heartRateAvg: e.target.value })} />
+
+              <label>Cadence (rpm):</label>
+              <input type="number" value={activityForm.cadence} onChange={(e) => setActivityForm({ ...activityForm, cadence: e.target.value })} />
+
+              <label>Power (watts):</label>
+              <input type="number" value={activityForm.power} onChange={(e) => setActivityForm({ ...activityForm, power: e.target.value })} />
             </>
           ) : (
             <>

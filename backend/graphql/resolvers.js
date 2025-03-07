@@ -38,56 +38,24 @@ async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
       .filter((a) => Number(a.distance).toFixed(2) === dist.toFixed(2))
       .sort((a, b) => a.duration - b.duration);
 
-    let uniqueBestAttempts = Array.from(
-      new Set(bestAttempts.map((a) => a.duration))
-      )
-      .map((bestTime) => bestAttempts.find((a) => a.duration === bestTime))
-      .slice(0, 3);
-  
-
-    console.log(`🎯 Checking records for ${dist} ${sportType === "Swim" ? "m" : "km"} (${uniqueBestAttempts.length} valid entries found)`);
-
     if (!bestAttempts.length) continue;
 
-    if (!uniqueBestAttempts.length) continue;
+    console.log(`🎯 Checking records for ${dist} ${sportType === "Swim" ? "m" : "km"} (${bestAttempts.length} valid entries found)`);
 
-    for (const attempt of uniqueBestAttempts) {
-      const existingRecords = await PersonalRecord.findAll({
-        where: {
-          user_id: userId,
-          activity_type: sportType,
-          distance: dist,
-        },
-        order: [["best_time", "ASC"]],
-      });
+    let existingRecords = await PersonalRecord.findAll({
+      where: {
+        user_id: userId,
+        activity_type: sportType,
+        distance: dist,
+      },
+      order: [["best_time", "ASC"]],
+    });
 
+    let updatedRecords = [...existingRecords];
 
-      if (existingRecords.length > 0) {
-        const slowestRecord = existingRecords[existingRecords.length - 1];
-
-        if (existingRecords.length < 3) {
-          console.log(`➕ Adding new record: ${dist} ${sportType === "Swim" ? "m" : "km"}, Time: ${attempt.duration}`);
-          recordsToSave.push({
-            user_id: userId,
-            session_id: sessionId,
-            session_activity_id: attempt.id,
-            activity_type: sportType,
-            distance: dist,
-            best_time: attempt.duration,
-            record_date: new Date(),
-          });
-        } else if (attempt.duration < slowestRecord.best_time) {
-          console.log(`✅ Replacing slowest record for ${dist} ${sportType === "Swim" ? "m" : "km"}, New best time: ${attempt.duration}`);
-          await slowestRecord.update({
-            best_time: attempt.duration,
-            record_date: new Date(),
-            session_id: sessionId,
-            session_activity_id: attempt.id,
-          });
-        }
-      } else {
-        console.log(`➕ Adding first-time record for ${dist} ${sportType === "Swim" ? "m" : "km"}, Time: ${attempt.duration}`);
-        recordsToSave.push({
+    for (const attempt of bestAttempts) {
+      if (!updatedRecords.some(r => r.best_time === attempt.duration && r.session_activity_id === attempt.id)) {
+        updatedRecords.push({
           user_id: userId,
           session_id: sessionId,
           session_activity_id: attempt.id,
@@ -97,6 +65,28 @@ async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
           record_date: new Date(),
         });
       }
+    }
+
+
+    updatedRecords.sort((a, b) => a.best_time - b.best_time);
+    updatedRecords = updatedRecords.slice(0, 3);
+
+
+    if (existingRecords.length > 3) {
+      const recordsToDelete = existingRecords.slice(3);
+      await PersonalRecord.destroy({ where: { id: recordsToDelete.map(r => r.id) } });
+    }
+
+    for (let i = 0; i < updatedRecords.length; i++) {
+      if (i < existingRecords.length) {
+        await existingRecords[i].update({
+          best_time: updatedRecords[i].best_time,
+          record_date: new Date(),
+          session_id: updatedRecords[i].session_id,
+          session_activity_id: updatedRecords[i].session_activity_id,
+        });
+      } else {
+        recordsToSave.push(updatedRecords[i]);
     }
   }
 

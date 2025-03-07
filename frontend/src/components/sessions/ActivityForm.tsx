@@ -97,6 +97,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ sessionId, sessionType, onS
 
       <button type="submit">Add Activity</button>
       <button type="button" onClick={onCancel}>Cancel</button>
+      <button type="button" onClick={onCancel} style={{ marginLeft: "10px" }}>Next</button>
     </form>
   );
 };

@@ -167,7 +167,10 @@ const Dashboard: React.FC = () => {
       const { data } = await addSessionTransition({
         variables: {
           sessionId,
-          ...transitionData,
+          previousSport: transitionData.previousSport,
+          nextSport: transitionData.nextSport,
+          transitionTime: parseInt(transitionData.transitionTime, 10),
+          comments: transitionData.comments,
         },
       });
 

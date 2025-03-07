@@ -20,8 +20,13 @@ const TransitionForm: React.FC<TransitionFormProps> = ({ sessionId, onSubmit, on
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(transition);
+  
+    onSubmit({
+      ...transition,
+      transitionTime: parseInt(transition.transitionTime, 10),
+    });
   };
+  
 
   return (
     <form className="transition-form" onSubmit={handleSubmit}>

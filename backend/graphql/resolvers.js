@@ -31,11 +31,9 @@ async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
 
   console.log(`🏁 Found ${activities.length} activities for sport: ${sportType}`);
 
-  let recordsToSave = [];
-
   for (const dist of distancesForSport) {
     const bestAttempts = activities
-      .filter((a) => Number(a.distance).toFixed(2) === dist.toFixed(2))
+      .filter((a) => Math.abs(a.distance - dist) < 0.01) // Fixes floating point issues
       .sort((a, b) => a.duration - b.duration);
 
     if (!bestAttempts.length) continue;
@@ -51,11 +49,11 @@ async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
       order: [["best_time", "ASC"]],
     });
 
-    let updatedRecords = [...existingRecords];
+    let newPRs = [];
 
     for (const attempt of bestAttempts) {
-      if (!updatedRecords.some(r => r.best_time === attempt.duration && r.session_activity_id === attempt.id)) {
-        updatedRecords.push({
+      if (!newPRs.some(r => r.best_time === attempt.duration)) {
+        newPRs.push({
           user_id: userId,
           session_id: sessionId,
           session_activity_id: attempt.id,
@@ -67,34 +65,31 @@ async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
       }
     }
 
+    // **Always maintain only the best 3 records**
+    newPRs = newPRs.slice(0, 3);
 
-    updatedRecords.sort((a, b) => a.best_time - b.best_time);
-    updatedRecords = updatedRecords.slice(0, 3);
+    console.log(`📊 Updated PR list for ${dist} ${sportType}:`, newPRs.map(r => r.best_time));
 
+    for (let i = 0; i < newPRs.length; i++) {
+      if (i < existingRecords.length) {
+        await existingRecords[i].update({
+          best_time: newPRs[i].best_time,
+          record_date: new Date(),
+          session_id: newPRs[i].session_id,
+          session_activity_id: newPRs[i].session_activity_id,
+        });
+      } else {
+        await PersonalRecord.create(newPRs[i]);
+      }
+    }
 
     if (existingRecords.length > 3) {
       const recordsToDelete = existingRecords.slice(3);
       await PersonalRecord.destroy({ where: { id: recordsToDelete.map(r => r.id) } });
+      console.log(`🗑 Deleted excess PRs for ${dist} km ${sportType}`);
     }
 
-    for (let i = 0; i < updatedRecords.length; i++) {
-      if (i < existingRecords.length) {
-        await existingRecords[i].update({
-          best_time: updatedRecords[i].best_time,
-          record_date: new Date(),
-          session_id: updatedRecords[i].session_id,
-          session_activity_id: updatedRecords[i].session_activity_id,
-        });
-      } else {
-        recordsToSave.push(updatedRecords[i]);
-    }
-  }
-
-  if (recordsToSave.length) {
-    await PersonalRecord.bulkCreate(recordsToSave);
-    console.log("✅ New personal records added.");
-  } else {
-    console.log("⚠️ No new personal records to add.");
+    console.log(`✅ Personal records updated successfully for ${dist} km ${sportType}`);
   }
 }
 
@@ -624,27 +619,27 @@ const resolvers = {
 
     createSessionActivity: async (_, { input }, { user }) => {
       if (!user) throw new Error("Authentication required.");
-
+    
       try {
         const { sessionId, sportType, duration, distance } = input;
-
+    
         if (!sessionId || !sportType || duration === undefined || distance === undefined) {
           throw new Error("Session ID, sportType, duration, and distance are required.");
         }
-
+    
         if (sportType.toLowerCase() === "transition") {
           throw new Error('Invalid sport type: "Transition" should be added as a transition, not an activity.');
         }
-
+    
         const session = await Session.findByPk(sessionId, {
           include: [
             { model: SessionActivity, as: "activities" },
             { model: Transition, as: "transitions" },
           ],
         });
-
+    
         if (!session || session.user_id !== user.id) throw new Error("Unauthorized.");
-
+    
         const activity = await SessionActivity.create({
           session_id: sessionId,
           user_id: user.id,
@@ -652,37 +647,29 @@ const resolvers = {
           duration,
           distance,
         });
-
+    
         console.log("✅ Activity Created:", activity.toJSON());
-
+    
         const updatedTotalDuration = 
-        (await SessionActivity.sum("duration", { where: { session_id: sessionId } })) || 0;
-  
+          (await SessionActivity.sum("duration", { where: { session_id: sessionId } })) || 0;
+    
         const updatedTotalDistance = 
-        (await SessionActivity.sum("distance", { where: { session_id: sessionId } })) || 0;
-  
+          (await SessionActivity.sum("distance", { where: { session_id: sessionId } })) || 0;
+    
         const updatedTotalTransitionTime = session.is_multi_sport
-        ? (await Transition.sum("transition_time", { where: { session_id: sessionId } })) || 0
-        : 0;
-  
+          ? (await Transition.sum("transition_time", { where: { session_id: sessionId } })) || 0
+          : 0;
+    
         await session.update({
           total_duration: updatedTotalDuration + updatedTotalTransitionTime,
           total_distance: updatedTotalDistance,
         });
-
+    
         console.log("✅ Session Updated After Activity Addition:", session.toJSON());
 
-        if (session.is_multi_sport) {
-          const allActivities = await SessionActivity.findAll({ where: { session_id: sessionId } });
-          const sports = [...new Set(allActivities.map((a) => a.sport_type))];
-        
-          for (const sport of sports) {
-            await createOrUpdatePersonalRecords(user.id, sport, sessionId);
-          }        
-        } else {
-          await createOrUpdatePersonalRecords(user.id, sportType, sessionId);
-        }
-
+        console.log("🔄 Updating personal records...");
+        await createOrUpdatePersonalRecords(user.id, sportType, sessionId);
+    
         return {
           id: activity.id,
           sessionId: activity.session_id,
@@ -697,7 +684,7 @@ const resolvers = {
         console.error("❌ Create Session Activity Error:", error);
         throw new Error("Failed to create session activity: " + error.message);
       }
-    },
+    },    
 
     updateSessionActivity: async (_, { id, input }, { user }) => {
       if (!user) throw new Error("Authentication required.");

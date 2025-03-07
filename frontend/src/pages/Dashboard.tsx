@@ -143,7 +143,6 @@ const Dashboard: React.FC = () => {
   };
 
   const handleSingleActivitySubmission = async (sessionId: string, sportType: string) => {
-    
     if (!sessionId) {
       alert("Session ID is missing. Please create a session first.");
       return;
@@ -158,15 +157,20 @@ const Dashboard: React.FC = () => {
       alert("Distance is required.");
       return;
     }
-
+  
     const durationInSeconds =
       (parseInt(activityForm.hours) || 0) * 3600 +
       (parseInt(activityForm.minutes) || 0) * 60 +
       (parseInt(activityForm.seconds) || 0);
   
+    if (durationInSeconds <= 0) {
+      alert("Duration must be greater than 0.");
+      return;
+    }
+
     let convertedDistance = parseFloat(activityForm.distance);
-    if (sportType === 'Swim') {
-      convertedDistance = convertedDistance / 1000;
+    if (sportType === "Swim") {
+      convertedDistance /= 1000;
     }
   
     try {
@@ -183,35 +187,36 @@ const Dashboard: React.FC = () => {
           power: activityForm.power ? parseInt(activityForm.power) : null,
         },
       });
-  
+
       if (data?.createSessionActivity) {
         console.log("✅ Activity Created:", data.createSessionActivity);
-  
+
         setSessions((prevSessions) =>
           prevSessions.map((session) =>
             session.id === sessionId
               ? {
                   ...session,
                   activities: [...(session.activities || []), data.createSessionActivity],
-                  totalDistance:
-                    (session.totalDistance || 0) +
-                    (sportType === "Swim"
-                      ? data.createSessionActivity.distance
-                      : data.createSessionActivity.distance),
+                  totalDistance: (session.totalDistance || 0) + data.createSessionActivity.distance,
                   totalDuration: (session.totalDuration || 0) + data.createSessionActivity.duration,
                 }
               : session
           )
         );
+        console.log("✅ Session updated with new activity");
       }
-  
+
       await refetch();
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Error Creating Activity:", error);
-      alert("Failed to create activity. Please try again.");
+
+      if (error.message.includes("GraphQL error")) {
+        alert("Server error while creating activity. Please try again.");
+      } else {
+        alert("Failed to create activity. Please check your input and try again.");
+      }
     }
   };
-  
 
   const handleInputSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

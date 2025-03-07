@@ -167,7 +167,7 @@ const Dashboard: React.FC = () => {
       alert("Duration must be greater than 0.");
       return;
     }
-    
+
     let convertedDistance = parseFloat(activityForm.distance);
     if (sportType === "Swim") {
       convertedDistance /= 1000;
@@ -218,115 +218,126 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleInputSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-  
-    if (!sessionId) {
-      alert("Session ID is missing. Please create a session first.");
+const handleInputSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!sessionId) {
+    alert("Session ID is missing. Please create a session first.");
+    return;
+  }
+
+  if (selectedFormType === "activity") {
+    // ✅ Correctly handling activity addition
+    if (!activityType) {
+      alert("Please select an activity type.");
       return;
     }
-  
-    if (!activityType) {
-      if (sessionType === 'Multi-Sport' && !activityType) {
-        alert("Please select an activity type for Multi-Sport sessions.");
-        return;
-      }
-  
-      if (!activityForm.distance) {
-        alert("Distance is required.");
-        return;
-      }
-  
-      const durationInSeconds =
-        (parseInt(activityForm.hours) || 0) * 3600 +
-        (parseInt(activityForm.minutes) || 0) * 60 +
-        (parseInt(activityForm.seconds) || 0);
-  
-      let convertedDistance = parseFloat(activityForm.distance);
-      if (activityType === 'Swim') {
-        convertedDistance = convertedDistance / 1000;
-      }
-  
-      try {
-        const { data } = await addSessionActivity({
-          variables: {
-            sessionId,
-            sportType: activityType,
-            duration: durationInSeconds,
-            distance: convertedDistance,
-            heartRateMin: activityForm.heartRateMin ? parseInt(activityForm.heartRateMin) : null,
-            heartRateMax: activityForm.heartRateMax ? parseInt(activityForm.heartRateMax) : null,
-            heartRateAvg: activityForm.heartRateAvg ? parseInt(activityForm.heartRateAvg) : null,
-            cadence: activityForm.cadence ? parseInt(activityForm.cadence) : null,
-            power: activityForm.power ? parseInt(activityForm.power) : null,
-          },
-        });
-  
-        if (data?.createSessionActivity) {
-          setSessions((prevSessions) =>
-            prevSessions.map((session) =>
-              session.id === sessionId
-                ? {
-                    ...session,
-                    activities: [...(session.activities || []), data.createSessionActivity],
-                    totalDistance:
-                      (session.totalDistance || 0) +
-                      (activityType === "Swim"
-                        ? data.createSessionActivity.distance
-                        : data.createSessionActivity.distance),
-                    totalDuration: (session.totalDuration || 0) + data.createSessionActivity.duration,
-                  }
-                : session
-            )
-          );
-        }
-  
-        setActivityForm({ hours: '', minutes: '', seconds: '', distance: '', heartRateMin: '', heartRateMax: '', heartRateAvg: '', cadence: '', power: '' });
-  
-      } catch (error) {
-        console.error("❌ Error Creating Activity:", error);
-        alert("Failed to create activity. Please try again.");
-      }
-    } else {
-      if (!transitionForm.previousSport || !transitionForm.nextSport) {
-        alert("Previous and Next sports are required for a transition.");
-        return;
-      }
-  
-      try {
-        const { data } = await addSessionTransition({
-          variables: {
-            sessionId,
-            previousSport: transitionForm.previousSport,
-            nextSport: transitionForm.nextSport,
-            transitionTime: parseInt(transitionForm.transitionTime),
-            comments: transitionForm.comments || null,
-          },
-        });
-  
-        if (data?.createSessionTransition) {
-          setSessions((prevSessions) =>
-            prevSessions.map((session) =>
-              session.id === sessionId
-                ? {
-                    ...session,
-                    transitions: [...(session.transitions || []), data.createSessionTransition],
-                    totalDuration: (session.totalDuration || 0) + data.createSessionTransition.transitionTime,
-                  }
-                : session
-            )
-          );
-        }
-  
-        setTransitionForm({ previousSport: '', nextSport: '', transitionTime: '', comments: '' });
-  
-      } catch (error) {
-        console.error("❌ Error Creating Transition:", error);
-        alert("Failed to create transition. Please try again.");
-      }
+
+    if (!activityForm.distance) {
+      alert("Distance is required.");
+      return;
     }
-    await refetch();
-  };  
+
+    const durationInSeconds =
+      (parseInt(activityForm.hours) || 0) * 3600 +
+      (parseInt(activityForm.minutes) || 0) * 60 +
+      (parseInt(activityForm.seconds) || 0);
+
+    let convertedDistance = parseFloat(activityForm.distance);
+    if (activityType === "Swim") {
+      convertedDistance /= 1000;
+    }
+
+    try {
+      const { data } = await addSessionActivity({
+        variables: {
+          sessionId,
+          sportType: activityType,
+          duration: durationInSeconds,
+          distance: convertedDistance,
+          heartRateMin: activityForm.heartRateMin ? parseInt(activityForm.heartRateMin) : null,
+          heartRateMax: activityForm.heartRateMax ? parseInt(activityForm.heartRateMax) : null,
+          heartRateAvg: activityForm.heartRateAvg ? parseInt(activityForm.heartRateAvg) : null,
+          cadence: activityForm.cadence ? parseInt(activityForm.cadence) : null,
+          power: activityForm.power ? parseInt(activityForm.power) : null,
+        },
+      });
+
+      if (data?.createSessionActivity) {
+        setSessions((prevSessions) =>
+          prevSessions.map((session) =>
+            session.id === sessionId
+              ? {
+                  ...session,
+                  activities: [...(session.activities || []), data.createSessionActivity],
+                  totalDistance:
+                    (session.totalDistance || 0) +
+                    (activityType === "Swim"
+                      ? data.createSessionActivity.distance
+                      : data.createSessionActivity.distance),
+                  totalDuration: (session.totalDuration || 0) + data.createSessionActivity.duration,
+                }
+              : session
+          )
+        );
+      }
+
+      setActivityForm({
+        hours: "",
+        minutes: "",
+        seconds: "",
+        distance: "",
+        heartRateMin: "",
+        heartRateMax: "",
+        heartRateAvg: "",
+        cadence: "",
+        power: "",
+      });
+    } catch (error) {
+      console.error("❌ Error Creating Activity:", error);
+      alert("Failed to create activity. Please try again.");
+    }
+  } else if (selectedFormType === "transition") {
+    // ✅ Correctly handling transitions separately
+    if (!transitionForm.previousSport || !transitionForm.nextSport) {
+      alert("Previous and Next sports are required for a transition.");
+      return;
+    }
+
+    try {
+      const { data } = await addSessionTransition({
+        variables: {
+          sessionId,
+          previousSport: transitionForm.previousSport,
+          nextSport: transitionForm.nextSport,
+          transitionTime: parseInt(transitionForm.transitionTime),
+          comments: transitionForm.comments || null,
+        },
+      });
+
+      if (data?.createSessionTransition) {
+        setSessions((prevSessions) =>
+          prevSessions.map((session) =>
+            session.id === sessionId
+              ? {
+                  ...session,
+                  transitions: [...(session.transitions || []), data.createSessionTransition],
+                  totalDuration: (session.totalDuration || 0) + data.createSessionTransition.transitionTime,
+                }
+              : session
+          )
+        );
+      }
+
+      setTransitionForm({ previousSport: "", nextSport: "", transitionTime: "", comments: "" });
+    } catch (error) {
+      console.error("❌ Error Creating Transition:", error);
+      alert("Failed to create transition. Please try again.");
+    }
+  }
+
+  await refetch();
+};
 
   return (
     <div className="dashboard">

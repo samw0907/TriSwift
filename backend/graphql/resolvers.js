@@ -19,7 +19,7 @@ async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
   const validDistances = {
     Run: [0.1, 0.2, 0.4, 1, 5, 10, 21.1, 42.2],
     Bike: [10, 20, 40, 50, 80, 100, 150, 200],
-    Swim: [100, 200, 400, 800, 1000, 1500, 2000],
+    Swim: [0.1, 0.2, 0.4, 0.8, 1, 1.5, 2],
   };
 
   const distancesForSport = validDistances[sportType];
@@ -35,21 +35,23 @@ async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
 
   for (const dist of distancesForSport) {
     const bestAttempts = activities
-      .filter((a) => {
-        const storedDistance = sportType === "Swim" 
-          ? Number(a.distance)
-          : Number(a.distance).toFixed(1);
-        
-        return Number(storedDistance) === Number(dist);
-      })
-      .sort((a, b) => a.duration - b.duration) 
-      .slice(0, 3); 
+      .filter((a) => Number(a.distance).toFixed(2) === dist.toFixed(2))
+      .sort((a, b) => a.duration - b.duration);
 
-    console.log(`🎯 Checking records for ${dist} ${sportType === "Swim" ? "m" : "km"} (${bestAttempts.length} valid entries found)`);
+    let uniqueBestAttempts = Array.from(
+      new Set(bestAttempts.map((a) => a.duration))
+      )
+      .map((bestTime) => bestAttempts.find((a) => a.duration === bestTime))
+      .slice(0, 3);
+  
+
+    console.log(`🎯 Checking records for ${dist} ${sportType === "Swim" ? "m" : "km"} (${uniqueBestAttempts.length} valid entries found)`);
 
     if (!bestAttempts.length) continue;
 
-    for (const attempt of bestAttempts) {
+    if (!uniqueBestAttempts.length) continue;
+
+    for (const attempt of uniqueBestAttempts) {
       const existingRecords = await PersonalRecord.findAll({
         where: {
           user_id: userId,
@@ -58,6 +60,7 @@ async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
         },
         order: [["best_time", "ASC"]],
       });
+
 
       if (existingRecords.length > 0) {
         const slowestRecord = existingRecords[existingRecords.length - 1];
@@ -69,12 +72,12 @@ async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
             session_id: sessionId,
             session_activity_id: attempt.id,
             activity_type: sportType,
-            distance: attempt.distance,
+            distance: sportType === "Swim" ? dist : attempt.distance,
             best_time: attempt.duration,
             record_date: new Date(),
           });
         } else if (attempt.duration < slowestRecord.best_time) {
-          console.log(`✅ Replacing slowest record for ${dist} km, New best time: ${attempt.duration}`);
+          console.log(`✅ Replacing slowest record for ${dist} ${sportType === "Swim" ? "m" : "km"}, New best time: ${attempt.duration}`);
           await slowestRecord.update({
             best_time: attempt.duration,
             record_date: new Date(),
@@ -83,13 +86,13 @@ async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
           });
         }
       } else {
-        console.log(`➕ Adding first-time record for ${dist} km, Time: ${attempt.duration}`);
+        console.log(`➕ Adding first-time record for ${dist} ${sportType === "Swim" ? "m" : "km"}, Time: ${attempt.duration}`);
         recordsToSave.push({
           user_id: userId,
           session_id: sessionId,
           session_activity_id: attempt.id,
           activity_type: sportType,
-          distance: attempt.distance,
+          distance: sportType === "Swim" ? dist : attempt.distance, 
           best_time: attempt.duration,
           record_date: new Date(),
         });
@@ -679,7 +682,14 @@ const resolvers = {
 
         console.log("✅ Session Updated After Activity Addition:", session.toJSON());
 
-        await createOrUpdatePersonalRecords(user.id, sportType, sessionId);
+        if (session.is_multi_sport) {
+          const allSports = [...new Set(session.activities.map((a) => a.sport_type))];
+          for (const sport of allSports) {
+            await createOrUpdatePersonalRecords(user.id, sport, sessionId);
+          }
+        } else {
+          await createOrUpdatePersonalRecords(user.id, sportType, sessionId);
+        }
 
         return {
           id: activity.id,

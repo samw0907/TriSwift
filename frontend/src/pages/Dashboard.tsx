@@ -97,8 +97,6 @@ const Dashboard: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this session?')) {
-      setSessions((prevSessions) => prevSessions.filter((session) => session.id !== id));
-
       try {
         await deleteSession({ variables: { id } });
         refetch();
@@ -151,7 +149,7 @@ const Dashboard: React.FC = () => {
       return;
     }
   
-    if (!sessionType) {
+    if (!sportType) {
       alert("Sport Type is required.");
       return;
     }
@@ -223,7 +221,7 @@ const Dashboard: React.FC = () => {
       return;
     }
   
-    if (selectedFormType === 'activity') {
+    if (!activityType) {
       if (sessionType === 'Multi-Sport' && !activityType) {
         alert("Please select an activity type for Multi-Sport sessions.");
         return;

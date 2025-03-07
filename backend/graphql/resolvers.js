@@ -72,7 +72,7 @@ async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
             session_id: sessionId,
             session_activity_id: attempt.id,
             activity_type: sportType,
-            distance: sportType === "Swim" ? dist : attempt.distance,
+            distance: dist,
             best_time: attempt.duration,
             record_date: new Date(),
           });
@@ -92,7 +92,7 @@ async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
           session_id: sessionId,
           session_activity_id: attempt.id,
           activity_type: sportType,
-          distance: sportType === "Swim" ? dist : attempt.distance, 
+          distance: dist,
           best_time: attempt.duration,
           record_date: new Date(),
         });
@@ -683,10 +683,12 @@ const resolvers = {
         console.log("✅ Session Updated After Activity Addition:", session.toJSON());
 
         if (session.is_multi_sport) {
-          const allSports = [...new Set(session.activities.map((a) => a.sport_type))];
-          for (const sport of allSports) {
+          const allActivities = await SessionActivity.findAll({ where: { session_id: sessionId } });
+          const sports = [...new Set(allActivities.map((a) => a.sport_type))];
+        
+          for (const sport of sports) {
             await createOrUpdatePersonalRecords(user.id, sport, sessionId);
-          }
+          }        
         } else {
           await createOrUpdatePersonalRecords(user.id, sportType, sessionId);
         }

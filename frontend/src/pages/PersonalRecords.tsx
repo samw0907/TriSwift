@@ -74,8 +74,12 @@ const PersonalRecords: React.FC = () => {
               <tbody>
                 {distances[selectedSport as keyof typeof distances].map((dist) => {
                   let matchingRecords = data.personalRecords
-                    .filter((r: any) => Number(r.distance) === Number(dist))
-                    .sort((a: any, b: any) => Number(a.bestTime) - Number(b.bestTime))
+                    .filter((r: any) => {
+                      const storedDistance = selectedSport === "Swim" ? Number(r.distance) * 1000 : Number(r.distance);
+                      const displayDistance = selectedSport === "Swim" ? dist * 1000 : dist;
+                      return storedDistance === displayDistance;
+                    })
+                    .sort((a: any, b: any) => Number(a.bestTime) - Number(b.bestTime));
 
                   let recordTimes = Array.from(new Set(matchingRecords.map((r: { bestTime: number }) => r.bestTime)));
 

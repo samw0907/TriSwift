@@ -167,7 +167,7 @@ const Dashboard: React.FC = () => {
       alert("Duration must be greater than 0.");
       return;
     }
-
+    
     let convertedDistance = parseFloat(activityForm.distance);
     if (sportType === "Swim") {
       convertedDistance /= 1000;

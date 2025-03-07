@@ -10,9 +10,13 @@ const distances = {
 };
 
 const formatTime = (seconds: number) => {
-  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
   const sec = seconds % 60;
-  return `${minutes}:${sec < 10 ? '0' : ''}${sec}`;
+
+  return `${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
 };
 
 const sportTypeMapping: { [key: string]: string } = {

@@ -298,7 +298,6 @@ const handleInputSubmit = async (e: React.FormEvent) => {
       alert("Failed to create activity. Please try again.");
     }
   } else if (selectedFormType === "transition") {
-    // ✅ Correctly handling transitions separately
     if (!transitionForm.previousSport || !transitionForm.nextSport) {
       alert("Previous and Next sports are required for a transition.");
       return;
@@ -339,6 +338,25 @@ const handleInputSubmit = async (e: React.FormEvent) => {
   await refetch();
 };
 
+const getNextActivity = (currentActivity: Activity, session: Session, transitions: Transition[]) => {
+  let nextTransitionIndex = transitions.findIndex(
+    (t) => t.previousSport === currentActivity.sportType
+  );
+
+  if (nextTransitionIndex !== -1) {
+    const transition = transitions.splice(nextTransitionIndex, 1)[0];
+
+    return {
+      transition,
+      nextActivity: session.activities.find(
+        (act) => act.sportType === transition.nextSport
+      ) || undefined
+    };
+  }
+
+  return { transition: null, nextActivity: undefined };
+};
+
   return (
     <div className="dashboard">
       <h1>Session Dashboard</h1>
@@ -375,26 +393,26 @@ const handleInputSubmit = async (e: React.FormEvent) => {
         </form>
       )}
   
-  {showInputForm && (
-      <div className="input-form-container">
-        {isMultiSportActive && (
-          <div className="toggle-buttons">
-            <button
-              type="button"
-              className={selectedFormType === 'activity' ? 'active' : ''}
-              onClick={() => setSelectedFormType('activity')}
-            >
-              Add Activity
-            </button>
-            <button
-              type="button"
-              className={selectedFormType === 'transition' ? 'active' : ''}
-              onClick={() => setSelectedFormType('transition')}
-            >
-              Add Transition
-            </button>
-          </div>
-        )}
+      {showInputForm && (
+        <div className="input-form-container">
+          {isMultiSportActive && (
+            <div className="toggle-buttons">
+              <button
+                type="button"
+                className={selectedFormType === 'activity' ? 'active' : ''}
+                onClick={() => setSelectedFormType('activity')}
+              >
+                Add Activity
+              </button>
+              <button
+                type="button"
+                className={selectedFormType === 'transition' ? 'active' : ''}
+                onClick={() => setSelectedFormType('transition')}
+              >
+                Add Transition
+              </button>
+            </div>
+          )}
 
         <form
           onSubmit={(e) => {
@@ -527,37 +545,33 @@ const handleInputSubmit = async (e: React.FormEvent) => {
                         orderedItems.push(currentActivity);
                         
 
-                        let nextTransitionIndex = remainingTransitions.findIndex(
-                          (t) => t.previousSport === currentActivity!.sportType
-                        );
+                        const { transition, nextActivity } = getNextActivity(currentActivity, session, remainingTransitions);
           
-                        if (nextTransitionIndex !== -1) {
-                          const transition = remainingTransitions.splice(nextTransitionIndex, 1)[0];
+                        if (transition) {
                           orderedItems.push(transition);
-    
-                          currentActivity = session.activities.find(
-                            (act) => act.sportType === transition.nextSport
-                          ) || undefined;
-                        } else {
-                          currentActivity = undefined;
                         }
-                      }
+                      
+                        currentActivity = nextActivity;
+                        }
           
                       return orderedItems.map((item) => {
                         if ("sportType" in item) {
                           return (
                             <li key={item.id}>
-                              <p><strong>{item.sportType}</strong></p>
-                              <p>
-                                Distance: {item.sportType === 'Swim' 
-                                  ? `${(item.distance * 1000).toFixed(0)} m` 
-                                  : `${item.distance.toFixed(2)} km`}
-                              </p>
-                              <p>Duration: {formatDuration(item.duration)}</p>
-                              {item.heartRateAvg && <p>Avg HR: {item.heartRateAvg} bpm</p>}
-                              {item.cadence && <p>Cadence: {item.cadence} rpm</p>}
-                              {item.power && <p>Power: {item.power} watts</p>}
-                            </li>
+                            <p><strong>{item.sportType}</strong></p>
+                            <p>
+                              Distance: {item.sportType === 'Swim' 
+                                ? `${(item.distance * 1000).toFixed(0)} m` 
+                                : `${item.distance.toFixed(2)} km`}
+                            </p>
+                            <p>Duration: {formatDuration(item.duration)}</p>
+    
+                            {item.heartRateMin !== null && <p>HR Min: {item.heartRateMin} bpm</p>}
+                            {item.heartRateMax !== null && <p>HR Max: {item.heartRateMax} bpm</p>}
+                            {item.heartRateAvg !== null && <p>Avg HR: {item.heartRateAvg} bpm</p>}
+                            {item.cadence !== null && <p>Cadence: {item.cadence} rpm</p>}
+                            {item.power !== null && <p>Power: {item.power} watts</p>}
+                          </li>
                           );
                         } else {
                           return (
@@ -575,7 +589,6 @@ const handleInputSubmit = async (e: React.FormEvent) => {
               )}
             </li>
           );
-          
           })}
         </ul>
       </div>

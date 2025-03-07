@@ -65,7 +65,6 @@ async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
       }
     }
 
-    // **Always maintain only the best 3 records**
     newPRs = newPRs.slice(0, 3);
 
     console.log(`📊 Updated PR list for ${dist} ${sportType}:`, newPRs.map(r => r.best_time));
@@ -621,7 +620,7 @@ const resolvers = {
       if (!user) throw new Error("Authentication required.");
     
       try {
-        const { sessionId, sportType, duration, distance } = input;
+        const { sessionId, sportType, duration, distance, heartRateMin, heartRateMax, heartRateAvg, cadence, power } = input;
     
         if (!sessionId || !sportType || duration === undefined || distance === undefined) {
           throw new Error("Session ID, sportType, duration, and distance are required.");
@@ -646,6 +645,11 @@ const resolvers = {
           sport_type: sportType.trim(),
           duration,
           distance,
+          heart_rate_min: heartRateMin ?? null,
+          heart_rate_max: heartRateMax ?? null,
+          heart_rate_avg: heartRateAvg ?? null,
+          cadence: cadence ?? null,
+          power: power ?? null,
         });
     
         console.log("✅ Activity Created:", activity.toJSON());
@@ -677,6 +681,11 @@ const resolvers = {
           sportType: activity.sport_type,
           duration: activity.duration,
           distance: activity.distance,
+          heartRateMin: activity.heart_rate_min,
+          heartRateMax: activity.heart_rate_max,
+          heartRateAvg: activity.heart_rate_avg,
+          cadence: activity.cadence,
+          power: activity.power,
           created_at: activity.created_at.toISOString(),
           updated_at: activity.updated_at.toISOString(),
         };

@@ -120,8 +120,9 @@ const Dashboard: React.FC = () => {
     }
   
     let convertedDistance = parseFloat(activityData.distance);
+
     if (activityData.sportType === "Swim") {
-      convertedDistance /= 1000;
+      convertedDistance = convertedDistance / 1000;
     }
   
     try {

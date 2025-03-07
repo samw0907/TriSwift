@@ -11,10 +11,17 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
 
   const calculateTotalDistance = (session: any) => {
     if (session.activities && session.activities.length > 0) {
-      return session.activities.reduce((acc: number, activity: any) => acc + activity.distance, 0);
+      return session.activities.reduce((acc: number, activity: any) => {
+        if (session.sessionType === "Swim") {
+          return acc + activity.distance * 1000;
+        } else {
+          return acc + activity.distance;
+        }
+      }, 0);
     }
     return session.totalDistance || 0;
   };
+  
 
   return (
     <div>
@@ -25,7 +32,9 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
           <li key={session.id}>
             <strong>
               {session.sessionType} {new Date(session.date).toLocaleDateString()} - 
-              {calculateTotalDistance(session).toFixed(2)} km
+              {session.sessionType === "Swim"
+                ? `${calculateTotalDistance(session).toFixed(0)} m`
+                : `${calculateTotalDistance(session).toFixed(2)} km`}
             </strong>
             <br />
             <button onClick={() => setExpandedSessionId(expandedSessionId === session.id ? null : session.id)}>

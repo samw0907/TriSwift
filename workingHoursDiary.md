@@ -7,7 +7,7 @@ Date            Hours    Topic
 21.02.2025      6        Settting up routers, testing routers
                 2.5      Fixing authorization issues
                 (33.5)
-                
+
 24.02.2025      2        GraphQL queries/mutations, typeDefs
                 7        Settting up routers, testing routers
 25.02.2025      8        Docker set up
@@ -24,7 +24,8 @@ Date            Hours    Topic
 05.03.2025      9        Adding fronted functionality, ammendments to backend
 06.03.2025      8.5      Fixed session activities, added personal records functions
 07.03.2025      4.5      Fixed backend and frontend issues for personal records/activities
-                4        Refactoring code into more managebale components
+                4        Major refactoring of code into more managebale components (Modularization)
                 (43.5)
 
+10.03.2025      
 TOTAL HOURS     119    

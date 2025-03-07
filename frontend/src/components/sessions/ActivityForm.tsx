@@ -71,8 +71,14 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ sessionId, sessionType, onS
         <input type="number" name="seconds" value={activity.seconds} onChange={handleChange} placeholder="Secs" min="0" />
       </div>
 
-      <label>Distance (km):</label>
-      <input type="number" name="distance" value={activity.distance} onChange={handleChange} required />
+      <label>Distance {activity.sportType === "Swim" ? "(m):" : "(km):"}</label>
+      <input
+        type="number"
+        name="distance"
+        value={activity.distance}
+        onChange={handleChange}
+        required
+      />
 
       <label>Heart Rate Min:</label>
       <input type="number" name="heartRateMin" value={activity.heartRateMin} onChange={handleChange} />

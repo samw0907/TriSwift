@@ -8,33 +8,37 @@ import "../styles/home.css";
 const Home = () => {
   const token = localStorage.getItem('token');
   const { data, loading, error } = useQuery(GET_SESSIONS);
-  const [last7DaysTotals, setLast7DaysTotals] = useState({
-    Swim: 0,
-    Bike: 0,
-    Run: 0,
-  });
+
+  const [last7DaysTotals, setLast7DaysTotals] = useState({ Swim: 0, Bike: 0, Run: 0 });
+  const [last28DaysTotals, setLast28DaysTotals] = useState({ Swim: 0, Bike: 0, Run: 0 });
 
   useEffect(() => {
     if (data?.sessions) {
       const now = new Date();
-
-      const totals = { Swim: 0, Bike: 0, Run: 0 };
+      const totals7Days = { Swim: 0, Bike: 0, Run: 0 };
+      const totals28Days = { Swim: 0, Bike: 0, Run: 0 };
 
       data.sessions.forEach((session: any) => {
         const sessionDate = new Date(session.date);
         const daysDiff = (now.getTime() - sessionDate.getTime()) / (1000 * 60 * 60 * 24);
 
-        if (daysDiff <= 7) {
-          session.activities.forEach((activity: any) => {
-            const sportType = activity.sportType as "Swim" | "Bike" | "Run";
-            const distance = sportType === "Swim" ? activity.distance * 1000 : activity.distance;
+        session.activities.forEach((activity: any) => {
+          const sportType = activity.sportType as "Swim" | "Bike" | "Run";
+          const distance = sportType === "Swim" ? activity.distance * 1000 : activity.distance;
 
-            totals[sportType] += distance;
-          });
-        }
+          if (sportType in totals28Days) {
+            if (daysDiff <= 28) {
+              totals28Days[sportType] += distance;
+            }
+            if (daysDiff <= 7) {
+              totals7Days[sportType] += distance;
+            }
+          }
+        });
       });
 
-      setLast7DaysTotals(totals);
+      setLast7DaysTotals(totals7Days);
+      setLast28DaysTotals(totals28Days);
     }
   }, [data]);
 
@@ -54,8 +58,14 @@ const Home = () => {
           <p>Bike: {last7DaysTotals.Bike.toFixed(2)} km</p>
           <p>Run: {last7DaysTotals.Run.toFixed(2)} km</p>
         </div>
+        <h2>Distance in the Last 28 Days</h2>
+        <div className="counter-section">
+          <p>Swim: {last28DaysTotals.Swim.toFixed(0)} m</p>
+          <p>Bike: {last28DaysTotals.Bike.toFixed(2)} km</p>
+          <p>Run: {last28DaysTotals.Run.toFixed(2)} km</p>
+        </div>
       </div>
-    </div>
+      </div>
   );
 };
 

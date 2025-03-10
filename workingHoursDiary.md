@@ -27,5 +27,12 @@ Date            Hours    Topic
                 4        Major refactoring of code into more managebale components (Modularization)
                 (43.5)
 
-10.03.2025      
-TOTAL HOURS     119    
+10.03.2025      2        Modularized resolvers
+                4        Added Counters and Graph to Home Page
+                3        Added Type and Date Filters to Session List
+11.03.2025      
+12.03.2025      
+13.03.2025      
+14.03.2025    
+                (9)
+TOTAL HOURS     128    

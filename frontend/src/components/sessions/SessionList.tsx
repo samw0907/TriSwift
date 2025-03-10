@@ -12,6 +12,9 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
+  const [minDistance, setMinDistance] = useState<string>("");
+  const [maxDistance, setMaxDistance] = useState<string>("");
+  const [distanceUnit, setDistanceUnit] = useState<"m" | "km">("km");
 
   const toggleFilter = (filter: string) => {
     setSelectedFilters((prev) =>
@@ -23,19 +26,10 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
     setSelectedFilters([]);
     setFromDate("");
     setToDate("");
+    setMinDistance("");
+    setMaxDistance("");
+    setDistanceUnit("km");
   };
-
-  const filteredSessions = sessions.filter((session) => {
-    const sessionDate = new Date(session.date);
-
-    const typeFilterPass =
-      selectedFilters.length === 0 || selectedFilters.includes(session.sessionType);
-
-    const fromPass = fromDate ? sessionDate >= new Date(fromDate) : true;
-    const toPass = toDate ? sessionDate <= new Date(toDate) : true;
-
-    return typeFilterPass && fromPass && toPass;
-  });
 
   const calculateTotalDistance = (session: any) => {
     if (session.activities && session.activities.length > 0) {
@@ -49,6 +43,26 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
     }
     return session.totalDistance || 0;
   };
+
+  const filteredSessions = sessions.filter((session) => {
+    const sessionDate = new Date(session.date);
+    const sessionDistance = calculateTotalDistance(session);
+
+    const convertedDistance =
+    distanceUnit === "m" ? sessionDistance * 1000 : sessionDistance;
+
+    const typeFilterPass =
+      selectedFilters.length === 0 || selectedFilters.includes(session.sessionType);
+
+    const fromPass = fromDate ? sessionDate >= new Date(fromDate) : true;
+    const toPass = toDate ? sessionDate <= new Date(toDate) : true;
+
+    const minPass = minDistance !== "" ? convertedDistance >= parseFloat(minDistance): true;
+
+    const maxPass = maxDistance !== "" ? convertedDistance <= parseFloat(maxDistance): true;
+
+    return typeFilterPass && fromPass && toPass && minPass && maxPass;
+  });
 
   return (
     <div>
@@ -98,6 +112,52 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
                 onChange={(e) => setToDate(e.target.value)}
               />
             </label>
+
+            <h4>Filter by Distance</h4>
+          <label>
+            Min:{" "}
+            <input
+              type="number"
+              value={minDistance}
+              onChange={(e) => setMinDistance(e.target.value)}
+              placeholder="Enter distance"
+              style={{ marginRight: "10px" }}
+            />
+          </label>
+
+          <label>
+            Max:{" "}
+            <input
+              type="number"
+              value={maxDistance}
+              onChange={(e) => setMaxDistance(e.target.value)}
+              placeholder="Enter distance"
+            />
+          </label>
+
+          <div>
+            <label style={{ marginLeft: "10px" }}>
+              <input
+                type="radio"
+                name="distanceUnit"
+                value="m"
+                checked={distanceUnit === "m"}
+                onChange={() => setDistanceUnit("m")}
+              />
+              m
+            </label>
+
+            <label>
+              <input
+                type="radio"
+                name="distanceUnit"
+                value="km"
+                checked={distanceUnit === "km"}
+                onChange={() => setDistanceUnit("km")}
+              />
+              km
+            </label>
+          </div>
         </div>
       )}
 

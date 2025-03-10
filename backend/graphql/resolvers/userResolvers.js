@@ -1,7 +1,7 @@
-const { User, Session } = require("../models");
+const { User, Session } = require("../../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../util/config");
+const { JWT_SECRET } = require("../../util/config");
 
 const userResolvers = {
     Query: {

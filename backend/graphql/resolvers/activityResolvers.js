@@ -1,4 +1,4 @@
-const { Session, SessionActivity, Transition } = require("../models");
+const { Session, SessionActivity, Transition } = require("../../models");
 const { createOrUpdatePersonalRecords } = require("../utils/personalRecordUtils");
 
 const activityResolvers = {

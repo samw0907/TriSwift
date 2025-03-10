@@ -1,4 +1,4 @@
-const { PersonalRecord } = require("../models");
+const { PersonalRecord } = require("../../models");
 
 const personalRecordResolvers = {
   Query: {

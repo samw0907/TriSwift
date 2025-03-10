@@ -1,4 +1,4 @@
-const { Transition, Session } = require("../models");
+const { Transition, Session } = require("../../models");
 
 const transitionResolvers = {
     Query: {

@@ -9,7 +9,9 @@ interface SessionListProps {
 const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedFilters, setSelectedFilters] = useState<string[]>(["Multi-Sport", "Run", "Bike", "Swim"]);
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [fromDate, setFromDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>("");
 
   const toggleFilter = (filter: string) => {
     setSelectedFilters((prev) =>
@@ -17,7 +19,23 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
     );
   };
 
-  const filteredSessions = sessions.filter((session) => selectedFilters.includes(session.sessionType));
+  const clearFilters = () => {
+    setSelectedFilters([]);
+    setFromDate("");
+    setToDate("");
+  };
+
+  const filteredSessions = sessions.filter((session) => {
+    const sessionDate = new Date(session.date);
+
+    const typeFilterPass =
+      selectedFilters.length === 0 || selectedFilters.includes(session.sessionType);
+
+    const fromPass = fromDate ? sessionDate >= new Date(fromDate) : true;
+    const toPass = toDate ? sessionDate <= new Date(toDate) : true;
+
+    return typeFilterPass && fromPass && toPass;
+  });
 
   const calculateTotalDistance = (session: any) => {
     if (session.activities && session.activities.length > 0) {
@@ -31,18 +49,25 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
     }
     return session.totalDistance || 0;
   };
-  
 
   return (
     <div>
       {sessions.length === 0 ? <p>No sessions available.</p> : null}
 
+      <div style={{ marginBottom: "10px" }}>
       <button onClick={() => setShowFilters((prev) => !prev)}>
         {showFilters ? "Hide Filters" : "Show Filters"}
       </button>
+        {showFilters && (
+          <button onClick={clearFilters} style={{ marginLeft: "10px" }}>
+            Clear Filters
+      </button>
+        )}
+      </div>
 
       {showFilters && (
         <div className="filter-options">
+          <h4>Filter by Session Type</h4>
           {["Multi-Sport", "Run", "Bike", "Swim"].map((type) => (
             <label key={type} style={{ marginRight: "10px" }}>
               <input
@@ -53,6 +78,26 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
               {type}
             </label>
           ))}
+
+          <h4>Filter by Date</h4>
+            <label>
+              From:{" "}
+              <input
+                type="date"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                style={{ marginRight: "10px" }}
+              />
+            </label>
+
+            <label>
+              To:{" "}
+              <input
+                type="date"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+              />
+            </label>
         </div>
       )}
 

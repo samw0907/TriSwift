@@ -27,7 +27,7 @@ const activityResolvers = {
             }));
           }
         },
-    Mutations: {
+    Mutation: {
         createSessionActivity: async (_, { input }, { user }) => {
             if (!user) throw new Error("Authentication required.");
           

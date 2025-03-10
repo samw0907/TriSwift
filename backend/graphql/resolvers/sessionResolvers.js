@@ -109,7 +109,7 @@ const sessionResolvers = {
         };
       },
   },
-  Mutations: {
+  Mutation: {
     createSession: async (_, { input }, { user }) => {
         if (!user) throw new Error("Authentication required.");
   

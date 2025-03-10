@@ -15,7 +15,7 @@ const userResolvers = {
             return await User.findByPk(user.id, { include: Session, as: "sessions" });
           },
     },
-    Mutations: {
+    Mutation: {
         createUser: async (_, { input }) => {
             try {
               if (!input.name || !input.email || !input.password) {

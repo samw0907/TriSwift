@@ -1,5 +1,5 @@
 const { Session, SessionActivity, Transition } = require("../../models");
-const { createOrUpdatePersonalRecords } = require("../utils/personalRecordUtils");
+const { createOrUpdatePersonalRecords } = require("../../util/personalRecordUtils");
 
 const activityResolvers = {
     Query: {

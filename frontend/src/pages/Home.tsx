@@ -11,12 +11,16 @@ const Home = () => {
 
   const [last7DaysTotals, setLast7DaysTotals] = useState({ Swim: 0, Bike: 0, Run: 0 });
   const [last28DaysTotals, setLast28DaysTotals] = useState({ Swim: 0, Bike: 0, Run: 0 });
+  const [yearToDateTotals, setYearToDateTotals] = useState({ Swim: 0, Bike: 0, Run: 0 });
 
   useEffect(() => {
     if (data?.sessions) {
       const now = new Date();
+      const startOfYear = new Date(now.getFullYear(), 0, 1);
+
       const totals7Days = { Swim: 0, Bike: 0, Run: 0 };
       const totals28Days = { Swim: 0, Bike: 0, Run: 0 };
+      const totalsYTD = { Swim: 0, Bike: 0, Run: 0 };
 
       data.sessions.forEach((session: any) => {
         const sessionDate = new Date(session.date);
@@ -27,6 +31,9 @@ const Home = () => {
           const distance = sportType === "Swim" ? activity.distance * 1000 : activity.distance;
 
           if (sportType in totals28Days) {
+            if (sessionDate >= startOfYear) {
+              totalsYTD[sportType] += distance;
+            }
             if (daysDiff <= 28) {
               totals28Days[sportType] += distance;
             }
@@ -39,6 +46,7 @@ const Home = () => {
 
       setLast7DaysTotals(totals7Days);
       setLast28DaysTotals(totals28Days);
+      setYearToDateTotals(totalsYTD);
     }
   }, [data]);
 
@@ -63,6 +71,12 @@ const Home = () => {
           <p>Swim: {last28DaysTotals.Swim.toFixed(0)} m</p>
           <p>Bike: {last28DaysTotals.Bike.toFixed(2)} km</p>
           <p>Run: {last28DaysTotals.Run.toFixed(2)} km</p>
+        </div>
+        <h2>Year-to-Date Distance</h2>
+        <div className="counter-section">
+          <p>Swim: {yearToDateTotals.Swim.toFixed(0)} m</p>
+          <p>Bike: {yearToDateTotals.Bike.toFixed(2)} km</p>
+          <p>Run: {yearToDateTotals.Run.toFixed(2)} km</p>
         </div>
       </div>
       </div>

@@ -34,6 +34,33 @@ interface SessionDetailsProps {
   session: Session;
 }
 
+const calculatePace = (activity: Activity): string | null => {
+  if (activity.distance <= 0 || activity.duration <= 0) {
+    return null;
+  }
+
+  if (activity.sportType === "Run") {
+    const pacePerKm = activity.duration / activity.distance;
+    const minutes = Math.floor(pacePerKm / 60);
+    const seconds = Math.round(pacePerKm % 60);
+    return `${minutes}:${seconds.toString().padStart(2, "0")} min/km`;
+  }
+
+  if (activity.sportType === "Bike") {
+    const speedKmH = (activity.distance / activity.duration) * 3600;
+    return `${speedKmH.toFixed(1)} km/h`;
+  }
+
+  if (activity.sportType === "Swim") {
+    const pacePer100m = (activity.duration / (activity.distance / 100)) || 0;
+    const minutes = Math.floor(pacePer100m / 60);
+    const seconds = Math.round(pacePer100m % 60);
+    return `${minutes}:${seconds.toString().padStart(2, "0")} min/100m`;
+  }
+
+  return null;
+};
+
 const SessionDetails: React.FC<SessionDetailsProps> = ({ session }) => {
   let orderedItems: (Activity | Transition)[] = [];
   let remainingTransitions = [...session.transitions];
@@ -84,7 +111,9 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session }) => {
                     : `${item.distance.toFixed(2)} km`}
                 </p>
                 <p>Duration: {formatDuration(item.duration)}</p>
-                
+
+                {calculatePace(item) && <p>Pace: {calculatePace(item)}</p>}
+
                 {item.heartRateMin !== undefined && item.heartRateMin !== null && (
                   <p>HR Min: {item.heartRateMin} bpm</p>
                 )}

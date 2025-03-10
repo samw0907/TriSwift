@@ -59,10 +59,15 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session }) => {
 
   return (
     <div className="session-details">
-      <p>Temp - {session.weatherTemp ?? "N/A"}°C</p>
-      <p>Humidity - {session.weatherHumidity ?? "N/A"}%</p>
-      <p>Wind Speed - {session.weatherWindSpeed ?? "N/A"}m/s</p>
-
+      {session.weatherTemp !== null && session.weatherTemp !== undefined && (
+        <p>Temp - {session.weatherTemp}°C</p>
+      )}
+      {session.weatherHumidity !== null && session.weatherHumidity !== undefined && (
+        <p>Humidity - {session.weatherHumidity}%</p>
+      )}
+      {session.weatherWindSpeed !== null && session.weatherWindSpeed !== undefined && (
+        <p>Wind Speed - {session.weatherWindSpeed}m/s</p>
+      )}
       <h3>Session Timeline</h3>
       <ul>
         {orderedItems.map((item) => {
@@ -79,20 +84,20 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session }) => {
                     : `${item.distance.toFixed(2)} km`}
                 </p>
                 <p>Duration: {formatDuration(item.duration)}</p>
-
-                {item.heartRateMin !== undefined && (
+                
+                {item.heartRateMin !== undefined && item.heartRateMin !== null && (
                   <p>HR Min: {item.heartRateMin} bpm</p>
                 )}
-                {item.heartRateMax !== undefined && (
+                {item.heartRateMax !== undefined && item.heartRateMax !== null && (
                   <p>HR Max: {item.heartRateMax} bpm</p>
                 )}
-                {item.heartRateAvg !== undefined && (
+                {item.heartRateAvg !== undefined && item.heartRateAvg !== null && (
                   <p>Avg HR: {item.heartRateAvg} bpm</p>
                 )}
-                {item.cadence !== undefined && (
+                {item.cadence !== undefined && item.cadence !== null && (
                   <p>Cadence: {item.cadence} rpm</p>
                 )}
-                {item.power !== undefined && (
+                {item.power !== undefined && item.power !== null && (
                   <p>Power: {item.power} watts</p>
                 )}
               </li>

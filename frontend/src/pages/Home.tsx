@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
 import { useQuery } from "@apollo/client";
 import { GET_SESSIONS } from "../graphql/queries";
+import TotalsGraph from "../components/TotalsGraph"; 
 import "../styles/home.css";
 
 
@@ -88,6 +89,7 @@ const Home = () => {
           <p>Bike: {lifetimeTotals.Bike.toFixed(2)} km</p>
           <p>Run: {lifetimeTotals.Run.toFixed(2)} km</p>
         </div>
+        <TotalsGraph />
       </div>
       </div>
   );

@@ -8,6 +8,16 @@ interface SessionListProps {
 
 const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedFilters, setSelectedFilters] = useState<string[]>(["Multi-Sport", "Run", "Bike", "Swim"]);
+
+  const toggleFilter = (filter: string) => {
+    setSelectedFilters((prev) =>
+      prev.includes(filter) ? prev.filter((f) => f !== filter) : [...prev, filter]
+    );
+  };
+
+  const filteredSessions = sessions.filter((session) => selectedFilters.includes(session.sessionType));
 
   const calculateTotalDistance = (session: any) => {
     if (session.activities && session.activities.length > 0) {
@@ -27,8 +37,29 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
     <div>
       {sessions.length === 0 ? <p>No sessions available.</p> : null}
 
+      <button onClick={() => setShowFilters((prev) => !prev)}>
+        {showFilters ? "Hide Filters" : "Show Filters"}
+      </button>
+
+      {showFilters && (
+        <div className="filter-options">
+          {["Multi-Sport", "Run", "Bike", "Swim"].map((type) => (
+            <label key={type} style={{ marginRight: "10px" }}>
+              <input
+                type="checkbox"
+                checked={selectedFilters.includes(type)}
+                onChange={() => toggleFilter(type)}
+              />
+              {type}
+            </label>
+          ))}
+        </div>
+      )}
+
+      {filteredSessions.length === 0 ? <p>No sessions available.</p> : null}
+
       <ul>
-        {sessions.map((session) => (
+        {filteredSessions.map((session) => (
           <li key={session.id}>
             <strong>
               {session.sessionType} {new Date(session.date).toLocaleDateString()} - 

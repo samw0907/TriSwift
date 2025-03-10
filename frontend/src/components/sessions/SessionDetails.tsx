@@ -52,7 +52,8 @@ const calculatePace = (activity: Activity): string | null => {
   }
 
   if (activity.sportType === "Swim") {
-    const pacePer100m = (activity.duration / (activity.distance / 100)) || 0;
+    const distanceMeters = activity.distance * 1000;
+    const pacePer100m = (activity.duration / (distanceMeters / 100)) || 0;
     const minutes = Math.floor(pacePer100m / 60);
     const seconds = Math.round(pacePer100m % 60);
     return `${minutes}:${seconds.toString().padStart(2, "0")} min/100m`;

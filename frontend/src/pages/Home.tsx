@@ -12,6 +12,7 @@ const Home = () => {
   const [last7DaysTotals, setLast7DaysTotals] = useState({ Swim: 0, Bike: 0, Run: 0 });
   const [last28DaysTotals, setLast28DaysTotals] = useState({ Swim: 0, Bike: 0, Run: 0 });
   const [yearToDateTotals, setYearToDateTotals] = useState({ Swim: 0, Bike: 0, Run: 0 });
+  const [lifetimeTotals, setLifetimeTotals] = useState({ Swim: 0, Bike: 0, Run: 0 });
 
   useEffect(() => {
     if (data?.sessions) {
@@ -21,6 +22,7 @@ const Home = () => {
       const totals7Days = { Swim: 0, Bike: 0, Run: 0 };
       const totals28Days = { Swim: 0, Bike: 0, Run: 0 };
       const totalsYTD = { Swim: 0, Bike: 0, Run: 0 };
+      const totalsLifetime = { Swim: 0, Bike: 0, Run: 0 };
 
       data.sessions.forEach((session: any) => {
         const sessionDate = new Date(session.date);
@@ -30,7 +32,8 @@ const Home = () => {
           const sportType = activity.sportType as "Swim" | "Bike" | "Run";
           const distance = sportType === "Swim" ? activity.distance * 1000 : activity.distance;
 
-          if (sportType in totals28Days) {
+          if (sportType in totalsLifetime) {
+            totalsLifetime[sportType] += distance;
             if (sessionDate >= startOfYear) {
               totalsYTD[sportType] += distance;
             }
@@ -47,6 +50,7 @@ const Home = () => {
       setLast7DaysTotals(totals7Days);
       setLast28DaysTotals(totals28Days);
       setYearToDateTotals(totalsYTD);
+      setLifetimeTotals(totalsLifetime);
     }
   }, [data]);
 
@@ -77,6 +81,12 @@ const Home = () => {
           <p>Swim: {yearToDateTotals.Swim.toFixed(0)} m</p>
           <p>Bike: {yearToDateTotals.Bike.toFixed(2)} km</p>
           <p>Run: {yearToDateTotals.Run.toFixed(2)} km</p>
+        </div>
+        <h2>Lifetime Total Distance</h2>
+        <div className="counter-section">
+          <p>Swim: {lifetimeTotals.Swim.toFixed(0)} m</p>
+          <p>Bike: {lifetimeTotals.Bike.toFixed(2)} km</p>
+          <p>Run: {lifetimeTotals.Run.toFixed(2)} km</p>
         </div>
       </div>
       </div>

@@ -111,14 +111,13 @@ const activityResolvers = {
             if (!user) throw new Error("Authentication required.");
       
             try {
-              const activity = await SessionActivity.findByPk(id);
-              if (!activity) throw new Error("Session Activity not found");
-      
-              const session = await Session.findByPk(activity.session_id, {
-                include: [SessionActivity],
+              const activity = await SessionActivity.findByPk(id, {
+                include: [{ model: Session, as: "session" }],
               });
-      
-              if (!session || session.user_id !== user.id) throw new Error("Unauthorized.");
+          
+              if (!activity) throw new Error("Session Activity not found.");
+              if (!activity.session) throw new Error("Session not found.");
+              if (activity.session.user_id !== user.id) throw new Error("Unauthorized.");
       
               const updatedValues = {
                 sport_type: input.sportType?.trim() ?? activity.sport_type,
@@ -133,16 +132,29 @@ const activityResolvers = {
       
               await activity.update(updatedValues);
               console.log("✅ Activity Updated:", activity.toJSON());
-      
-              const updatedTotalDuration = await SessionActivity.sum("duration", { where: { session_id: activity.session_id } });
-              const updatedTotalDistance = await SessionActivity.sum("distance", { where: { session_id: activity.session_id } });
-      
+          
+              const session = await Session.findByPk(activity.session_id, {
+                include: [{ model: SessionActivity, as: "activities" }],
+              });
+          
+              if (!session) throw new Error("Session not found.");
+          
+              const updatedTotalDuration = session.activities.reduce(
+                (total, act) => total + act.duration,
+                0
+              );
+          
+              const updatedTotalDistance = session.activities.reduce(
+                (total, act) => total + act.distance,
+                0
+              );
+          
               await session.update({
-                total_duration: updatedTotalDuration || 0,
-                total_distance: updatedTotalDistance || 0,
+                total_duration: updatedTotalDuration,
+                total_distance: updatedTotalDistance,
               });
       
-              console.log("✅ Session Updated After Activity Update:", session.toJSON());
+              console.log("✅ Session Updated After Activity Update:", activity.session.toJSON());
       
               return {
                 id: activity.id,

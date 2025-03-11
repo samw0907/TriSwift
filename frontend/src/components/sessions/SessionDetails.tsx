@@ -98,7 +98,7 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session }) => {
       {session.weatherWindSpeed !== null && session.weatherWindSpeed !== undefined && (
         <p>Wind Speed - {session.weatherWindSpeed}m/s</p>
       )}
-      <h3>Session Timeline</h3>
+      <h3>Activity Details</h3>
       <ul>
         {orderedItems.map((item) => {
           if ("sportType" in item) {

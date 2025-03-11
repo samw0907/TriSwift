@@ -3,6 +3,20 @@ import SessionDetails from "./SessionDetails";
 import EditSessionForm from "./EditSessionForm";
 import EditActivityForm from "./EditActivityForm";
 
+interface Activity {
+  id: string;
+  sportType: string;
+  distance: number;
+  duration: number;
+}
+
+interface Session {
+  id: string;
+  sessionType: string;
+  date: string;
+  activities: Activity[];
+}
+
 interface SessionListProps {
   sessions: any[];
   onDelete: (id: string) => void;
@@ -26,6 +40,15 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
     setSelectedFilters((prev) =>
       prev.includes(filter) ? prev.filter((f) => f !== filter) : [...prev, filter]
     );
+  };
+
+  const toggleSessionDetails = (sessionId: string) => {
+    setExpandedSessionId(expandedSessionId === sessionId ? null : sessionId);
+    setEditingActivityId(null);
+  };
+
+  const toggleEditActivity = (activityId: string) => {
+    setEditingActivityId(editingActivityId === activityId ? null : activityId);
   };
 
   const clearFilters = () => {
@@ -195,17 +218,26 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
         {filteredSessions.map((session) => (
           <li key={session.id}>
             <strong>
-              {session.sessionType} {new Date(session.date).toLocaleDateString()} - 
+              {session.sessionType} {new Date(session.date).toLocaleDateString()} -{" "}
               {session.sessionType === "Swim"
                 ? `${calculateTotalDistance(session).toFixed(0)} m`
                 : `${calculateTotalDistance(session).toFixed(2)} km`}
             </strong>
             <br />
-            <button onClick={() => setExpandedSessionId(expandedSessionId === session.id ? null : session.id)}>
-              {expandedSessionId === session.id ? "Hide Details" : "Show Details"}
-            </button>
+            <button
+            onClick={() => {
+              if (expandedSessionId === session.id) {
+                setExpandedSessionId(null);
+                setEditingActivityId(null);
+              } else {
+                setExpandedSessionId(session.id);
+              }
+            }}
+          >
+            {expandedSessionId === session.id ? "Hide Details" : "Show Details"}
+          </button>
 
-            {expandedSessionId === session.id && (
+          {expandedSessionId === session.id && (
             <>
             <button onClick={() => setEditingSessionId(session.id)} style={{ marginLeft: "10px" }}>
               Edit Session
@@ -216,38 +248,41 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
             <SessionDetails session={session} onUpdate={onUpdate} />
 
             <h4>Activities:</h4>
-            <ul>
-              {session.activities.map((activity: { id: string; sportType: string; distance: number; duration: number }) => (
-                <li key={activity.id}>
-                  <strong>{activity.sportType}</strong> - {activity.distance} km, {activity.duration} sec
-                  <button onClick={() => setEditingActivityId(activity.id)} style={{ marginLeft: "10px" }}>
-                    Edit Activity
-                  </button>
-                </li>
-              ))}
-            </ul>
+              <ul>
+               {session.activities.map((activity: { id: string; sportType: string; distance: number; duration: number }) => (
+                  <li key={activity.id}>
+                    <strong>{activity.sportType}</strong> - {activity.distance} km, {activity.duration} sec
+                    <button
+                      onClick={() => setEditingActivityId(editingActivityId === activity.id ? null : activity.id)}
+                      style={{ marginLeft: "10px" }}
+                    >
+                      {editingActivityId === activity.id ? "Cancel" : "Edit Activity"}
+                    </button>
+
+                    {editingActivityId === activity.id && (
+                      <EditActivityForm
+                        activity={activity}
+                        onClose={() => setEditingActivityId(null)}
+                        onUpdate={onUpdate}
+                      />
+                    )}
+                  </li>
+                ))}
+              </ul>
             </>
-            )}
+          )}
 
-            {editingSessionId === session.id && (
-              <EditSessionForm 
-                session={session} 
-                onClose={() => setEditingSessionId(null)}
-                onUpdate={onUpdate}
-              />
-            )}
-
-            {editingActivityId && (
-            <EditActivityForm 
-              activity={editingActivityId}
-              onClose={() => setEditingActivityId(null)}
+          {editingSessionId === session.id && (
+            <EditSessionForm
+              session={session}
+              onClose={() => setEditingSessionId(null)}
               onUpdate={onUpdate}
             />
           )}
-          </li>
-        ))}
-      </ul>
-    </div>
+        </li>
+      ))}
+    </ul>
+  </div>
   );
 };
 

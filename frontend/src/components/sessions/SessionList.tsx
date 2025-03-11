@@ -15,7 +15,7 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
   const [minDistance, setMinDistance] = useState<string>("");
   const [maxDistance, setMaxDistance] = useState<string>("");
   const [distanceUnit, setDistanceUnit] = useState<"m" | "km">("km");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | "">("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | "date-desc">("date-desc");
 
   const toggleFilter = (filter: string) => {
     setSelectedFilters((prev) =>
@@ -30,7 +30,7 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
     setMinDistance("");
     setMaxDistance("");
     setDistanceUnit("km");
-    setSortOrder("");
+    setSortOrder("date-desc");
   };
 
   const calculateTotalDistance = (session: any) => {
@@ -60,18 +60,21 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
     const toPass = toDate ? sessionDate <= new Date(toDate) : true;
 
     const minPass = minDistance !== "" ? convertedDistance >= parseFloat(minDistance): true;
-
     const maxPass = maxDistance !== "" ? convertedDistance <= parseFloat(maxDistance): true;
 
     return typeFilterPass && fromPass && toPass && minPass && maxPass;
   })
   .sort((a, b) => {
-    if (!sortOrder) return 0;
-
-    const distanceA = calculateTotalDistance(a);
-    const distanceB = calculateTotalDistance(b);
-
-    return sortOrder === "asc" ? distanceA - distanceB : distanceB - distanceA;
+    if (sortOrder === "date-desc") {
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    }
+    if (sortOrder === "asc") {
+      return calculateTotalDistance(a) - calculateTotalDistance(b);
+    }
+    if (sortOrder === "desc") {
+      return calculateTotalDistance(b) - calculateTotalDistance(a);
+    }
+    return 0;
   });
 
   return (
@@ -169,16 +172,11 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
             </label>
           </div>
 
-          <h4>Sort by Total Distance</h4>
-          <button
-            onClick={() =>
-              setSortOrder((prev) =>
-                prev === "asc" ? "desc" : prev === "desc" ? "" : "asc"
-              )
-            }
-          >
-            {sortOrder === "asc" ? "Sort: Distance (High)" : sortOrder === "desc" ? "Sort: None" : "Sort: Distance (Low)"}
-          </button>
+          <h4>Sort by</h4>
+          <button onClick={() => setSortOrder("date-desc")}>Most Recent</button>
+          <button onClick={() => setSortOrder("asc")}>Distance (Lowest First)</button>
+          <button onClick={() => setSortOrder("desc")}>Distance (Highest First)</button>
+
         </div>
       )}
 

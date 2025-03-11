@@ -14,6 +14,8 @@ const SessionForm: React.FC<SessionFormProps> = ({ onSubmit, onCancel }) => {
     weatherWindSpeed: "",
   });
 
+  const today = new Date().toISOString().split("T")[0];
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -30,7 +32,7 @@ const SessionForm: React.FC<SessionFormProps> = ({ onSubmit, onCancel }) => {
       </select>
 
       <label>Date:</label>
-      <input type="date" name="date" value={formData.date} onChange={handleChange} required />
+      <input type="date" name="date" value={formData.date} onChange={handleChange} required max={today}/>
 
       <label>Weather Temp (°C):</label>
       <input type="number" name="weatherTemp" value={formData.weatherTemp} onChange={handleChange} />

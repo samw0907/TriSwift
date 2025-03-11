@@ -141,6 +141,24 @@ export const UPDATE_SESSION = gql`
   }
 `;
 
+export const UPDATE_SESSION_ACTIVITY = gql`
+  mutation UpdateSessionActivity($id: ID!, $input: UpdateSessionActivityInput!) {
+    updateSessionActivity(id: $id, input: $input) {
+      id
+      sportType
+      duration
+      distance
+      heartRateMin
+      heartRateMax
+      heartRateAvg
+      cadence
+      power
+      updated_at
+    }
+  }
+`;
+
+
 export const DELETE_SESSION = gql`
   mutation DeleteSession($id: ID!) {
     deleteSession(id: $id) {

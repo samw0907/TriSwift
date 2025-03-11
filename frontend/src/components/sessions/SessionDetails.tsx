@@ -1,6 +1,7 @@
 import React from "react";
 import { formatDuration } from "../../utils/format";
 import { getNextActivity } from "../../utils/sessionHelpers";
+import EditActivityForm from "./EditActivityForm";
 
 interface Activity {
   id: string;
@@ -32,6 +33,7 @@ interface Session {
 
 interface SessionDetailsProps {
   session: Session;
+  onUpdate: () => void; 
 }
 
 const calculatePace = (activity: Activity): string | null => {

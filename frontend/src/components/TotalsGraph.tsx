@@ -23,9 +23,13 @@ const TotalsGraph: React.FC = () => {
           const startOfWeek = new Date();
           startOfWeek.setDate(now.getDate() - i * 7);
 
-          const year = startOfWeek.getFullYear();
-          const weekNumber = Math.ceil(((startOfWeek.getTime() - new Date(year, 0, 1).getTime()) / (1000 * 60 * 60 * 24)) / 7);
-          const weekLabel = `${year}-W${weekNumber.toString().padStart(2, "0")}`;
+          const weekStart = new Date(startOfWeek);
+          weekStart.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+
+          const weekLabel = `${weekStart.toLocaleDateString("default", {
+            month: "short",
+            day: "numeric",
+          })}`;
 
           dateMap[weekLabel] = 0;
         }

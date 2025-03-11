@@ -32,9 +32,9 @@ Date            Hours    Topic
                 3        Added Type and Date Filters to Session List
 11.03.2025      2        Added more filters/sorting
                 1.5      Added Pace Calculator page
-
+                5        Adding ability to edit sessions
 12.03.2025      
 13.03.2025      
 14.03.2025    
-                (9)
-TOTAL HOURS     128    
+                (17.5)
+TOTAL HOURS     136.5    

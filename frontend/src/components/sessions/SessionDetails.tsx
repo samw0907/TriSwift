@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { formatDuration } from "../../utils/format";
 import { getNextActivity } from "../../utils/sessionHelpers";
 import EditActivityForm from "./EditActivityForm";
@@ -64,7 +64,9 @@ const calculatePace = (activity: Activity): string | null => {
   return null;
 };
 
-const SessionDetails: React.FC<SessionDetailsProps> = ({ session }) => {
+const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) => {
+  const [editingActivityId, setEditingActivityId] = useState<string | null>(null);
+
   let orderedItems: (Activity | Transition)[] = [];
   let remainingTransitions = [...session.transitions];
 
@@ -131,6 +133,22 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session }) => {
                 )}
                 {item.power !== undefined && item.power !== null && (
                   <p>Power: {item.power} watts</p>
+                )}
+
+                <button
+                  onClick={() =>
+                    setEditingActivityId(editingActivityId === item.id ? null : item.id)
+                  }
+                >
+                  {editingActivityId === item.id ? "Cancel" : "Edit Activity"}
+                </button>
+
+                {editingActivityId === item.id && (
+                  <EditActivityForm
+                    activity={item}
+                    onClose={() => setEditingActivityId(null)}
+                    onUpdate={onUpdate}
+                  />
                 )}
               </li>
             );

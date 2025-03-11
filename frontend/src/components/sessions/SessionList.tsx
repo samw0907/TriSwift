@@ -246,29 +246,6 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
               Delete Session
             </button>
             <SessionDetails session={session} onUpdate={onUpdate} />
-
-            <h4>Activities:</h4>
-              <ul>
-               {session.activities.map((activity: { id: string; sportType: string; distance: number; duration: number }) => (
-                  <li key={activity.id}>
-                    <strong>{activity.sportType}</strong> - {activity.distance} km, {activity.duration} sec
-                    <button
-                      onClick={() => setEditingActivityId(editingActivityId === activity.id ? null : activity.id)}
-                      style={{ marginLeft: "10px" }}
-                    >
-                      {editingActivityId === activity.id ? "Cancel" : "Edit Activity"}
-                    </button>
-
-                    {editingActivityId === activity.id && (
-                      <EditActivityForm
-                        activity={activity}
-                        onClose={() => setEditingActivityId(null)}
-                        onUpdate={onUpdate}
-                      />
-                    )}
-                  </li>
-                ))}
-              </ul>
             </>
           )}
 

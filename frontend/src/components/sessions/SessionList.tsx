@@ -202,21 +202,18 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
             <button onClick={() => setExpandedSessionId(expandedSessionId === session.id ? null : session.id)}>
               {expandedSessionId === session.id ? "Hide Details" : "Show Details"}
             </button>
-            <button onClick={() => onDelete(session.id)} style={{ marginLeft: "10px", color: "red" }}>
-              Delete
-            </button>
-
+            
             {expandedSessionId === session.id && (
             <>
-              <SessionDetails session={session} />
-              <button 
-                onClick={() => setEditingSessionId(session.id)} 
-                style={{ marginLeft: "10px" }}
-              >
+              <button onClick={() => setEditingSessionId(session.id)} style={{ marginLeft: "10px" }}>
                 Edit
               </button>
+              <button onClick={() => onDelete(session.id)} style={{ marginLeft: "10px", color: "red" }}>
+                Delete
+              </button>
+              <SessionDetails session={session} />
             </>
-            )}
+          )}
 
             {editingSessionId === session.id && (
               <EditSessionForm 

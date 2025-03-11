@@ -15,6 +15,7 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
   const [minDistance, setMinDistance] = useState<string>("");
   const [maxDistance, setMaxDistance] = useState<string>("");
   const [distanceUnit, setDistanceUnit] = useState<"m" | "km">("km");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | "">("");
 
   const toggleFilter = (filter: string) => {
     setSelectedFilters((prev) =>
@@ -29,6 +30,7 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
     setMinDistance("");
     setMaxDistance("");
     setDistanceUnit("km");
+    setSortOrder("");
   };
 
   const calculateTotalDistance = (session: any) => {
@@ -62,6 +64,14 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
     const maxPass = maxDistance !== "" ? convertedDistance <= parseFloat(maxDistance): true;
 
     return typeFilterPass && fromPass && toPass && minPass && maxPass;
+  })
+  .sort((a, b) => {
+    if (!sortOrder) return 0;
+
+    const distanceA = calculateTotalDistance(a);
+    const distanceB = calculateTotalDistance(b);
+
+    return sortOrder === "asc" ? distanceA - distanceB : distanceB - distanceA;
   });
 
   return (
@@ -158,6 +168,17 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
               km
             </label>
           </div>
+
+          <h4>Sort by Total Distance</h4>
+          <button
+            onClick={() =>
+              setSortOrder((prev) =>
+                prev === "asc" ? "desc" : prev === "desc" ? "" : "asc"
+              )
+            }
+          >
+            {sortOrder === "asc" ? "Sort: Distance (High)" : sortOrder === "desc" ? "Sort: None" : "Sort: Distance (Low)"}
+          </button>
         </div>
       )}
 

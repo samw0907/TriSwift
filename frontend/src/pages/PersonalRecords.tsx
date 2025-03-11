@@ -26,7 +26,7 @@ const sportTypeMapping: { [key: string]: string } = {
 };
 
 const PersonalRecords: React.FC = () => {
-  const [selectedSport, setSelectedSport] = useState<string | null>(null);
+  const [selectedSport, setSelectedSport] = useState<string>("Swim");
 
   const mappedSportType = selectedSport ? sportTypeMapping[selectedSport] : null;
 

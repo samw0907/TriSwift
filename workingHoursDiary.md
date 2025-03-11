@@ -30,7 +30,9 @@ Date            Hours    Topic
 10.03.2025      2        Modularized resolvers
                 4        Added Counters and Graph to Home Page
                 3        Added Type and Date Filters to Session List
-11.03.2025      
+11.03.2025      2        Added more filters/sorting
+                1.5      Added Pace Calculator page
+
 12.03.2025      
 13.03.2025      
 14.03.2025    

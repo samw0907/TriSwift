@@ -15,6 +15,7 @@ const Navbar = () => {
       <Link to="/">Home</Link> |  
       <Link to="/dashboard">Dashboard</Link> |  
       <Link to="/records">Personal Records</Link> |  
+      <Link to="/paceCalculator">Pace Calculator</Link> |  
       {!token ? (
         <>
           <Link to="/login">Login</Link> |  

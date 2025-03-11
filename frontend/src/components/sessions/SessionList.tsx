@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import SessionDetails from "./SessionDetails";
 import EditSessionForm from "./EditSessionForm";
+import EditActivityForm from "./EditActivityForm";
 
 interface SessionListProps {
   sessions: any[];
@@ -11,6 +12,7 @@ interface SessionListProps {
 const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate }) => {
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
+  const [editingActivityId, setEditingActivityId] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [fromDate, setFromDate] = useState<string>("");
@@ -205,15 +207,27 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
 
             {expandedSessionId === session.id && (
             <>
-              <button onClick={() => setEditingSessionId(session.id)} style={{ marginLeft: "10px" }}>
-                Edit
-              </button>
-              <button onClick={() => onDelete(session.id)} style={{ marginLeft: "10px", color: "red" }}>
-                Delete
-              </button>
-              <SessionDetails session={session}  onUpdate={onUpdate} />
+            <button onClick={() => setEditingSessionId(session.id)} style={{ marginLeft: "10px" }}>
+              Edit Session
+            </button>
+            <button onClick={() => onDelete(session.id)} style={{ marginLeft: "10px", color: "red" }}>
+              Delete Session
+            </button>
+            <SessionDetails session={session} onUpdate={onUpdate} />
+
+            <h4>Activities:</h4>
+            <ul>
+              {session.activities.map((activity: { id: string; sportType: string; distance: number; duration: number }) => (
+                <li key={activity.id}>
+                  <strong>{activity.sportType}</strong> - {activity.distance} km, {activity.duration} sec
+                  <button onClick={() => setEditingActivityId(activity.id)} style={{ marginLeft: "10px" }}>
+                    Edit Activity
+                  </button>
+                </li>
+              ))}
+            </ul>
             </>
-          )}
+            )}
 
             {editingSessionId === session.id && (
               <EditSessionForm 
@@ -222,6 +236,14 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
                 onUpdate={onUpdate}
               />
             )}
+
+            {editingActivityId && (
+            <EditActivityForm 
+              activity={editingActivityId}
+              onClose={() => setEditingActivityId(null)}
+              onUpdate={onUpdate}
+            />
+          )}
           </li>
         ))}
       </ul>

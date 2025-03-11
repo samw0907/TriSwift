@@ -183,6 +183,10 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleUpdate = () => {
+    refetch();
+  };
+
   return (
     <div className="dashboard">
       <h1>Session Dashboard</h1>
@@ -237,7 +241,7 @@ const Dashboard: React.FC = () => {
       <h2>Past Sessions</h2>
       {loading && <p>Loading sessions...</p>}
       {error && <p style={{ color: "red" }}>Error fetching sessions</p>}
-      {sessions.length > 0 && <SessionList sessions={sessions} onDelete={handleDelete} />}
+      {sessions.length > 0 && <SessionList sessions={sessions} onDelete={handleDelete}  onUpdate={handleUpdate}/>}
     </div>
   );
 };

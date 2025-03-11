@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import SessionDetails from "./SessionDetails";
+import EditSessionForm from "./EditSessionForm";
 
 interface SessionListProps {
   sessions: any[];
   onDelete: (id: string) => void;
+  onUpdate: () => void;
 }
 
-const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
+const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate }) => {
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
+  const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [fromDate, setFromDate] = useState<string>("");
@@ -203,7 +206,25 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete }) => {
               Delete
             </button>
 
-            {expandedSessionId === session.id && <SessionDetails session={session} />}
+            {expandedSessionId === session.id && (
+            <>
+              <SessionDetails session={session} />
+              <button 
+                onClick={() => setEditingSessionId(session.id)} 
+                style={{ marginLeft: "10px" }}
+              >
+                Edit
+              </button>
+            </>
+            )}
+
+            {editingSessionId === session.id && (
+              <EditSessionForm 
+                session={session} 
+                onClose={() => setEditingSessionId(null)}
+                onUpdate={onUpdate}
+              />
+            )}
           </li>
         ))}
       </ul>

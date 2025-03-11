@@ -127,6 +127,20 @@ export const ADD_SESSION_TRANSITION = gql`
   }
 `;
 
+export const UPDATE_SESSION = gql`
+  mutation UpdateSession($id: ID!, $input: UpdateSessionInput!) {
+    updateSession(id: $id, input: $input) {
+      id
+      sessionType
+      date
+      weatherTemp
+      weatherHumidity
+      weatherWindSpeed
+      updated_at
+    }
+  }
+`;
+
 export const DELETE_SESSION = gql`
   mutation DeleteSession($id: ID!) {
     deleteSession(id: $id) {

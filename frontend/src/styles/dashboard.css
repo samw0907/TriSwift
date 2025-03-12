@@ -3,12 +3,22 @@
   margin: auto;
   padding: 20px;
   font-family: "Roboto", sans-serif;
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
 }
 
 .dashboard h1 {
   text-align: center;
   color: var(--primary-dark);
   margin-bottom: 20px;
+}
+
+.dashboard h2 {
+  color: var(--primary-dark);
+  margin-top: 30px;
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: 5px;
 }
 
 .session-item {
@@ -25,4 +35,25 @@
 .session-item:hover {
   transform: scale(1.02);
   background: var(--secondary-color);
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: white;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+  text-align: center;
 }

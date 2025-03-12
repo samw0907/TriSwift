@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import SessionDetails from "./SessionDetails";
 import EditSessionForm from "./EditSessionForm";
 import EditActivityForm from "./EditActivityForm";
+import "../../styles/sessionList.css";
 
 interface Activity {
   id: string;
@@ -40,15 +41,6 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
     setSelectedFilters((prev) =>
       prev.includes(filter) ? prev.filter((f) => f !== filter) : [...prev, filter]
     );
-  };
-
-  const toggleSessionDetails = (sessionId: string) => {
-    setExpandedSessionId(expandedSessionId === sessionId ? null : sessionId);
-    setEditingActivityId(null);
-  };
-
-  const toggleEditActivity = (activityId: string) => {
-    setEditingActivityId(editingActivityId === activityId ? null : activityId);
   };
 
   const clearFilters = () => {
@@ -109,15 +101,15 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
   });
 
   return (
-    <div>
-      {sessions.length === 0 ? <p>No sessions available.</p> : null}
+    <div className="session-list-container">
+      {sessions.length === 0 ? <p className="no-sessions">No sessions available.</p> : null}
 
-      <div style={{ marginBottom: "10px" }}>
-      <button onClick={() => setShowFilters((prev) => !prev)}>
+      <div className="filter-controls">
+      <button className="btn-filter-toggle" onClick={() => setShowFilters((prev) => !prev)}>
         {showFilters ? "Hide Filters" : "Show Filters"}
       </button>
         {showFilters && (
-          <button onClick={clearFilters} style={{ marginLeft: "10px" }}>
+          <button className="btn-clear-filters" onClick={clearFilters} style={{ marginLeft: "10px" }}>
             Clear Filters
       </button>
         )}
@@ -126,8 +118,9 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
       {showFilters && (
         <div className="filter-options">
           <h4>Filter by Session Type</h4>
+          <div className="filter-group">
           {["Multi-Sport", "Run", "Bike", "Swim"].map((type) => (
-            <label key={type} style={{ marginRight: "10px" }}>
+            <label key={type} className="filter-checkbox">
               <input
                 type="checkbox"
                 checked={selectedFilters.includes(type)}
@@ -136,8 +129,10 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
               {type}
             </label>
           ))}
+          </div>
 
           <h4>Filter by Date</h4>
+          <div  className="filter-group">
             <label>
               From:{" "}
               <input
@@ -156,16 +151,17 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
                 onChange={(e) => setToDate(e.target.value)}
               />
             </label>
+            </div>
 
-            <h4>Filter by Distance</h4>
+          <h4>Filter by Distance</h4>
+          <div className="filter-group">
           <label>
             Min:{" "}
             <input
               type="number"
               value={minDistance}
               onChange={(e) => setMinDistance(e.target.value)}
-              placeholder="Enter distance"
-              style={{ marginRight: "10px" }}
+              placeholder="Enter min distance"
             />
           </label>
 
@@ -175,12 +171,14 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
               type="number"
               value={maxDistance}
               onChange={(e) => setMaxDistance(e.target.value)}
-              placeholder="Enter distance"
+              placeholder="Enter max distance"
             />
           </label>
+          </div>
 
-          <div>
-            <label style={{ marginLeft: "10px" }}>
+          <h4>Distance Unit</h4>
+          <div className="filter-group">
+            <label>
               <input
                 type="radio"
                 name="distanceUnit"
@@ -188,7 +186,7 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
                 checked={distanceUnit === "m"}
                 onChange={() => setDistanceUnit("m")}
               />
-              m
+              meters
             </label>
 
             <label>
@@ -199,31 +197,36 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
                 checked={distanceUnit === "km"}
                 onChange={() => setDistanceUnit("km")}
               />
-              km
+              kilometers
             </label>
           </div>
 
           <h4>Sort by</h4>
+          <div className="sort-buttons">
           <button onClick={() => setSortOrder("date-desc")}>Most Recent</button>
           <button onClick={() => setSortOrder("date-asc")}>Oldest First</button>
           <button onClick={() => setSortOrder("asc")}>Distance (Lowest First)</button>
           <button onClick={() => setSortOrder("desc")}>Distance (Highest First)</button>
-
+          </div>
         </div>
       )}
 
-      {filteredSessions.length === 0 ? <p>No sessions available.</p> : null}
+      {filteredSessions.length === 0 ? <p className="no-sessions">No sessions available.</p> : null}
 
-      <ul>
+      <ul className="session-list">
         {filteredSessions.map((session) => (
-          <li key={session.id}>
-            <strong>
-              {session.sessionType} {new Date(session.date).toLocaleDateString()} -{" "}
-              {session.sessionType === "Swim"
-                ? `${calculateTotalDistance(session).toFixed(0)} m`
-                : `${calculateTotalDistance(session).toFixed(2)} km`}
-            </strong>
-            <br />
+          <li key={session.id} className="session-card">
+            <div className="session-info">
+              <h3>{session.sessionType}</h3>
+              <p className="session-date">{new Date(session.date).toLocaleDateString()}</p>
+              <p className="session-distance">
+                {session.sessionType === "Swim"
+                  ? `${calculateTotalDistance(session).toFixed(0)} m`
+                  : `${calculateTotalDistance(session).toFixed(2)} km`}
+              </p>
+            </div>
+
+                  
             <button
             onClick={() => {
               if (expandedSessionId === session.id) {

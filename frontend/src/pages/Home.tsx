@@ -61,7 +61,7 @@ const Home = () => {
   if (error) return <p>Error loading data</p>;
 
   return (
-    <div style={{ textAlign: 'center' }}>
+    <div  className="home">
       <h1>Welcome to TriSwift</h1>
       <p>Track your fitness progress with ease.</p>
 

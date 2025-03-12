@@ -72,19 +72,17 @@ const PaceCalculator: React.FC = () => {
   };
 
   return (
-    <div style={{ textAlign: "center", padding: "20px" }}>
+    <div className="pace-calculator-container">
       <h2>Pace Calculator</h2>
 
-      <div style={{ marginBottom: "10px" }}>
+      <div className="pace-form">
         <label>Sport: </label>
         <select value={sport} onChange={handleSportChange}>
           <option value="Swim">Swim</option>
           <option value="Run">Run</option>
           <option value="Bike">Bike</option>
         </select>
-      </div>
 
-      <div style={{ marginBottom: "10px" }}>
         <label>Distance: </label>
         <select value={distance} onChange={handleDistanceChange}>
           <option value="">Select Distance</option>
@@ -103,47 +101,46 @@ const PaceCalculator: React.FC = () => {
           style={{ width: "100px" }}
         />
         <span> {sport === "Swim" ? "m" : "km"}</span>
-      </div>
 
-      <div style={{ marginBottom: "10px" }}>
         <label>Target Time: </label>
-        <input
-          type="number"
-          name="hours"
-          placeholder="HH"
-          value={time.hours}
-          onChange={handleTimeChange}
-          style={{ width: "50px", marginRight: "5px" }}
-        />
-        :
-        <input
-          type="number"
-          name="minutes"
-          placeholder="MM"
-          value={time.minutes}
-          onChange={handleTimeChange}
-          style={{ width: "50px", marginRight: "5px" }}
-        />
-        :
-        <input
-          type="number"
-          name="seconds"
-          placeholder="SS"
-          value={time.seconds}
-          onChange={handleTimeChange}
-          style={{ width: "50px", marginRight: "10px" }}
-        />
+        <div className="pace-time-inputs">
+          <input
+            type="number"
+            name="hours"
+            placeholder="HH"
+            value={time.hours}
+            onChange={handleTimeChange}
+            style={{ width: "50px", marginRight: "5px" }}
+          />
+          :
+          <input
+            type="number"
+            name="minutes"
+            placeholder="MM"
+            value={time.minutes}
+            onChange={handleTimeChange}
+            style={{ width: "50px", marginRight: "5px" }}
+          />
+          :
+          <input
+            type="number"
+            name="seconds"
+            placeholder="SS"
+            value={time.seconds}
+            onChange={handleTimeChange}
+            style={{ width: "50px", marginRight: "10px" }}
+          />
+        </div>
+
+        <div className="pace-buttons">
+          <button onClick={calculatePace}> Calculate Pace </button>
+        </div>
+
+        {pace && <h3 style={{ marginTop: "20px" }}>Target Pace: {pace}</h3>}
       </div>
-
-      <button onClick={calculatePace} style={{ marginTop: "10px", padding: "5px 15px" }}>
-        Calculate Pace
-      </button>
-
-      {pace && (
-        <h3 style={{ marginTop: "20px" }}>Target Pace: {pace}</h3>
-      )}
     </div>
   );
+
 };
 
 export default PaceCalculator;

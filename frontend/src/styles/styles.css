@@ -1,4 +1,4 @@
-/* ====== GLOBAL STYLES ====== */
+
 :root {
     --primary-color: #007bff;
     --primary-dark: #0056b3;
@@ -22,14 +22,12 @@
     color: var(--primary-dark);
   }
   
-  /* ====== CONTAINER STYLES ====== */
   .container {
     max-width: 1000px;
     margin: auto;
     padding: 20px;
   }
-  
-  /* ====== BUTTONS ====== */
+
   button {
     background: var(--primary-color);
     color: white;
@@ -53,7 +51,6 @@
     background: #c82333;
   }
   
-  /* ====== FORMS & INPUTS ====== */
   input, select, textarea {
     width: 100%;
     padding: 10px;
@@ -68,7 +65,6 @@
     outline: none;
   }
   
-  /* ====== CARD STYLES ====== */
   .card {
     background: white;
     padding: 15px;
@@ -82,7 +78,6 @@
     transition: transform 0.2s ease-in-out;
   }
   
-  /* ====== TABLE STYLES ====== */
   .table {
     width: 100%;
     border-collapse: collapse;

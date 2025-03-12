@@ -203,10 +203,30 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
 
           <h4>Sort by</h4>
           <div className="sort-buttons">
-          <button onClick={() => setSortOrder("date-desc")}>Most Recent</button>
-          <button onClick={() => setSortOrder("date-asc")}>Oldest First</button>
-          <button onClick={() => setSortOrder("asc")}>Distance (Lowest First)</button>
-          <button onClick={() => setSortOrder("desc")}>Distance (Highest First)</button>
+          <button 
+            className={`sort-btn ${sortOrder === "date-desc" ? "active" : ""}`} 
+            onClick={() => setSortOrder("date-desc")}
+          >
+            Most Recent
+          </button>
+          <button 
+            className={`sort-btn ${sortOrder === "date-asc" ? "active" : ""}`} 
+            onClick={() => setSortOrder("date-asc")}
+          >
+            Oldest First
+          </button>
+          <button 
+            className={`sort-btn ${sortOrder === "asc" ? "active" : ""}`} 
+            onClick={() => setSortOrder("asc")}
+          >
+            Distance (Lowest First)
+          </button>
+          <button 
+            className={`sort-btn ${sortOrder === "desc" ? "active" : ""}`} 
+            onClick={() => setSortOrder("desc")}
+          >
+            Distance (Highest First)
+          </button>
           </div>
         </div>
       )}
@@ -226,39 +246,39 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
               </p>
             </div>
 
-                  
-            <button
-            onClick={() => {
-              if (expandedSessionId === session.id) {
-                setExpandedSessionId(null);
-                setEditingActivityId(null);
-              } else {
-                setExpandedSessionId(session.id);
-              }
-            }}
-          >
+          <div className="session-actions">
+          <button
+                className={`btn-primary ${expandedSessionId === session.id ? "active" : ""}`}
+                onClick={() => {
+                  setExpandedSessionId(expandedSessionId === session.id ? null : session.id);
+                  setEditingActivityId(null);
+                }}
+              >
             {expandedSessionId === session.id ? "Hide Details" : "Show Details"}
           </button>
 
-          {expandedSessionId === session.id && (
-            <>
-            <button onClick={() => setEditingSessionId(session.id)} style={{ marginLeft: "10px" }}>
-              Edit Session
-            </button>
-            <button onClick={() => onDelete(session.id)} style={{ marginLeft: "10px", color: "red" }}>
-              Delete Session
-            </button>
-            <SessionDetails session={session} onUpdate={onUpdate} />
-            </>
-          )}
+          <button className="btn-secondary" onClick={() => setEditingSessionId(session.id)}>
+            Edit
+          </button>
 
-          {editingSessionId === session.id && (
-            <EditSessionForm
-              session={session}
-              onClose={() => setEditingSessionId(null)}
-              onUpdate={onUpdate}
-            />
-          )}
+          <button className="btn-danger" onClick={() => onDelete(session.id)}>
+            Delete
+          </button>
+          </div>
+          
+          {expandedSessionId === session.id && (
+              <div className="session-details">
+                <SessionDetails session={session} onUpdate={onUpdate} />
+              </div>
+            )}
+
+            {editingSessionId === session.id && (
+              <EditSessionForm
+                session={session}
+                onClose={() => setEditingSessionId(null)}
+                onUpdate={onUpdate}
+              />
+            )}
         </li>
       ))}
     </ul>

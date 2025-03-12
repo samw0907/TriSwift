@@ -14,10 +14,8 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <div className="nav-left">
-      <Link to="/">Home</Link>
-      </div>
       <div className="nav-links">
+      <Link to="/">Home</Link>
       <Link to="/dashboard">Dashboard</Link> |  
       <Link to="/records">Personal Records</Link> |  
       <Link to="/paceCalculator">Pace Calculator</Link>
@@ -25,8 +23,8 @@ const Navbar = () => {
       <div className="nav-auth">
       {!token ? (
         <>
-          <Link to="/login">Login</Link> |  
-          <Link to="/signup">Signup</Link>
+          <Link to="/login" className="nav-btn">Login</Link> |  
+          <Link to="/signup" className="nav-btn">Signup</Link>
         </>
       ) : (
         <button onClick={handleLogout} style={{ marginLeft: '10px' }}>Logout</button>

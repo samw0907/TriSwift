@@ -8,18 +8,6 @@
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.nav-left {
-  font-size: 22px;
-  font-weight: bold;
-}
-
-.nav-logo {
-  color: white;
-  text-decoration: none;
-  font-size: 22px;
-  font-weight: bold;
-}
-
 .nav-links {
   display: flex;
   gap: 20px;
@@ -78,10 +66,13 @@
   }
   
   .nav-links {
+    flex-direction: row;
     margin-top: 10px;
   }
 
   .nav-auth {
+    flex-direction: row;
+    gap: 10px;
     margin-top: 10px;
   }
 }

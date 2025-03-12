@@ -1,3 +1,46 @@
+.personal-records {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.sport-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.sport-button {
+  background: var(--primary-color);
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.sport-button:hover {
+  background: var(--primary-dark);
+}
+
+.sport-button.active {
+  background: var(--primary-dark);
+  font-weight: bold;
+}
+
+.records-container {
+  max-width: 800px;
+  margin: auto;
+  overflow-x: auto;
+  background: white;
+  padding: 20px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
 .records-table {
   width: 100%;
   border-collapse: collapse;
@@ -21,4 +64,14 @@
 
 .records-table tr:nth-child(even) {
   background-color: var(--secondary-color);
+}
+
+@media (max-width: 768px) {
+  .records-container {
+    padding: 10px;
+  }
+
+  .records-table {
+    font-size: 14px;
+  }
 }

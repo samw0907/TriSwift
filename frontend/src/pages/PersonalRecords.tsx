@@ -61,7 +61,7 @@ const PersonalRecords: React.FC = () => {
       </div>
 
       {selectedSport && (
-        <div className="records-list">
+        <div className="records-container">
           <h2>{sportTypeMapping[selectedSport]} Records</h2>
           {loading && <p>Loading...</p>}
           {error && <p style={{ color: 'red' }}>Error fetching records. Please try again.</p>}

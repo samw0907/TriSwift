@@ -1,0 +1,109 @@
+/* ====== GLOBAL STYLES ====== */
+:root {
+    --primary-color: #007bff;
+    --primary-dark: #0056b3;
+    --secondary-color: #f4f4f4;
+    --text-color: #333;
+    --danger-color: #dc3545;
+    --success-color: #28a745;
+    --border-radius: 8px;
+    --box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  body {
+    font-family: "Roboto", sans-serif;
+    background: #f8f9fa;
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+  }
+  
+  h1, h2, h3 {
+    color: var(--primary-dark);
+  }
+  
+  /* ====== CONTAINER STYLES ====== */
+  .container {
+    max-width: 1000px;
+    margin: auto;
+    padding: 20px;
+  }
+  
+  /* ====== BUTTONS ====== */
+  button {
+    background: var(--primary-color);
+    color: white;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+  }
+  
+  button:hover {
+    background: var(--primary-dark);
+  }
+  
+  button.danger {
+    background: var(--danger-color);
+  }
+  
+  button.danger:hover {
+    background: #c82333;
+  }
+  
+  /* ====== FORMS & INPUTS ====== */
+  input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: var(--border-radius);
+    transition: border-color 0.3s ease-in-out;
+  }
+  
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+  }
+  
+  /* ====== CARD STYLES ====== */
+  .card {
+    background: white;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 15px;
+  }
+  
+  .card:hover {
+    transform: scale(1.02);
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  /* ====== TABLE STYLES ====== */
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+  }
+  
+  .table th, .table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+  }
+  
+  .table th {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: bold;
+  }
+  
+  .table tr:nth-child(even) {
+    background-color: var(--secondary-color);
+  }
+  

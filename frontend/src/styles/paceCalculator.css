@@ -8,25 +8,32 @@
     text-align: center;
   }
   
-  .pace-calculator-container h2 {
+.pace-calculator-container h2 {
     color: var(--primary-dark);
     margin-bottom: 15px;
   }
   
-  .pace-form {
+.pace-form {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 15px;
   }
   
-  .pace-form label {
+.pace-form label {
     font-weight: bold;
     display: block;
     margin-bottom: 5px;
   }
+
+.pace-distance-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }  
   
-  .pace-form select,
-  .pace-form input {
+.pace-form select,
+.pace-form input {
     width: 100%;
     max-width: 250px;
     padding: 8px;
@@ -35,26 +42,26 @@
     border-radius: var(--border-radius);
   }
   
-  .pace-form input[type="number"] {
+.pace-form input[type="number"] {
     text-align: center;
   }
   
-  .pace-time-inputs {
+.pace-time-inputs {
     display: flex;
     justify-content: center;
     gap: 10px;
   }
   
-  .pace-time-inputs input {
+.pace-time-inputs input {
     width: 60px;
     text-align: center;
   }
   
-  .pace-buttons {
+.pace-buttons {
     margin-top: 10px;
   }
   
-  .pace-buttons button {
+.pace-buttons button {
     background: var(--primary-color);
     color: white;
     padding: 10px 15px;
@@ -65,23 +72,23 @@
     transition: background 0.3s ease-in-out;
   }
   
-  .pace-buttons button:hover {
+.pace-buttons button:hover {
     background: var(--primary-dark);
   }
   
-  .pace-result {
+.pace-result {
     margin-top: 20px;
     font-size: 18px;
     font-weight: bold;
     color: var(--secondary-dark);
   }
   
-  @media (max-width: 768px) {
-    .pace-calculator-container {
+@media (max-width: 768px) {
+.pace-calculator-container {
       padding: 15px;
     }
   
-    .pace-time-inputs input {
+.pace-time-inputs input {
       width: 50px;
     }
   }

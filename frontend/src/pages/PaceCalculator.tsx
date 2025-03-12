@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import '../styles/paceCalculator.css'
 import '../index.css'
 
 const sportDistances = {
@@ -84,6 +85,7 @@ const PaceCalculator: React.FC = () => {
         </select>
 
         <label>Distance: </label>
+        <div className="pace-distance-wrapper">
         <select value={distance} onChange={handleDistanceChange}>
           <option value="">Select Distance</option>
           {sportDistances[sport].map((d) => (
@@ -101,7 +103,8 @@ const PaceCalculator: React.FC = () => {
           style={{ width: "100px" }}
         />
         <span> {sport === "Swim" ? "m" : "km"}</span>
-
+        </div>
+        
         <label>Target Time: </label>
         <div className="pace-time-inputs">
           <input

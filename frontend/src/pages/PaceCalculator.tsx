@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import '../index.css'
 
 const sportDistances = {
   Swim: ["100m", "200m", "400m", "800m", "1000m", "1500m", "2000m"],

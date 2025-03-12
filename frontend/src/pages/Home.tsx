@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { useQuery } from "@apollo/client";
 import { GET_SESSIONS } from "../graphql/queries";
 import TotalsGraph from "../components/TotalsGraph"; 
-import "../styles/home.css";
+import '../index.css'
+import '../styles/home.css'
 
 
 const Home = () => {

@@ -3,6 +3,9 @@ import { Line } from "react-chartjs-2";
 import { Chart, registerables } from "chart.js";
 import { useQuery } from "@apollo/client";
 import { GET_SESSIONS } from "../graphql/queries";
+import '../index.css'
+import "../styles/totalsGraph.css";
+
 
 Chart.register(...registerables);
 
@@ -87,25 +90,28 @@ const TotalsGraph: React.FC = () => {
       {
         label: `Total Distance (${selectedSport})`,
         data: graphData.map((d) => d.distance),
-        borderColor: "blue",
-        backgroundColor: "rgba(0, 0, 255, 0.2)",
-        borderWidth: 2,
+        borderColor: "#0056b3",
+        backgroundColor: "rgba(0, 86, 179, 0.2)",
+        borderWidth: 3,
+        pointBackgroundColor: "#004494",
+        pointBorderColor: "#ffffff",
+        pointRadius: 5, 
         fill: true,
       },
     ],
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "20px" }}>
+    <div className="totals-graph-container">
       <h2>
         {viewMode === "Weekly" ? "Last 7 Days Distance" : viewMode === "Monthly" ? "Past Month Distance": "Past Year Distance"}
       </h2>
-      <div>
+      <div className="sport-buttons">
         <button onClick={() => setSelectedSport("Run")}>Run</button>
         <button onClick={() => setSelectedSport("Bike")}>Bike</button>
         <button onClick={() => setSelectedSport("Swim")}>Swim</button>
       </div>
-      <div style={{ margin: "10px 0" }}>
+      <div className="view-buttons">
         <button onClick={() => setViewMode("Weekly")}>
           Weekly
         </button>
@@ -116,7 +122,7 @@ const TotalsGraph: React.FC = () => {
             Yearly
         </button>
       </div>
-      <div style={{ width: "80%", margin: "auto" }}>
+      <div className="graph-container">
       <Line
           data={chartData}
           options={{

@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useMutation } from '@apollo/client';
 import { LOGIN_USER } from '../graphql/mutations';
 import { useNavigate } from 'react-router-dom';
+import '../index.css'
 
 const Login: React.FC = () => {
   const navigate = useNavigate();

@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_PERSONAL_RECORDS } from '../graphql/queries';
-import '../styles/personalRecords.css';
+import '../index.css'
+import '../styles/personalRecords.css'
 
 const distances = {
   Run: [0.1, 0.2, 0.4, 1, 5, 10, 21.1, 42.2],

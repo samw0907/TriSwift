@@ -7,6 +7,7 @@ import SessionForm from "../components/sessions/SessionForm";
 import ActivityForm from "../components/sessions/ActivityForm";
 import TransitionForm from "../components/sessions/TransitionForm";
 import '../index.css'
+import '../styles/dashboard.css'
 
 interface Session {
   id: string;

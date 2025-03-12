@@ -24,7 +24,10 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onClose, 
   });
 
   const [updateActivity] = useMutation(UPDATE_SESSION_ACTIVITY, {
-    refetchQueries: [{ query: GET_PERSONAL_RECORDS }],
+    refetchQueries: [{ 
+        query: GET_PERSONAL_RECORDS,
+        variables: { sportType: activity.sportType }
+    }],
     onCompleted: () => {
       onUpdate();
       onClose();

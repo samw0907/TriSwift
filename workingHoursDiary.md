@@ -34,7 +34,8 @@ Date            Hours    Topic
                 1.5      Added Pace Calculator page
                 5        Adding ability to edit sessions
 12.03.2025      1.5      Fix PR updates on activity edits
-                2.5      Basic css styling
+                5        CSS styling
+                1        
 13.03.2025      
 14.03.2025    
                 (17.5)

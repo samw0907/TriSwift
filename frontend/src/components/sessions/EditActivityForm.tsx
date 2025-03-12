@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { UPDATE_SESSION_ACTIVITY } from "../../graphql/mutations";
+import { GET_PERSONAL_RECORDS } from "../../graphql/queries";
 
 interface EditActivityFormProps {
   activity: any;
@@ -23,12 +24,12 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onClose, 
   });
 
   const [updateActivity] = useMutation(UPDATE_SESSION_ACTIVITY, {
+    refetchQueries: [{ query: GET_PERSONAL_RECORDS }],
     onCompleted: () => {
       onUpdate();
       onClose();
     },
   });
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };

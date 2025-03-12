@@ -153,6 +153,8 @@ const activityResolvers = {
                 total_duration: updatedTotalDuration,
                 total_distance: updatedTotalDistance,
               });
+
+              await createOrUpdatePersonalRecords(user.id, activity.sport_type, activity.session_id);
       
               console.log("✅ Session Updated After Activity Update:", activity.session.toJSON());
       

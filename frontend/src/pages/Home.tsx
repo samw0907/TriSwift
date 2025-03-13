@@ -67,7 +67,7 @@ const Home = () => {
 
       <div className="counters">
         <div className="counter-wrapper">
-          <h2>Distance in the Last 7 Days</h2>
+          <h2>Week Distance</h2>
           <div className="counter-section">
             <p>Swim: {last7DaysTotals.Swim.toFixed(0)} m</p>
             <p>Bike: {last7DaysTotals.Bike.toFixed(2)} km</p>
@@ -76,7 +76,7 @@ const Home = () => {
         </div>
 
         <div className="counter-wrapper">
-          <h2>Distance in the Last 28 Days</h2>
+          <h2>Month Distance</h2>
           <div className="counter-section">
             <p>Swim: {last28DaysTotals.Swim.toFixed(0)} m</p>
             <p>Bike: {last28DaysTotals.Bike.toFixed(2)} km</p>

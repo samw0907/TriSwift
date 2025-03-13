@@ -66,33 +66,45 @@ const Home = () => {
       <p>Track your fitness progress with ease.</p>
 
       <div className="counters">
-        <h2>Distance in the Last 7 Days</h2>
-        <div className="counter-section">
-          <p>Swim: {last7DaysTotals.Swim.toFixed(0)} m</p>
-          <p>Bike: {last7DaysTotals.Bike.toFixed(2)} km</p>
-          <p>Run: {last7DaysTotals.Run.toFixed(2)} km</p>
+        <div className="counter-wrapper">
+          <h2>Distance in the Last 7 Days</h2>
+          <div className="counter-section">
+            <p>Swim: {last7DaysTotals.Swim.toFixed(0)} m</p>
+            <p>Bike: {last7DaysTotals.Bike.toFixed(2)} km</p>
+            <p>Run: {last7DaysTotals.Run.toFixed(2)} km</p>
+          </div>
         </div>
-        <h2>Distance in the Last 28 Days</h2>
-        <div className="counter-section">
-          <p>Swim: {last28DaysTotals.Swim.toFixed(0)} m</p>
-          <p>Bike: {last28DaysTotals.Bike.toFixed(2)} km</p>
-          <p>Run: {last28DaysTotals.Run.toFixed(2)} km</p>
+
+        <div className="counter-wrapper">
+          <h2>Distance in the Last 28 Days</h2>
+          <div className="counter-section">
+            <p>Swim: {last28DaysTotals.Swim.toFixed(0)} m</p>
+            <p>Bike: {last28DaysTotals.Bike.toFixed(2)} km</p>
+            <p>Run: {last28DaysTotals.Run.toFixed(2)} km</p>
+          </div>
         </div>
-        <h2>Year-to-Date Distance</h2>
-        <div className="counter-section">
-          <p>Swim: {yearToDateTotals.Swim.toFixed(0)} m</p>
-          <p>Bike: {yearToDateTotals.Bike.toFixed(2)} km</p>
-          <p>Run: {yearToDateTotals.Run.toFixed(2)} km</p>
+
+        <div className="counter-wrapper">
+          <h2>Year-to-Date Distance</h2>
+          <div className="counter-section">
+            <p>Swim: {yearToDateTotals.Swim.toFixed(0)} m</p>
+            <p>Bike: {yearToDateTotals.Bike.toFixed(2)} km</p>
+            <p>Run: {yearToDateTotals.Run.toFixed(2)} km</p>
+          </div>
         </div>
-        <h2>Lifetime Total Distance</h2>
-        <div className="counter-section">
-          <p>Swim: {lifetimeTotals.Swim.toFixed(0)} m</p>
-          <p>Bike: {lifetimeTotals.Bike.toFixed(2)} km</p>
-          <p>Run: {lifetimeTotals.Run.toFixed(2)} km</p>
+
+        <div className="counter-wrapper">
+          <h2>Lifetime Total Distance</h2>
+          <div className="counter-section">
+            <p>Swim: {lifetimeTotals.Swim.toFixed(0)} m</p>
+            <p>Bike: {lifetimeTotals.Bike.toFixed(2)} km</p>
+            <p>Run: {lifetimeTotals.Run.toFixed(2)} km</p>
+          </div>
         </div>
+      </div> 
+
         {!loading && !error && <TotalsGraph />}
-      </div>
-      </div>
+    </div>
   );
 };
 

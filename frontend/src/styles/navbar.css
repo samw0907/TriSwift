@@ -33,7 +33,7 @@
 
 .nav-btn {
   background: var(--secondary-color);
-  color: white;
+  color: rgb(10, 90, 144);
   padding: 8px 14px;
   text-decoration: none;
   border-radius: var(--border-radius);

@@ -15,9 +15,21 @@
 
 .counters {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 20px;
+  align-items: flex-start;
+}
+
+.counter-wrapper {
+  flex: 1 1 300px;
+  min-width: 300px;
+  max-width: 400px;
+  text-align: center;
+}
+
+.counter-wrapper h2 {
+  margin-bottom: 10px;
 }
 
 .counter-section {
@@ -25,11 +37,9 @@
   box-shadow: var(--box-shadow);
   border-radius: var(--border-radius);
   padding: 20px;
-  max-width: 400px;
-  width: 100%;
   text-align: center;
   font-size: 18px;
-  margin-bottom: 15px;
+  margin: 0 auto
 }
 
 .counter-section h2 {
@@ -62,7 +72,24 @@
     padding: 20px;
   }
 
+  .counters {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .counter-wrapper {
+    width: 90%;
+    margin-bottom: 10px;
+  }
+
   .counter-section {
     max-width: 90%;
+    padding: 15px;
+    margin-bottom: 5px;
+  }
+
+  .counter-section p {
+    font-size: 18px;
   }
 }

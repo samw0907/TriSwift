@@ -34,14 +34,17 @@ const PersonalRecords: React.FC = () => {
   const { loading, error, data, refetch } = useQuery(GET_PERSONAL_RECORDS, {
     variables: { sportType: mappedSportType },
     skip: !mappedSportType,
-    fetchPolicy: "network-only"
+    fetchPolicy: "network-only",
+    onCompleted: () => {
+      setTimeout(() => {
+        setSelectedSport(mappedSportType || "Swim");
+      }, 0);
+    }
   });
   
   const handleSportSelection = useCallback((sport: string) => {
     setSelectedSport(sport);
-    if (refetch) {
-      refetch({ sportType: sportTypeMapping[sport] });
-    }
+    refetch({ sportType: sportTypeMapping[sport] });
   }, [refetch]);
 
   return (
@@ -67,7 +70,7 @@ const PersonalRecords: React.FC = () => {
           {error && <p style={{ color: 'red' }}>Error fetching records. Please try again.</p>}
 
           {data?.personalRecords && data.personalRecords.length > 0 ? (
-            <table className="records-table">
+            <table className="records-table" role="table">
               <thead>
                 <tr>
                   <th>Distance</th>

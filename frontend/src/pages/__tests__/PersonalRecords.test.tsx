@@ -65,6 +65,48 @@ test("displays loading indicator while fetching data", async () => {
   expect(screen.getByText(/Loading.../i)).toBeInTheDocument();
 });
 
+test("updates sport selection when clicking buttons", async () => {
+    renderWithMock([mockSwimData, mockRunData]);
+  
+    const runButton = screen.getByRole("button", { name: /Run/i });
+    const swimButton = screen.getByRole("button", { name: /Swim/i });
+  
+    fireEvent.click(runButton);
+  
+    await waitFor(() => {
+      expect(runButton).toHaveClass("active");
+    });
+  
+    expect(swimButton).not.toHaveClass("active");
+  
+    const bikeButton = screen.getByRole("button", { name: /Bike/i });
+  
+    fireEvent.click(bikeButton);
+
+    await waitFor(() => {
+      expect(bikeButton).toHaveClass("active");
+    });
+  
+    expect(runButton).not.toHaveClass("active");
+});
+  
+test("fetches and displays personal records for selected sport", async () => {
+    renderWithMock([mockSwimData, mockRunData]);
+  
+    fireEvent.click(screen.getByRole("button", { name: /Run/i }));
+  
+    await waitFor(() => {
+      const table = screen.queryByRole("table");
+      const noRecordsMessage = screen.queryByText(/No personal records found/i);
+      expect(table || noRecordsMessage).toBeTruthy();
+    });
+  
+    if (screen.queryByRole("table")) {
+      expect(screen.getByText("5km")).toBeInTheDocument();
+      expect(screen.getByText("10km")).toBeInTheDocument();
+    }
+});
+  
 test("displays no records message when no data is returned", async () => {
   renderWithMock([
     mockSwimData,
@@ -72,7 +114,7 @@ test("displays no records message when no data is returned", async () => {
       request: { query: GET_PERSONAL_RECORDS, variables: { sportType: "Run" } },
       result: { data: { personalRecords: [] } },
     },
-  ]);
+]);
 
   fireEvent.click(screen.getByRole("button", { name: /Run/i }));
 

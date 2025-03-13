@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_PERSONAL_RECORDS } from '../graphql/queries';
 import '../index.css'
@@ -28,24 +28,25 @@ const sportTypeMapping: { [key: string]: string } = {
 
 const PersonalRecords: React.FC = () => {
   const [selectedSport, setSelectedSport] = useState<string>("Swim");
-
   const mappedSportType = selectedSport ? sportTypeMapping[selectedSport] : null;
 
   const { loading, error, data, refetch } = useQuery(GET_PERSONAL_RECORDS, {
     variables: { sportType: mappedSportType },
     skip: !mappedSportType,
     fetchPolicy: "network-only",
-    onCompleted: () => {
-      setTimeout(() => {
-        setSelectedSport(mappedSportType || "Swim");
-      }, 0);
-    }
   });
-  
-  const handleSportSelection = useCallback((sport: string) => {
+
+  const handleSportSelection = (sport: string) => {
     setSelectedSport(sport);
-    refetch({ sportType: sportTypeMapping[sport] });
-  }, [refetch]);
+    setTimeout(() => refetch({ sportType: sportTypeMapping[sport] }), 0);
+  };
+
+  useEffect(() => {
+    if (selectedSport) {
+      refetch({ sportType: sportTypeMapping[selectedSport] });
+    }
+  }, [selectedSport, refetch]);
+  
 
   return (
     <div className="personal-records">
@@ -54,6 +55,7 @@ const PersonalRecords: React.FC = () => {
         {["Swim", "Run", "Bike"].map((sport) => (
           <button
             key={sport}
+            data-testid={`sport-button-${sport.toLowerCase()}`} 
             className={`sport-button ${selectedSport === sport ? 'active' : ''}`}
             onClick={() => handleSportSelection(sport)}
             disabled={loading}

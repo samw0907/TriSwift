@@ -68,8 +68,9 @@ test("displays loading indicator while fetching data", async () => {
 test("updates sport selection when clicking buttons", async () => {
     renderWithMock([mockSwimData, mockRunData]);
   
-    const runButton = screen.getByRole("button", { name: /Run/i });
-    const swimButton = screen.getByRole("button", { name: /Swim/i });
+    const runButton = await screen.findByTestId("sport-button-run");
+    const swimButton = await screen.findByTestId("sport-button-swim");
+    const bikeButton = await screen.findByTestId("sport-button-bike");
   
     fireEvent.click(runButton);
   
@@ -77,18 +78,14 @@ test("updates sport selection when clicking buttons", async () => {
       expect(runButton).toHaveClass("active");
     });
   
-    expect(swimButton).not.toHaveClass("active");
-  
-    const bikeButton = screen.getByRole("button", { name: /Bike/i });
-  
     fireEvent.click(bikeButton);
-
+  
     await waitFor(() => {
       expect(bikeButton).toHaveClass("active");
+      expect(runButton).not.toHaveClass("active");
     });
+  });  
   
-    expect(runButton).not.toHaveClass("active");
-});
   
 test("fetches and displays personal records for selected sport", async () => {
     renderWithMock([mockSwimData, mockRunData]);

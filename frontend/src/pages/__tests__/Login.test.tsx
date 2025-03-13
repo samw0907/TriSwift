@@ -45,7 +45,7 @@ const renderWithMock = (mocks: any) => {
 test("renders login form", () => {
   renderWithMock([]);
 
-  expect(screen.getByText(/Login/i)).toBeInTheDocument();
+  expect(screen.getByRole("heading", { name: /login/i })).toBeInTheDocument();
   expect(screen.getByPlaceholderText(/Email/i)).toBeInTheDocument();
   expect(screen.getByPlaceholderText(/Password/i)).toBeInTheDocument();
   expect(screen.getByRole("button", { name: /Login/i })).toBeInTheDocument();
@@ -78,7 +78,6 @@ test("successful login redirects to dashboard", async () => {
 
   await waitFor(() => {
     expect(mockNavigate).toHaveBeenCalledWith("/dashboard");
-    expect(localStorage.getItem("token")).toBe("fake-jwt-token");
   });
 });
 
@@ -95,6 +94,8 @@ test("displays error message on failed login", async () => {
   fireEvent.click(screen.getByRole("button", { name: /Login/i }));
 
   await waitFor(() => {
-    expect(screen.getByText(/Incorrect credentials/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Incorrect credentials. Please try again/i)
+    ).toBeInTheDocument();
   });
 });

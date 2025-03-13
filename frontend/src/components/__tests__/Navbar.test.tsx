@@ -1,13 +1,13 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import Navbar from "../Navbar";
 
 test("renders all navigation links", () => {
   render(
-    <BrowserRouter>
+    <MemoryRouter>
       <Navbar />
-    </BrowserRouter>
+    </MemoryRouter>
   );
 
   expect(screen.getByText(/Home/i)).toBeInTheDocument();
@@ -15,3 +15,4 @@ test("renders all navigation links", () => {
   expect(screen.getByText(/Personal Records/i)).toBeInTheDocument();
   expect(screen.getByText(/Pace Calculator/i)).toBeInTheDocument();
 });
+

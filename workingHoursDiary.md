@@ -35,8 +35,8 @@ Date            Hours    Topic
                 5        Adding ability to edit sessions
 12.03.2025      1.5      Fix PR updates on activity edits
                 5        CSS styling
-                1        
+                1        Setting up Jest testing 
 13.03.2025      
 14.03.2025    
-                (17.5)
-TOTAL HOURS     136.5    
+                (25)
+TOTAL HOURS     144    

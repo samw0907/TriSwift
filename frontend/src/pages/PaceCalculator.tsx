@@ -77,16 +77,16 @@ const PaceCalculator: React.FC = () => {
       <h2>Pace Calculator</h2>
 
       <div className="pace-form">
-        <label>Sport: </label>
-        <select value={sport} onChange={handleSportChange}>
+        <label htmlFor="sport-select">Sport: </label>
+        <select id="sport-select" value={sport} onChange={handleSportChange}>
           <option value="Swim">Swim</option>
           <option value="Run">Run</option>
           <option value="Bike">Bike</option>
         </select>
 
-        <label>Distance: </label>
+        <label htmlFor="distance-select">Distance: </label>
         <div className="pace-distance-wrapper">
-        <select value={distance} onChange={handleDistanceChange}>
+        <select id="distance-select" value={distance} onChange={handleDistanceChange}>
           <option value="">Select Distance</option>
           {sportDistances[sport].map((d) => (
             <option key={d} value={d.replace("m", "").replace("km", "")}>
@@ -96,6 +96,7 @@ const PaceCalculator: React.FC = () => {
         </select>
         <span> OR </span>
         <input
+          id="custom-distance"
           type="number"
           placeholder="Custom Distance"
           value={customDistance}
@@ -105,9 +106,10 @@ const PaceCalculator: React.FC = () => {
         <span> {sport === "Swim" ? "m" : "km"}</span>
         </div>
         
-        <label>Target Time: </label>
+        <label htmlFor="hours-input">Target Time: </label>
         <div className="pace-time-inputs">
           <input
+            id="hours-input"
             type="number"
             name="hours"
             placeholder="HH"
@@ -117,6 +119,7 @@ const PaceCalculator: React.FC = () => {
           />
           :
           <input
+            id="minutes-input"
             type="number"
             name="minutes"
             placeholder="MM"
@@ -126,6 +129,7 @@ const PaceCalculator: React.FC = () => {
           />
           :
           <input
+            id="seconds-input"
             type="number"
             name="seconds"
             placeholder="SS"

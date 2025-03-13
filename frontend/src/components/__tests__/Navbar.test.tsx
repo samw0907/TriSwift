@@ -1,13 +1,13 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import Navbar from "../Navbar";
 
 test("renders all navigation links", () => {
   render(
-    <MemoryRouter>
+    <BrowserRouter>
       <Navbar />
-    </MemoryRouter>
+    </BrowserRouter>
   );
 
   expect(screen.getByText(/Home/i)).toBeInTheDocument();

@@ -90,7 +90,7 @@ const Home = () => {
           <p>Bike: {lifetimeTotals.Bike.toFixed(2)} km</p>
           <p>Run: {lifetimeTotals.Run.toFixed(2)} km</p>
         </div>
-        <TotalsGraph />
+        {!loading && !error && <TotalsGraph />}
       </div>
       </div>
   );

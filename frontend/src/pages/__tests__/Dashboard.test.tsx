@@ -68,7 +68,6 @@ const renderWithMock = (mocks: any) => {
   );
 };
 
-// ✅ Fix Jest to Vitest
 beforeAll(() => {
   vi.spyOn(window, "confirm").mockImplementation(() => true);
 });

@@ -3,13 +3,20 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BrowserRouter } from "react-router-dom";
 import Navbar from "../Navbar";
+import { AuthContext } from "../../context/AuthContext";
+
+const renderWithAuth = (isAuthenticated: boolean, logoutUser = jest.fn()) => {
+  return render(
+    <AuthContext.Provider value={{ isAuthenticated, loginUser: jest.fn(), logoutUser }}>
+      <BrowserRouter>
+        <Navbar />
+      </BrowserRouter>
+    </AuthContext.Provider>
+  );
+};
 
 test("renders all navigation links", () => {
-  render(
-    <BrowserRouter>
-      <Navbar />
-    </BrowserRouter>
-  );
+  renderWithAuth(false);
 
   expect(screen.getByText(/Home/i)).toBeInTheDocument();
   expect(screen.getByText(/Dashboard/i)).toBeInTheDocument();
@@ -18,11 +25,7 @@ test("renders all navigation links", () => {
 });
 
 test("shows login and signup buttons when no user is logged in", () => {
-  render(
-    <BrowserRouter>
-      <Navbar />
-    </BrowserRouter>
-  );
+  renderWithAuth(false);
 
   expect(screen.getByText(/Login/i)).toBeInTheDocument();
   expect(screen.getByText(/Signup/i)).toBeInTheDocument();
@@ -31,12 +34,7 @@ test("shows login and signup buttons when no user is logged in", () => {
 
 test("clicking login button navigates to login page", async () => {
   const user = userEvent.setup();
-
-  render(
-    <BrowserRouter>
-      <Navbar />
-    </BrowserRouter>
-  );
+  renderWithAuth(false);
 
   const loginButton = screen.getByText(/Login/i);
   expect(loginButton).toBeInTheDocument();
@@ -46,45 +44,30 @@ test("clicking login button navigates to login page", async () => {
 });
 
 test("shows logout button and hides login/signup when user is logged in", () => {
-  localStorage.setItem("token", "mockToken");
-
-  render(
-    <BrowserRouter>
-      <Navbar />
-    </BrowserRouter>
-  );
+  renderWithAuth(true);
 
   expect(screen.queryByText(/Login/i)).toBeNull();
   expect(screen.queryByText(/Signup/i)).toBeNull();
   expect(screen.getByText(/Logout/i)).toBeInTheDocument();
 });
 
-test("clicking logout removes token and navigates to login", async () => {
+test("clicking logout calls logout function and navigates to landing page", async () => {
   const user = userEvent.setup();
-  localStorage.setItem("token", "mockToken");
+  const mockLogout = jest.fn();
 
-  render(
-    <BrowserRouter>
-      <Navbar />
-    </BrowserRouter>
-  );
+  renderWithAuth(true, mockLogout);
 
   const logoutButton = screen.getByRole("button", { name: /logout/i });
   expect(logoutButton).toBeInTheDocument();
 
   await user.click(logoutButton);
-
-  expect(localStorage.getItem("token")).toBeNull();
+  
+  expect(mockLogout).toHaveBeenCalledTimes(1);
 });
 
 test("clicking signup button navigates to signup page", async () => {
   const user = userEvent.setup();
-
-  render(
-    <BrowserRouter>
-      <Navbar />
-    </BrowserRouter>
-  );
+  renderWithAuth(false);
 
   const signupButton = screen.getByText(/Signup/i);
   expect(signupButton).toBeInTheDocument();

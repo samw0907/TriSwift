@@ -1,16 +1,25 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 import { useMutation } from '@apollo/client';
 import { LOGIN_USER } from '../graphql/mutations';
 import { useNavigate } from 'react-router-dom';
-import '../index.css'
+import { AuthContext } from '../context/AuthContext'; 
+import '../index.css';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const authContext = useContext(AuthContext);
+
+  if (!authContext) {
+    throw new Error("AuthContext must be used within an AuthProvider");
+  }
+
+  const { loginUser } = authContext;
+
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [login, { loading, error }] = useMutation(LOGIN_USER, {
     onCompleted: (data) => {
       if (data?.login?.token) {
-        localStorage.setItem('token', data.login.token);
+        loginUser(data.login.token);
         navigate('/dashboard');
       }
     },

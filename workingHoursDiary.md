@@ -39,6 +39,7 @@ Date            Hours    Topic
 13.03.2025      7.5      Writing frontend tests
                 1        CSS styling
 14.03.2025      4        Writing frontned tests
-                4        Playwright e2e testing
+                1        Playwright e2e testing
+                3        Adding landing page, amending frontend tests
                 (32.5)
 TOTAL HOURS     152.5    

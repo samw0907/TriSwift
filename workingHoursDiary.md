@@ -36,7 +36,8 @@ Date            Hours    Topic
 12.03.2025      1.5      Fix PR updates on activity edits
                 5        CSS styling
                 1        Setting up testing env
-13.03.2025      8.5      Writing frontend tests
-14.03.2025    
-                (25)
-TOTAL HOURS     144    
+13.03.2025      7.5      Writing frontend tests
+                1        CSS styling
+14.03.2025      
+                (32.5)
+TOTAL HOURS     152.5    

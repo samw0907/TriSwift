@@ -96,8 +96,8 @@ test("renders the welcome message", async () => {
     renderWithMock([mockData]);
   
     await waitFor(() => {
-      expect(screen.getByText(/Distance in the Last 7 Days/i)).toBeInTheDocument();
-      expect(screen.getByText(/Distance in the Last 28 Days/i)).toBeInTheDocument();
+      expect(screen.getByText(/Week Distance/i)).toBeInTheDocument();
+      expect(screen.getByText(/Month Distance/i)).toBeInTheDocument();
       expect(screen.getByText(/Year-to-Date Distance/i)).toBeInTheDocument();
       expect(screen.getByText(/Lifetime Total Distance/i)).toBeInTheDocument();
     });

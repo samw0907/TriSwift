@@ -30,27 +30,27 @@ const TransitionForm: React.FC<TransitionFormProps> = ({ sessionId, onSubmit, on
 
   return (
     <form className="transition-form" onSubmit={handleSubmit}>
-      <label>Previous Sport:</label>
-      <select name="previousSport" value={transition.previousSport} onChange={handleChange} required>
+      <label htmlFor="previousSport">Previous Sport:</label>
+      <select id="previousSport" name="previousSport" value={transition.previousSport} onChange={handleChange} required>
         <option value="">Select Sport</option>
         <option value="Swim">Swim</option>
         <option value="Bike">Bike</option>
         <option value="Run">Run</option>
       </select>
 
-      <label>Next Sport:</label>
-      <select name="nextSport" value={transition.nextSport} onChange={handleChange} required>
+      <label htmlFor="nextSport">Next Sport:</label>
+      <select id="nextSport" name="nextSport" value={transition.nextSport} onChange={handleChange} required>
         <option value="">Select Sport</option>
         <option value="Swim">Swim</option>
         <option value="Bike">Bike</option>
         <option value="Run">Run</option>
       </select>
 
-      <label>Transition Time (seconds):</label>
-      <input type="number" name="transitionTime" value={transition.transitionTime} onChange={handleChange} required />
+      <label  htmlFor="transitionTime">Transition Time (seconds):</label>
+      <input id="transitionTime" type="number" name="transitionTime" value={transition.transitionTime} onChange={handleChange} required />
 
-      <label>Comments:</label>
-      <textarea name="comments" value={transition.comments} onChange={handleChange} />
+      <label htmlFor="comments">Comments:</label>
+      <textarea id="comments" name="comments" value={transition.comments} onChange={handleChange} />
 
       <button type="submit">Add Transition</button>
       <button type="button" onClick={onCancel}>Cancel</button>

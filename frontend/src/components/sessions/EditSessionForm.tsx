@@ -58,25 +58,25 @@ const EditSessionForm: React.FC<EditSessionFormProps> = ({ session, onClose, onU
     <form onSubmit={handleSubmit} style={{ border: "1px solid gray", padding: "10px", marginTop: "10px" }}>
       <h3>Edit Session</h3>
 
-      <label>Session Type:</label>
-      <select name="sessionType" value={formData.sessionType} onChange={handleChange}>
+      <label htmlFor="sessionType">Session Type:</label>
+      <select id="sessionType" name="sessionType" value={formData.sessionType} onChange={handleChange}>
         <option value="Swim">Swim</option>
         <option value="Bike">Bike</option>
         <option value="Run">Run</option>
         <option value="Multi-Sport">Multi-Sport</option>
       </select>
 
-      <label>Date:</label>
-      <input type="date" name="date" value={formData.date} onChange={handleChange} />
+      <label htmlFor="date">Date:</label>
+      <input id="date" type="date" name="date" value={formData.date} onChange={handleChange} />
 
-      <label>Weather Temp (°C):</label>
-      <input type="number" name="weatherTemp" value={formData.weatherTemp} onChange={handleChange} />
+      <label htmlFor="weatherTemp">Weather Temp (°C):</label>
+      <input id="weatherTemp"type="number" name="weatherTemp" value={formData.weatherTemp} onChange={handleChange} />
 
-      <label>Weather Humidity (%):</label>
-      <input type="number" name="weatherHumidity" value={formData.weatherHumidity} onChange={handleChange} />
+      <label  htmlFor="weatherHumidity">Weather Humidity (%):</label>
+      <input id="weatherHumidity" type="number" name="weatherHumidity" value={formData.weatherHumidity} onChange={handleChange} />
 
-      <label>Wind Speed (m/s):</label>
-      <input type="number" name="weatherWindSpeed" value={formData.weatherWindSpeed} onChange={handleChange} />
+      <label htmlFor="weatherWindSpeed">Wind Speed (m/s):</label>
+      <input id="weatherWindSpeed" type="number" name="weatherWindSpeed" value={formData.weatherWindSpeed} onChange={handleChange} />
 
       <br />
       <button type="submit">Save</button>

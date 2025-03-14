@@ -7,7 +7,6 @@ import { formatDuration } from "../../../utils/format";
 import { getNextActivity } from "../../../utils/sessionHelpers";
 import { UPDATE_SESSION_ACTIVITY } from "../../../graphql/mutations";
 
-// Mock utility functions
 vi.mock("../../../utils/format", () => ({
   formatDuration: vi.fn((duration) => `${duration} sec`),
 }));
@@ -24,7 +23,7 @@ const mockSession = {
     {
       id: "a1",
       sportType: "Run",
-      duration: 1800, // 30 min
+      duration: 1800,
       distance: 5,
       heartRateMin: 100,
       heartRateMax: 170,
@@ -83,28 +82,23 @@ describe("SessionDetails Component", () => {
     expect(screen.getByText("Power: 200 watts")).toBeInTheDocument();
   });
 
-  test("renders transition details", () => {
+  test("renders transition details", async () => {
     render(<SessionDetails session={mockSession} onUpdate={mockUpdate} />);
-
-    // Debug the DOM to check how "Transition:" is structured
-    screen.debug();
-
-    expect(
-      screen.getByText((content) => content.includes("Transition:"))
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText((content) => content.includes("Swim → Bike"))
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText((content) => content.includes("Transition Time: 120 sec"))
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText((content) => content.includes("Notes: Quick change"))
-    ).toBeInTheDocument();
+  
+    await screen.findByText((content, node) => {
+      const hasText = (text: string) => text.includes("Transition: Swim → Bike");
+      const nodeHasText = node && hasText(node.textContent || "");
+      const childrenDoNotHaveText = Array.from(node?.children || []).every(
+        (child) => !hasText(child.textContent || "")
+      );
+      return nodeHasText && childrenDoNotHaveText;
+    });
+  
+    expect(screen.getByText(/Swim → Bike/i)).toBeInTheDocument();
+    expect(screen.getByText(/Transition Time: 120 sec/i)).toBeInTheDocument();
+    expect(screen.getByText(/Notes: Quick change/i)).toBeInTheDocument();
   });
+  
 
   test("shows and hides edit form when clicking edit button", async () => {
     render(
@@ -113,21 +107,16 @@ describe("SessionDetails Component", () => {
       </MockedProvider>
     );
 
-    // Click "Edit Activity"
     fireEvent.click(screen.getByText("Edit Activity"));
 
-    // Ensure the edit form is shown
-    expect(await screen.findByText("Cancel")).toBeInTheDocument();
-
-    // Find the cancel button inside the edit form
     const editForm = screen.getByRole("form");
-    const cancelButtons = within(editForm).getAllByText("Cancel");
+    expect(editForm).toBeInTheDocument();
 
-    // Ensure there is exactly **one** cancel button inside the form
+    const cancelButtons = within(editForm).getAllByText("Cancel");
     expect(cancelButtons.length).toBeGreaterThan(0);
 
-    // Click cancel and check if form is closed
     fireEvent.click(cancelButtons[0]);
+
     expect(screen.getByText("Edit Activity")).toBeInTheDocument();
   });
 

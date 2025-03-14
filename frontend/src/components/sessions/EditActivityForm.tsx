@@ -72,7 +72,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onClose, 
   };
 
   return (
-    <form className="edit-activity-form" onSubmit={handleSubmit}>
+    <form className="edit-activity-form" role="form" onSubmit={handleSubmit}>
       <label>Sport Type:</label>
       <select name="sportType" value={formData.sportType} onChange={handleChange}>
         <option value="Swim">Swim</option>

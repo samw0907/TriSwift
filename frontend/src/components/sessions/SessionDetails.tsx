@@ -84,6 +84,7 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
 
     if (transition) {
       orderedItems.push(transition);
+      remainingTransitions = remainingTransitions.filter((t) => t.id !== transition.id);
     }
 
     currentActivity = nextActivity;

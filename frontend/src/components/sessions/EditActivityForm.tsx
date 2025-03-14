@@ -73,37 +73,43 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onClose, 
 
   return (
     <form className="edit-activity-form" role="form" onSubmit={handleSubmit}>
-      <label>Sport Type:</label>
-      <select name="sportType" value={formData.sportType} onChange={handleChange}>
+      <label  htmlFor="sportType">Sport Type:</label>
+      <select id="sportType" name="sportType" value={formData.sportType} onChange={handleChange}>
         <option value="Swim">Swim</option>
         <option value="Bike">Bike</option>
         <option value="Run">Run</option>
       </select>
 
-      <label>Duration:</label>
+      <label htmlFor="duration">Duration:</label>
       <div className="duration-inputs">
-        <input type="number" name="hours" value={formData.hours} onChange={handleChange} placeholder="Hrs" min="0" />
-        <input type="number" name="minutes" value={formData.minutes} onChange={handleChange} placeholder="Mins" min="0" />
-        <input type="number" name="seconds" value={formData.seconds} onChange={handleChange} placeholder="Secs" min="0" />
+        
+        <label htmlFor="hours">Hours</label>
+        <input  id="hours" type="number" name="hours" value={formData.hours} onChange={handleChange} placeholder="Hrs" min="0" />
+
+        <label htmlFor="minutes">Minutes</label>
+        <input  id="minutes" type="number" name="minutes" value={formData.minutes} onChange={handleChange} placeholder="Mins" min="0" />
+
+        <label htmlFor="seconds">Seconds</label>
+        <input  id="seconds" type="number" name="seconds" value={formData.seconds} onChange={handleChange} placeholder="Secs" min="0" />
       </div>
 
-      <label>Distance (km or m for Swim):</label>
-      <input type="number" name="distance" value={formData.distance} onChange={handleChange} />
+      <label htmlFor="distance">Distance (km or m for Swim):</label>
+      <input id="distance" type="number" name="distance" value={formData.distance} onChange={handleChange} />
 
-      <label>Heart Rate Min:</label>
-      <input type="number" name="heartRateMin" value={formData.heartRateMin} onChange={handleChange} />
+      <label  htmlFor="heartRateMin">Heart Rate Min:</label>
+      <input id="heartRateMin" type="number" name="heartRateMin" value={formData.heartRateMin} onChange={handleChange} />
 
-      <label>Heart Rate Max:</label>
-      <input type="number" name="heartRateMax" value={formData.heartRateMax} onChange={handleChange} />
+      <label htmlFor="heartRateMax">Heart Rate Max:</label>
+      <input id="heartRateMax" type="number" name="heartRateMax" value={formData.heartRateMax} onChange={handleChange} />
 
-      <label>Heart Rate Avg:</label>
-      <input type="number" name="heartRateAvg" value={formData.heartRateAvg} onChange={handleChange} />
+      <label htmlFor="heartRateAvg">Heart Rate Avg:</label>
+      <input id="heartRateAvg" type="number" name="heartRateAvg" value={formData.heartRateAvg} onChange={handleChange} />
 
-      <label>Cadence:</label>
-      <input type="number" name="cadence" value={formData.cadence} onChange={handleChange} />
+      <label htmlFor="cadence">Cadence:</label>
+      <input id="cadence" type="number" name="cadence" value={formData.cadence} onChange={handleChange} />
 
-      <label>Power:</label>
-      <input type="number" name="power" value={formData.power} onChange={handleChange} />
+      <label htmlFor="power">Power:</label>
+      <input id="power" type="number" name="power" value={formData.power} onChange={handleChange} />
 
       <button type="submit">Save</button>
       <button type="button" onClick={onClose}>Cancel</button>

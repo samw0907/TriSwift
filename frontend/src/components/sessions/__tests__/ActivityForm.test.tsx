@@ -49,7 +49,7 @@ describe("ActivityForm Component", () => {
 
     expect(mockOnSubmit).toHaveBeenCalledWith({
       sportType: "Run",
-      duration: 4230, // 1h 10m 30s = 4230 seconds
+      duration: 4230,
       distance: 12.5,
       heartRateMin: null,
       heartRateMax: null,

@@ -246,31 +246,25 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
               </p>
             </div>
 
-          <div className="session-actions">
-          <button
+            <div className="session-actions">
+              <button
                 className={`btn-primary ${expandedSessionId === session.id ? "active" : ""}`}
-                onClick={() => {
-                  setExpandedSessionId(expandedSessionId === session.id ? null : session.id);
-                  setEditingActivityId(null);
-                }}
+                onClick={() => setExpandedSessionId(expandedSessionId === session.id ? null : session.id)}
               >
-            {expandedSessionId === session.id ? "Hide Details" : "Show Details"}
-          </button>
+                {expandedSessionId === session.id ? "Hide Details" : "Show Details"}
+              </button>
 
-          <button className="btn-secondary" onClick={() => setEditingSessionId(session.id)}>
-            Edit
-          </button>
+              <button
+                className="btn-secondary"
+                onClick={() => setEditingSessionId(session.id)}
+              >
+                Edit
+              </button>
 
-          <button className="btn-danger" onClick={() => onDelete(session.id)}>
-            Delete
-          </button>
-          </div>
-          
-          {expandedSessionId === session.id && (
-              <div className="session-details">
-                <SessionDetails session={session} onUpdate={onUpdate} />
-              </div>
-            )}
+              <button className="btn-danger" onClick={() => onDelete(session.id)}>
+                Delete
+              </button>
+            </div>
 
             {editingSessionId === session.id && (
               <EditSessionForm
@@ -278,6 +272,12 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
                 onClose={() => setEditingSessionId(null)}
                 onUpdate={onUpdate}
               />
+            )}
+
+            {expandedSessionId === session.id && (
+              <div className="session-details">
+                <SessionDetails session={session} onUpdate={onUpdate} />
+              </div>
             )}
         </li>
       ))}

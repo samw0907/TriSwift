@@ -4,6 +4,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 import Login from "../Login";
+import { AuthProvider } from "../../context/AuthContext";
 import { LOGIN_USER } from "../../graphql/mutations";
 
 const mockNavigate = vi.fn();
@@ -34,17 +35,18 @@ const errorMock = {
 
 const renderWithMock = (mocks: any) => {
   return render(
-    <MockedProvider mocks={mocks} addTypename={false}>
-      <MemoryRouter>
-        <Login />
-      </MemoryRouter>
-    </MockedProvider>
+    <AuthProvider>
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <MemoryRouter>
+          <Login />
+        </MemoryRouter>
+      </MockedProvider>
+    </AuthProvider>
   );
 };
 
 test("renders login form", () => {
   renderWithMock([]);
-
   expect(screen.getByRole("heading", { name: /login/i })).toBeInTheDocument();
   expect(screen.getByPlaceholderText(/Email/i)).toBeInTheDocument();
   expect(screen.getByPlaceholderText(/Password/i)).toBeInTheDocument();
@@ -53,29 +55,23 @@ test("renders login form", () => {
 
 test("updates input fields", () => {
   renderWithMock([]);
-
   const emailInput = screen.getByPlaceholderText(/Email/i);
   const passwordInput = screen.getByPlaceholderText(/Password/i);
-
   fireEvent.change(emailInput, { target: { value: "test@example.com" } });
   fireEvent.change(passwordInput, { target: { value: "password123" } });
-
   expect(emailInput).toHaveValue("test@example.com");
   expect(passwordInput).toHaveValue("password123");
 });
 
 test("successful login redirects to dashboard", async () => {
   renderWithMock([successMock]);
-
   fireEvent.change(screen.getByPlaceholderText(/Email/i), {
     target: { value: "test@example.com" },
   });
   fireEvent.change(screen.getByPlaceholderText(/Password/i), {
     target: { value: "password123" },
   });
-
   fireEvent.click(screen.getByRole("button", { name: /Login/i }));
-
   await waitFor(() => {
     expect(mockNavigate).toHaveBeenCalledWith("/dashboard");
   });
@@ -83,19 +79,14 @@ test("successful login redirects to dashboard", async () => {
 
 test("displays error message on failed login", async () => {
   renderWithMock([errorMock]);
-
   fireEvent.change(screen.getByPlaceholderText(/Email/i), {
     target: { value: "wrong@example.com" },
   });
   fireEvent.change(screen.getByPlaceholderText(/Password/i), {
     target: { value: "wrongpassword" },
   });
-
   fireEvent.click(screen.getByRole("button", { name: /Login/i }));
-
   await waitFor(() => {
-    expect(
-      screen.getByText(/Incorrect credentials. Please try again/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Incorrect credentials. Please try again/i)).toBeInTheDocument();
   });
 });

@@ -38,10 +38,10 @@ Date            Hours    Topic
                 1        Setting up testing env
 13.03.2025      7.5      Writing frontend tests
                 1        CSS styling
-14.03.2025      4        Writing frontned tests
-                2        Playwright e2e testing
+14.03.2025      4.5      Writing frontned tests
+                1        Playwright e2e testing
                 2        Adding landing page, amending frontend tests
-                1        Fixing edit session button issues
+                1.5      Fixing edit session button issues
                 (41.5)
                 
 TOTAL HOURS     161.5    

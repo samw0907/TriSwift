@@ -16,6 +16,8 @@ const Login: React.FC = () => {
   const { loginUser } = authContext;
 
   const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const [notification, setNotification] = useState<string | null>(null);
+
   const [login, { loading, error }] = useMutation(LOGIN_USER, {
     onCompleted: (data) => {
       if (data?.login?.token) {
@@ -25,6 +27,8 @@ const Login: React.FC = () => {
     },
     onError: (error) => {
       console.error("GraphQL Login Error:", error);
+      setNotification("Invalid email or password. Please try again.");
+      setTimeout(() => setNotification(null), 5000);
     }
   });
 
@@ -43,9 +47,10 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="auth-container">
       <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
+      {notification && <div className="notification">{notification}</div>}
+      <form className="auth-form" onSubmit={handleSubmit}>
         <input 
           type="email" 
           name="email" 
@@ -66,13 +71,6 @@ const Login: React.FC = () => {
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
-      {error && (
-        <p style={{ color: 'red' }}>
-          {error.message.includes("Invalid email or password") 
-            ? "Incorrect credentials. Please try again." 
-            : "Login failed. Check your connection and try again."}
-        </p>
-      )}
     </div>
   );
 };

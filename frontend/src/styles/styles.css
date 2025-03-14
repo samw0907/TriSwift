@@ -102,3 +102,61 @@
     background-color: var(--secondary-color);
   }
   
+  .auth-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    text-align: center;
+  }
+  
+  .auth-container h2 {
+    margin-bottom: 20px;
+  }
+  
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .auth-form input {
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: var(--border-radius);
+  }
+  
+  .auth-form button {
+    padding: 12px;
+    font-size: 16px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+  }
+  
+  .auth-form button:hover {
+    background: var(--primary-dark);
+  }
+  
+  .notification-error {
+    background: var(--danger-color);
+    color: white;
+    padding: 12px;
+    border-radius: var(--border-radius);
+    margin-bottom: 10px;
+  }
+  
+  .notification-warning {
+    background: orange;
+    color: white;
+    padding: 12px;
+    border-radius: var(--border-radius);
+    margin-bottom: 10px;
+  }
+  

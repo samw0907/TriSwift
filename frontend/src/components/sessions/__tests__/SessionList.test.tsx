@@ -105,7 +105,6 @@ describe("SessionList Component", () => {
     fireEvent.click(screen.getByText("Show Filters"));
     fireEvent.click(screen.getByLabelText("Run"));
 
-    // Ensure only "Run" session remains (but checkbox for "Bike" exists)
     const sessionTitles = screen.getAllByRole("heading", { level: 3 });
     expect(sessionTitles).toHaveLength(1);
     expect(sessionTitles[0]).toHaveTextContent("Run");

@@ -90,6 +90,10 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
     currentActivity = nextActivity;
   }
 
+  remainingTransitions.forEach((transition) => {
+    orderedItems.push(transition);
+  });
+  
   return (
     <div className="session-details">
       {session.weatherTemp !== null && session.weatherTemp !== undefined && (

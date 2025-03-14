@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent, within } from "@testing-library/react";
+import { render, screen, fireEvent, within , waitFor} from "@testing-library/react";
 import { vi } from "vitest";
 import { MockedProvider } from "@apollo/client/testing";
 import SessionDetails from "../SessionDetails";
@@ -85,21 +85,14 @@ describe("SessionDetails Component", () => {
   test("renders transition details", async () => {
     render(<SessionDetails session={mockSession} onUpdate={mockUpdate} />);
   
-    await screen.findByText((content, node) => {
-      const hasText = (text: string) => text.includes("Transition: Swim → Bike");
-      const nodeHasText = node && hasText(node.textContent || "");
-      const childrenDoNotHaveText = Array.from(node?.children || []).every(
-        (child) => !hasText(child.textContent || "")
-      );
-      return nodeHasText && childrenDoNotHaveText;
+    await waitFor(() => {
+      expect(screen.getByText(/Transition:/i)).toBeInTheDocument();
+      expect(screen.getByText(/Swim → Bike/i)).toBeInTheDocument();
+      expect(screen.getByText(/Transition Time: 120 sec/i)).toBeInTheDocument();
+      expect(screen.getByText(/Notes: Quick change/i)).toBeInTheDocument();
     });
-  
-    expect(screen.getByText(/Swim → Bike/i)).toBeInTheDocument();
-    expect(screen.getByText(/Transition Time: 120 sec/i)).toBeInTheDocument();
-    expect(screen.getByText(/Notes: Quick change/i)).toBeInTheDocument();
   });
   
-
   test("shows and hides edit form when clicking edit button", async () => {
     render(
       <MockedProvider mocks={[mockUpdateActivity]} addTypename={false}>

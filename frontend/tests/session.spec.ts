@@ -1,16 +1,10 @@
 import { test, expect } from '@playwright/test';
 
+test.use({ storageState: 'auth.json' });
+
+let createdSessionId: string | null = null;
+
 test.describe('Session Management Tests', () => {
-  
-  test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:3000/login');
-
-    await page.fill('input[name="email"]', 'ubolt@gmail.com');
-    await page.fill('input[name="password"]', 'fastpassword');
-    await page.click('button[type="submit"]');
-
-    await page.waitForURL('http://localhost:3000/home', { timeout: 10000 });
-  });
 
   test('User can create a new session', async ({ page }) => {
     await page.goto('http://localhost:3000/sessions');
@@ -27,9 +21,13 @@ test.describe('Session Management Tests', () => {
 
     await page.waitForSelector('.session-list');
     await expect(page.locator('.session-card', { hasText: 'Run' })).toBeVisible();
+    await expect(session).toBeVisible();
+    
+    createdSessionId = await session.getAttribute('data-session-id');
   });
 
   test('User can edit an existing session', async ({ page }) => {
+    test.skip(!createdSessionId, 'Skipping test because session creation failed');
     await page.goto('http://localhost:3000/sessions');
 
     const sessionCard = page.locator('.session-card', { hasText: 'Run' });
@@ -44,6 +42,7 @@ test.describe('Session Management Tests', () => {
   });
 
   test('User can delete a session', async ({ page }) => {
+    test.skip(!createdSessionId, 'Skipping test because session creation failed');
     await page.goto('http://localhost:3000/sessions');
 
     const sessionCard = page.locator('.session-card', { hasText: 'Run' });

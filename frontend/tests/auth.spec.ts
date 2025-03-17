@@ -13,6 +13,9 @@ test.describe('Authentication Tests', () => {
     await page.click('button[type="submit"]');
 
     await page.waitForURL('http://localhost:3000/home', { timeout: 10000 });
+
+    await page.context().storageState({ path: 'auth.json' });
+    
     await expect(page).toHaveURL('http://localhost:3000/home');
   });
 

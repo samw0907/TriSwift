@@ -23,11 +23,21 @@ test.describe('Session Management Tests', () => {
 
     await page.click('button', { hasText: 'Next' });
 
-    await page.waitForSelector('.activity-form');
-    await expect(page.locator('.activity-form')).toBeVisible();
+    await page.waitForTimeout(1000);
 
-    createdSessionId = await page.getAttribute('.session-card', 'data-session-id');
+    const correctSession = page.locator('li.session-card').filter({
+      has: page.locator('div.session-info > h3', { hasText: 'Run' }),
+    }).filter({
+      has: page.locator('div.session-info > p.session-date', { hasText: '17/03/2025' }),
+    });
+
+    await expect(correctSession).toBeVisible({ timeout: 7000 });
+
+    createdSessionId = await correctSession.getAttribute('data-session-id');
     console.log('Created Session ID:', createdSessionId);
+
+    await page.waitForSelector('input[name="distance"]');
+    await expect(page.locator('input[name="distance"]')).toBeVisible();
   });
 
   test('User can edit an existing session', async ({ page }) => {

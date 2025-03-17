@@ -102,6 +102,7 @@ const Dashboard: React.FC = () => {
       });
 
       if (data?.createSession) {
+        setSessions((prevSessions) => [data.createSession, ...prevSessions]);
         setSessionId(data.createSession.id);
         setShowSessionForm(false);
         setShowInputForm(true);

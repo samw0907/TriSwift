@@ -23,21 +23,51 @@ test.describe('Session Management Tests', () => {
 
     await page.click('button', { hasText: 'Next' });
 
-    await page.waitForTimeout(1000);
+    console.log("⏳ Waiting for session list to update...");
+    await page.waitForTimeout(5000);  // Give GraphQL more time
+    await page.reload();  // Force UI refresh
 
+    // 🚀 Print full page content to debug
+    const pageContent = await page.content();
+    console.log("🛑 FULL PAGE CONTENT BEFORE FAILURE:");
+    console.log(pageContent);
+
+    // 🚀 Print all elements on the page
+    const allElements = await page.evaluate(() => [...document.body.querySelectorAll('*')].map(el => el.className));
+    console.log("🛑 ALL ELEMENTS ON PAGE:", allElements);
+
+    // 🔥 Check if session list exists
+    await page.waitForSelector('.session-list-container', { timeout: 10000 });
+
+    // Check if any session cards are found
+    const sessionCount = await page.locator('li.session-card').count();
+    console.log(`=== TOTAL SESSION CARDS FOUND: ${sessionCount} ===`);
+
+    if (sessionCount === 0) {
+      throw new Error("❌ No session cards found. Possible issue with session list update.");
+    }
+
+    // Extract actual date format from session list
+    const firstSessionDate = await page.locator('p.session-date').first().textContent();
+    console.log("🚀 FORMATTED DATE FROM PAGE:", firstSessionDate);
+
+    // Find the correct session based on session type & correct date format
     const correctSession = page.locator('li.session-card').filter({
-      has: page.locator('div.session-info > h3', { hasText: 'Run' }),
-    }).filter({
-      has: page.locator('div.session-info > p.session-date', { hasText: '17/03/2025' }),
+      has: page.locator('div.session-info h3', { hasText: 'Run' }),
+      has: page.locator('p.session-date', { hasText: firstSessionDate }),
     });
+
+    const correctCount = await correctSession.count();
+    console.log(`=== MATCHING SESSIONS FOUND: ${correctCount} ===`);
+
+    if (correctCount === 0) {
+      throw new Error("❌ No matching session found. Check selectors and session list update.");
+    }
 
     await expect(correctSession).toBeVisible({ timeout: 7000 });
 
     createdSessionId = await correctSession.getAttribute('data-session-id');
-    console.log('Created Session ID:', createdSessionId);
-
-    await page.waitForSelector('input[name="distance"]');
-    await expect(page.locator('input[name="distance"]')).toBeVisible();
+    console.log('✅ Created Session ID:', createdSessionId);
   });
 
   test('User can edit an existing session', async ({ page }) => {

@@ -24,8 +24,6 @@ test.describe('Authentication Tests', () => {
 
     await page.click('button[type="submit"]');
 
-    console.log(await page.content());
-
     await page.waitForSelector('.notification', { timeout: 5000 });
     await expect(page.locator('.notification')).toHaveText(/Invalid email or password\. Please try again\./i);
   });
@@ -46,7 +44,6 @@ test.describe('Authentication Tests', () => {
 
     await page.waitForFunction(() => window.location.pathname === '/login', null, { timeout: 10000 });
 
-    console.log('Final URL:', await page.url());
     await expect(page).toHaveURL(/\/login$/);
   });
 
@@ -58,8 +55,6 @@ test.describe('Authentication Tests', () => {
     await page.fill('input[name="password"]', 'fastpassword');
 
     await page.click('button[type="submit"]');
-
-    console.log(await page.content());
 
     await page.waitForSelector('.notification', { timeout: 5000 });
 

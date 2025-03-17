@@ -7,5 +7,8 @@ export default defineConfig({
     headless: true,
     baseURL: 'http://localhost:3000',
     browserName: 'chromium',
+    screenshot: 'off',
+    video: 'off',
+    trace: 'off'
   },
 });

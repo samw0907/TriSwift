@@ -26,9 +26,11 @@ test.describe('Authentication Tests', () => {
 
     console.log(await page.content());
 
-    await page.waitForSelector('.error-message, .alert, .notification-error', { timeout: 5000 });
-    await expect(page.locator('.error-message, .alert, .notification-error'))
-      .toHaveText(/Invalid email or password/i);
+    const errorMessage = page.locator('form').locator('text=Invalid email or password. Please try again.');
+
+    await errorMessage.waitFor({ timeout: 5000 });
+  
+    await expect(errorMessage).toBeVisible();
   });
 
   test('User can successfully sign up and is redirected to login', async ({ page }) => {

@@ -235,7 +235,7 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
 
       <ul className="session-list">
         {filteredSessions.map((session) => (
-          <li key={session.id} className="session-card">
+          <li key={session.id} className="session-card" data-session-id={session.id}>
             <div className="session-info">
               <h3>{session.sessionType}</h3>
               <p className="session-date">{new Date(session.date).toLocaleDateString()}</p>

@@ -60,10 +60,13 @@ const Dashboard: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
 
   useEffect(() => {
+    console.log("Fetching sessions...");
     if (data?.sessions) {
+      console.log("Sessions loaded:", data.sessions);
       setSessions(data.sessions);
     }
   }, [data]);
+  
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this session?')) {
@@ -108,6 +111,11 @@ const Dashboard: React.FC = () => {
         setShowInputForm(true);
         setIsMultiSportActive(formData.sessionType === "Multi-Sport");
         setSessionType(formData.sessionType);
+        
+        setTimeout(() => {
+          console.log("🔄 Refetching sessions after creation...");
+          refetch();
+        }, 500);
       }
     } catch (error) {
       console.error("❌ Error Creating Session:", error);

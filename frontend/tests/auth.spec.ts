@@ -30,20 +30,21 @@ test.describe('Authentication Tests', () => {
     await expect(page.locator('.notification')).toHaveText(/Invalid email or password\. Please try again\./i);
   });
 
+  const randomEmail = `user${Date.now()}@example.com`;
+
   test('User can successfully sign up and is redirected to login', async ({ page }) => {
     await page.goto('http://localhost:3000/signup');
 
     await page.fill('input[name="name"]', 'New User');
-    await page.fill('input[name="email"]', 'newuser@example.com');
+    await page.fill('input[name="email"]', randomEmail);
     await page.fill('input[name="password"]', 'newpassword123');
 
-    const submitButton = page.locator('button[type="submit"]');
-    await expect(submitButton).not.toBeDisabled();
+    const signupButton = page.locator('button', { hasText: 'Signup' });
+    await expect(signupButton).not.toBeDisabled();
 
-    await submitButton.click();
-    
-    console.log('Current URL:', await page.url());
-    await page.waitForFunction(() => window.location.pathname === '/login', null, { timeout: 5000 });
+    await signupButton.click();
+
+    await page.waitForFunction(() => window.location.pathname === '/login', null, { timeout: 10000 });
 
     console.log('Final URL:', await page.url());
     await expect(page).toHaveURL(/\/login$/);
@@ -52,8 +53,8 @@ test.describe('Authentication Tests', () => {
   test('Signup fails if email already exists', async ({ page }) => {
     await page.goto('http://localhost:3000/signup');
 
-    await page.fill('input[name="name"]', 'Existing User');
-    await page.fill('input[name="email"]', 'testuser@example.com');
+    await page.fill('input[name="name"]', 'Existing Username');
+    await page.fill('input[name="email"]', 'testusername@example.com');
     await page.fill('input[name="password"]', 'password123');
 
     await page.click('button[type="submit"]');

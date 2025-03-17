@@ -26,11 +26,8 @@ test.describe('Authentication Tests', () => {
 
     console.log(await page.content());
 
-    const errorMessage = page.locator('form').locator('text=Invalid email or password. Please try again.');
-
-    await errorMessage.waitFor({ timeout: 5000 });
-  
-    await expect(errorMessage).toBeVisible();
+    await page.waitForSelector('.notification', { timeout: 5000 });
+    await expect(page.locator('.notification')).toHaveText(/Invalid email or password\. Please try again\./i);
   });
 
   test('User can successfully sign up and is redirected to login', async ({ page }) => {
@@ -44,9 +41,12 @@ test.describe('Authentication Tests', () => {
     await expect(submitButton).not.toBeDisabled();
 
     await submitButton.click();
+    
+    console.log('Current URL:', await page.url());
+    await page.waitForFunction(() => window.location.pathname === '/login', null, { timeout: 5000 });
 
-    await page.waitForURL('http://localhost:3000/login', { timeout: 10000 });
-    await expect(page).toHaveURL('http://localhost:3000/login');
+    console.log('Final URL:', await page.url());
+    await expect(page).toHaveURL(/\/login$/);
   });
 
   test('Signup fails if email already exists', async ({ page }) => {

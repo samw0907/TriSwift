@@ -53,17 +53,16 @@ test.describe('Authentication Tests', () => {
   test('Signup fails if email already exists', async ({ page }) => {
     await page.goto('http://localhost:3000/signup');
 
-    await page.fill('input[name="name"]', 'Existing Username');
-    await page.fill('input[name="email"]', 'testusername@example.com');
-    await page.fill('input[name="password"]', 'password123');
+    await page.fill('input[name="name"]', 'Usain Bolt');
+    await page.fill('input[name="email"]', 'ubolt@gmail.com');
+    await page.fill('input[name="password"]', 'fastpassword');
 
     await page.click('button[type="submit"]');
 
     console.log(await page.content());
 
-    await page.waitForSelector('.error-message, .alert, .notification-warning', { timeout: 5000 });
-    await expect(page.locator('.error-message, .alert, .notification-warning'))
-      .toHaveText(/User already exists/i);
-  });
+    await page.waitForSelector('.notification', { timeout: 5000 });
 
+    await expect(page.locator('.notification')).toHaveText(/This email is already registered. Try logging in./i);
+  });
 });

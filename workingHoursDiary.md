@@ -44,4 +44,11 @@ Date            Hours    Topic
                 1.5      Fixing edit session button issues
                 (41.5)
                 
-TOTAL HOURS     161.5    
+17.03.2025      9        E2E testing, session issues still unresolved, no progress
+18.03.2025
+19.03.2025
+20.03.2025
+21.03.2025
+                (9)
+                
+TOTAL HOURS     170.5    

@@ -4,47 +4,51 @@ let createdSessionId: string | null = null;
 
 test.describe('Session Management Tests', () => {
   test.beforeEach(async ({ page }) => {
+    console.log("🔑 Logging in before test...");
     await page.goto('http://localhost:3000/login');
-
     await page.fill('input[name="email"]', 'ubolt@gmail.com');
     await page.fill('input[name="password"]', 'fastpassword');
     await page.click('button[type="submit"]');
-
+    
     await page.waitForURL('http://localhost:3000/home', { timeout: 10000 });
     await expect(page).toHaveURL('http://localhost:3000/home');
   });
 
   test('User can create a new session', async ({ page }) => {
     await page.goto('http://localhost:3000/dashboard');
-  
+
     const addSessionButton = page.locator('button', { hasText: 'Add Session' });
     await expect(addSessionButton).toBeVisible();
     await addSessionButton.click();
-  
+
     await page.waitForSelector('input[name="date"]');
-  
-    await page.fill('input[name="date"]', '2025-03-17');
+
     await page.selectOption('select[name="sessionType"]', 'Run');
+    await page.fill('input[name="date"]', '2025-03-17');
     await page.fill('input[name="weatherTemp"]', '20');
     await page.fill('input[name="weatherHumidity"]', '60');
     await page.fill('input[name="weatherWindSpeed"]', '10');
-  
-    page.on('request', request => {
-      console.log(`📤 Request Sent: ${request.url()}`);
-      console.log(`🔍 Method: ${request.method()}`);
-      console.log(`📄 Post Data: ${request.postData()}`);
-    });
-  
+
     console.log("✅ Clicking Next...");
     await page.click('button', { hasText: 'Next' });
-  
+
+    console.log("⏳ Waiting for UI update...");
     await page.waitForTimeout(5000);
 
+    console.log("🔍 Checking if new session appears...");
     const sessionList = page.locator('li.session-card');
-    await sessionList.waitFor({ state: 'visible', timeout: 7000 });
+
+    const sessionCountBefore = await sessionList.count();
+    console.log(`📊 Session count before wait: ${sessionCountBefore}`);
+
+    await sessionList.waitFor({ state: 'visible', timeout: 7000 }).catch(() => {
+      console.log("⚠️ No session card appeared! Checking session list count again...");
+    });
+
+    const sessionCountAfter = await sessionList.count();
+    console.log(`📊 Session count after wait: ${sessionCountAfter}`);
 
     createdSessionId = await sessionList.first().getAttribute('data-session-id');
-
     console.log("✅ Created Session ID:", createdSessionId);
 
     if (!createdSessionId) {

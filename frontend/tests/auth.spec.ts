@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import fs from 'fs';
 
 test.describe('Authentication Tests', () => {
   
@@ -14,26 +13,7 @@ test.describe('Authentication Tests', () => {
     await page.click('button[type="submit"]');
 
     await page.waitForURL('http://localhost:3000/home', { timeout: 10000 });
-
-    // ✅ Ensure localStorage is updated
-    await page.waitForTimeout(2000);
-
-    // ✅ Retrieve auth token from localStorage
-    const token = await page.evaluate(() => localStorage.getItem('authToken'));
-    console.log("🔑 Extracted Token:", token);
-
-    if (token) {
-      fs.writeFileSync('auth_token.json', JSON.stringify({ token }));
-      console.log("✅ Token saved to auth_token.json");
-
-      // ✅ Store Playwright auth state
-      await page.context().storageState({ path: 'auth.json' });
-      console.log("✅ Authentication state saved to auth.json");
-      
-    } else {
-      throw new Error("❌ Failed to retrieve auth token. Ensure login stores token in localStorage.");
-    }
-
+    
     await expect(page).toHaveURL('http://localhost:3000/home');
   });
 

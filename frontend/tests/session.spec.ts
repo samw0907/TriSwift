@@ -1,58 +1,50 @@
 import { test, expect } from '@playwright/test';
-import fs from 'fs';
 
-// ✅ Load authentication token from file
-let authToken: string | null = null;
-if (fs.existsSync('auth_token.json')) {
-  authToken = JSON.parse(fs.readFileSync('auth_token.json', 'utf8')).token;
-  console.log("🔑 Loaded auth token for session tests:", authToken);
-} else {
-  console.log("❌ No auth token found. Ensure login test runs first.");
-}
-
-// ✅ Use the authentication state
-test.use({ storageState: 'auth.json' });
+let createdSessionId: string | null = null;
 
 test.describe('Session Management Tests', () => {
   test.beforeEach(async ({ page }) => {
-    if (!authToken) {
-      test.skip("❌ Skipping session tests due to missing authentication token.");
-    }
+    await page.goto('http://localhost:3000/login');
+
+    await page.fill('input[name="email"]', 'ubolt@gmail.com');
+    await page.fill('input[name="password"]', 'fastpassword');
+    await page.click('button[type="submit"]');
+
+    await page.waitForURL('http://localhost:3000/home', { timeout: 10000 });
+    await expect(page).toHaveURL('http://localhost:3000/home');
   });
 
   test('User can create a new session', async ({ page }) => {
-    if (!authToken) throw new Error("❌ Missing auth token!");
-
     await page.goto('http://localhost:3000/dashboard');
-
+  
     const addSessionButton = page.locator('button', { hasText: 'Add Session' });
     await expect(addSessionButton).toBeVisible();
     await addSessionButton.click();
-
+  
     await page.waitForSelector('input[name="date"]');
+  
     await page.fill('input[name="date"]', '2025-03-17');
     await page.selectOption('select[name="sessionType"]', 'Run');
     await page.fill('input[name="weatherTemp"]', '20');
     await page.fill('input[name="weatherHumidity"]', '60');
     await page.fill('input[name="weatherWindSpeed"]', '10');
-
+  
+    page.on('request', request => {
+      console.log(`📤 Request Sent: ${request.url()}`);
+      console.log(`🔍 Method: ${request.method()}`);
+      console.log(`📄 Post Data: ${request.postData()}`);
+    });
+  
     console.log("✅ Clicking Next...");
     await page.click('button', { hasText: 'Next' });
+  
+    await page.waitForTimeout(5000);
 
-    console.log("⏳ Waiting for GraphQL response...");
-    await page.waitForResponse(response =>
-      response.url().includes('/graphql') && response.status() === 200
-    );
-
-    console.log("✅ GraphQL response received!");
-
-    await page.waitForTimeout(3000);
-
-    console.log("🔍 Checking for session card...");
     const sessionList = page.locator('li.session-card');
     await sessionList.waitFor({ state: 'visible', timeout: 7000 });
 
     createdSessionId = await sessionList.first().getAttribute('data-session-id');
+
     console.log("✅ Created Session ID:", createdSessionId);
 
     if (!createdSessionId) {
@@ -87,5 +79,4 @@ test.describe('Session Management Tests', () => {
 
     await expect(sessionCard).not.toBeVisible();
   });
-
 });

@@ -6,6 +6,53 @@ let createdSessionId: string | null = null;
 
 test.describe('Session Management Tests', () => {
 
+  test.beforeEach(async ({ page }) => {
+    console.log("🔑 Checking stored authentication state...");
+
+    await page.goto('http://localhost:3000/home', { waitUntil: 'load' });
+
+    const authToken = await page.evaluate(() => {
+      try {
+        return localStorage.getItem('token');
+      } catch (error) {
+        console.error("❌ Failed to access localStorage:", error);
+        return null;
+      }
+    });
+
+    if (!authToken) {
+      throw new Error("❌ No auth token found in localStorage. Playwright might not be applying storageState correctly.");
+    }
+
+    console.log(`✅ Token retrieved from localStorage: ${authToken}`);
+
+    await page.reload({ waitUntil: 'load' });
+
+    console.log("🔍 Verifying Authentication via API...");
+    const userResponse = await page.evaluate(async (token) => {
+      console.log(`📡 Sending GraphQL request with token: ${token}`);
+
+      const response = await fetch("http://localhost:3001/graphql", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ query: `{ me { id email } }` }),
+      });
+
+      const responseData = await response.json();
+      console.log("📥 API Response:", responseData);
+      return responseData;
+    }, authToken);
+
+    if (!userResponse.data || !userResponse.data.me) {
+      throw new Error("❌ Authentication failed via API. Token might be invalid.");
+    }
+
+    console.log("✅ Authentication confirmed via API.");
+  });
+
   test('User can create a new session', async ({ page }) => {
     await page.goto('http://localhost:3000/dashboard');
 
@@ -19,7 +66,6 @@ test.describe('Session Management Tests', () => {
     if (!sessionFormVisible) {
       throw new Error("❌ Add Session form did not open!");
     }
-
     console.log("✅ Session form is visible.");
 
     await page.selectOption('select[name="sessionType"]', 'Run');
@@ -32,25 +78,32 @@ test.describe('Session Management Tests', () => {
       input.value = "false";
       document.querySelector("form").appendChild(input);
     });
-  
+
     await page.fill('input[name="totalDuration"]', '0');
     await page.fill('input[name="totalDistance"]', '0');
-  
+
     await page.fill('input[name="weatherTemp"]', '20');
     await page.fill('input[name="weatherHumidity"]', '60');
     await page.fill('input[name="weatherWindSpeed"]', '10');
 
     console.log("📡 Fetching sessions from API...");
     const sessionApiResponse = await page.evaluate(async () => {
+      const token = localStorage.getItem('token');
+      console.log(`📡 Using token for session fetch: ${token}`);
+
       const response = await fetch("http://localhost:3001/graphql", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify({ query: `query { sessions { id sessionType date } }` }),
       });
-      return response.json();
-    });
 
-    console.log("📥 API Response:", sessionApiResponse);
+      const responseData = await response.json();
+      console.log("📥 Session API Response:", responseData);
+      return responseData;
+    });
 
     console.log("✅ Clicking Next...");
     await page.click('button', { hasText: 'Next' });

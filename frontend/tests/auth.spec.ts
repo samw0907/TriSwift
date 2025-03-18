@@ -15,7 +15,7 @@ test.describe('Authentication Tests', () => {
     await page.waitForURL('http://localhost:3000/home', { timeout: 10000 });
     await expect(page).toHaveURL('http://localhost:3000/home');
     
-    await context.storageState({ path: 'auth.json' });
+    await page.context().storageState({ path: 'auth.json' });
   });
 
   test('Login fails with incorrect credentials', async ({ page }) => {

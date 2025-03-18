@@ -30,23 +30,29 @@ test.describe('Session Management Tests', () => {
 
     console.log("🔍 Verifying Authentication via API...");
     const userResponse = await page.evaluate(async (token) => {
-      console.log(`📡 Sending GraphQL request with token: ${token}`);
-
       const response = await fetch("http://localhost:3001/graphql", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({ query: `{ me { id email } }` }),
+        body: JSON.stringify({
+          query: `
+            query {
+              sessions {
+                id
+                sessionType
+                date
+              }
+            }
+          `,
+        }),
       });
-
-      const responseData = await response.json();
-      console.log("📥 API Response:", responseData);
-      return responseData;
+      return response.json();
     }, authToken);
+    
 
-    if (!userResponse.data || !userResponse.data.me) {
+    if (!userResponse.data || !userResponse.data.sessions) {
       throw new Error("❌ Authentication failed via API. Token might be invalid.");
     }
 
@@ -78,9 +84,6 @@ test.describe('Session Management Tests', () => {
       input.value = "false";
       document.querySelector("form").appendChild(input);
     });
-
-    await page.fill('input[name="totalDuration"]', '0');
-    await page.fill('input[name="totalDistance"]', '0');
 
     await page.fill('input[name="weatherTemp"]', '20');
     await page.fill('input[name="weatherHumidity"]', '60');

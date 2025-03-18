@@ -111,7 +111,10 @@ const Dashboard: React.FC = () => {
         setShowInputForm(true);
         setIsMultiSportActive(formData.sessionType === "Multi-Sport");
         setSessionType(formData.sessionType);
-        
+
+        await refetch();
+        console.log("🔄 Sessions refetched!");
+
         setTimeout(() => {
           console.log("🔄 Refetching sessions after creation...");
           refetch();

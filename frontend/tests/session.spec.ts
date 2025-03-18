@@ -1,25 +1,15 @@
 import { test, expect } from '@playwright/test';
 
 test.use({ storageState: 'auth.json' });
-
 let createdSessionId: string | null = null;
 
 test.describe('Session Management Tests', () => {
-
   test.beforeEach(async ({ page }) => {
     console.log("🔑 Checking stored authentication state...");
 
     await page.goto('http://localhost:3000/home', { waitUntil: 'load' });
 
-    const authToken = await page.evaluate(() => {
-      try {
-        return localStorage.getItem('token');
-      } catch (error) {
-        console.error("❌ Failed to access localStorage:", error);
-        return null;
-      }
-    });
-
+    const authToken = await page.evaluate(() => localStorage.getItem('token'));
     if (!authToken) {
       throw new Error("❌ No auth token found in localStorage. Playwright might not be applying storageState correctly.");
     }
@@ -37,20 +27,11 @@ test.describe('Session Management Tests', () => {
           "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
-          query: `
-            query {
-              sessions {
-                id
-                sessionType
-                date
-              }
-            }
-          `,
+          query: `query { sessions { id sessionType date userId } }`
         }),
       });
       return response.json();
     }, authToken);
-    
 
     if (!userResponse.data || !userResponse.data.sessions) {
       throw new Error("❌ Authentication failed via API. Token might be invalid.");
@@ -68,30 +49,25 @@ test.describe('Session Management Tests', () => {
     console.log("🖱️ Clicking Add Session...");
     await addSessionButton.click();
 
-    const sessionFormVisible = await page.waitForSelector('input[name="date"]', { timeout: 5000 }).catch(() => null);
-    if (!sessionFormVisible) {
-      throw new Error("❌ Add Session form did not open!");
-    }
+    await page.waitForSelector('input[name="date"]', { timeout: 5000 });
+
     console.log("✅ Session form is visible.");
 
+    const todayISO = new Date().toISOString().split('T')[0];
+
     await page.selectOption('select[name="sessionType"]', 'Run');
-    await page.fill('input[name="date"]', '2025-03-16');
+    await page.fill('input[name="date"]', todayISO);
 
-    await page.evaluate(() => {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = "isMultiSport";
-      input.value = "false";
-      document.querySelector("form").appendChild(input);
-    });
-
-    await page.fill('input[name="weatherTemp"]', '20');
-    await page.fill('input[name="weatherHumidity"]', '60');
-    await page.fill('input[name="weatherWindSpeed"]', '10');
+    await page.click('button', { hasText: 'Next' });
 
     console.log("📡 Fetching sessions from API...");
+    
+
+    await page.waitForTimeout(1000);
+
     const sessionApiResponse = await page.evaluate(async () => {
       const token = localStorage.getItem('token');
+
       console.log(`📡 Using token for session fetch: ${token}`);
 
       const response = await fetch("http://localhost:3001/graphql", {
@@ -100,39 +76,33 @@ test.describe('Session Management Tests', () => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({ query: `query { sessions { id sessionType date } }` }),
+        body: JSON.stringify({ query: `query { sessions { id sessionType date userId } }` }),
       });
 
-      const responseData = await response.json();
-      console.log("📥 Session API Response:", responseData);
-      return responseData;
+      return response.json();
     });
 
-    console.log("✅ Clicking Next...");
-    await page.click('button', { hasText: 'Next' });
+    if (!sessionApiResponse.data || !sessionApiResponse.data.sessions.length) {
+      throw new Error("❌ Session not found in API response.");
+    }
 
-    console.log("⏳ Waiting for UI update...");
-    await page.waitForTimeout(5000);
-
-    console.log("🔍 Checking if new session appears...");
-    const sessionList = page.locator('li.session-card');
-
-    const sessionCountBefore = await sessionList.count();
-    console.log(`📊 Session count before wait: ${sessionCountBefore}`);
-
-    await sessionList.waitFor({ state: 'visible', timeout: 7000 }).catch(() => {
-      console.log("⚠️ No session card appeared! Checking session list count again...");
-    });
-
-    const sessionCountAfter = await sessionList.count();
-    console.log(`📊 Session count after wait: ${sessionCountAfter}`);
-
-    createdSessionId = await sessionList.first().getAttribute('data-session-id');
-    console.log("✅ Created Session ID:", createdSessionId);
+    createdSessionId = sessionApiResponse.data.sessions.find(
+      (session: any) => session.date === todayISO
+    )?.id || null;
 
     if (!createdSessionId) {
-      throw new Error("❌ Failed to retrieve session ID. Ensure session cards have the correct attribute.");
+      throw new Error("❌ Newly created session not found in API response.");
     }
+
+    console.log(`✅ Created Session ID: ${createdSessionId}`);
+
+    console.log("⏳ Waiting for session to appear in UI...");
+    await page.waitForFunction(
+      (sessionId) => !!document.querySelector(`[data-session-id="${sessionId}"]`),
+      createdSessionId
+    );
+
+    console.log("✅ Session found in UI.");
   });
 
   test('User can edit an existing session', async ({ page }) => {

@@ -173,5 +173,5 @@ test.describe('Session Management Tests', () => {
 
     console.log("✅ Confirming session is removed from list...");
     await expect(page.locator(`li.session-card[data-session-id="${createdSessionId}"]`)).not.toBeVisible();
-});
+  });
 });

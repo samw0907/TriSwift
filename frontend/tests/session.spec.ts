@@ -57,7 +57,7 @@ test.describe('Session Management Tests', () => {
 
     console.log("📡 Submitting session creation request...");
     
-    await page.locator("form.session-form").evaluate(form => form.submit());
+    await page.click('button[type="submit"]');
 
     console.log("✅ Form submission triggered.");
 
@@ -118,7 +118,6 @@ test.describe('Session Management Tests', () => {
   });
 
   test('User can edit an existing session', async ({ page }) => {
-    test.skip(!createdSessionId, 'Skipping test because session creation failed');
     await page.goto('http://localhost:3000/dashboard');
 
     const sessionCard = page.locator(`li.session-card[data-session-id="${createdSessionId}"]`);
@@ -133,7 +132,6 @@ test.describe('Session Management Tests', () => {
   });
 
   test('User can delete a session', async ({ page }) => {
-    test.skip(!createdSessionId, 'Skipping test because session creation failed');
     await page.goto('http://localhost:3000/dashboard');
 
     const sessionCard = page.locator(`li.session-card[data-session-id="${createdSessionId}"]`);

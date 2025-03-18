@@ -6,7 +6,6 @@ let createdSessionId: string | null = null;
 test.describe('Session Management Tests', () => {
   test.beforeEach(async ({ page }) => {
     console.log("🔑 Checking stored authentication state...");
-  
     await page.goto('http://localhost:3000/home', { waitUntil: 'load' });
 
     const authToken = await page.evaluate(() => localStorage.getItem('token'));
@@ -14,7 +13,7 @@ test.describe('Session Management Tests', () => {
       throw new Error("❌ No auth token found in localStorage.");
     }
 
-    console.log(`✅ Token retrieved from localStorage`);
+    console.log("✅ Token retrieved from localStorage");
 
     console.log("🔍 Verifying Authentication via API...");
     const userResponse = await page.evaluate(async (token) => {
@@ -24,7 +23,9 @@ test.describe('Session Management Tests', () => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({ query: "query { sessions { id } }" }),
+        body: JSON.stringify({ 
+          query: `query { sessions { id, date } }`
+        }),
       });
       return response.json();
     }, authToken);
@@ -38,16 +39,6 @@ test.describe('Session Management Tests', () => {
 
   test('User can create a new session', async ({ page }) => {
     await page.goto('http://localhost:3000/dashboard');
-
-    page.on('request', request => {
-      console.log(`📡 Request Sent: ${request.url()} - Method: ${request.method()}`);
-      if (request.postData()) console.log("📡 Request Body:", request.postData());
-    });
-
-    page.on('response', response => {
-      console.log(`📡 Response Received: ${response.url()} - Status: ${response.status()}`);
-      response.text().then(body => console.log("📡 Response Body:", body));
-    });
 
     const addSessionButton = page.locator('button', { hasText: 'Add Session' });
     await expect(addSessionButton).toBeVisible();
@@ -70,7 +61,11 @@ test.describe('Session Management Tests', () => {
 
     console.log("✅ Form submission triggered.");
 
-    await page.waitForTimeout(2000);
+    console.log("⏳ Waiting for UI to update...");
+    await page.waitForTimeout(3000);
+
+    console.log("🔄 Refreshing the dashboard...");
+    await page.goto("http://localhost:3000/dashboard", { waitUntil: "networkidle" });
 
     console.log("📡 Fetching sessions from API...");
 
@@ -88,7 +83,9 @@ test.describe('Session Management Tests', () => {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`
           },
-          body: JSON.stringify({ query: "query { sessions { id } }" }),
+          body: JSON.stringify({ 
+            query: `query { sessions { id, date } }`
+          }),
         });
 
         return response.json();

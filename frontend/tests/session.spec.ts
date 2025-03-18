@@ -152,19 +152,26 @@ test.describe('Session Management Tests', () => {
     const sessionCard = page.locator(`li.session-card[data-session-id="${createdSessionId}"]`);
     await sessionCard.waitFor({ state: 'visible', timeout: 5000 });
 
+    console.log("⚠️ Setting up dialog handler for window.confirm()...");
+    page.once('dialog', async (dialog) => {
+        console.log(`🗨️ Dialog Message: ${dialog.message()}`);
+        if (dialog.message().includes("Are you sure you want to delete this session?")) {
+            await dialog.accept();
+        } else {
+            await dialog.dismiss();
+        }
+    });
+
     console.log("🗑️ Clicking Delete button...");
     await sessionCard.locator('button.btn-danger').click();
 
-    console.log("⚠️ Handling confirmation dialog...");
-    page.once('dialog', async (dialog) => {
-        console.log(`🗨️ Dialog Message: ${dialog.message()}`);
-        await dialog.accept();
-    });
+    console.log("⏳ Waiting for session to be removed from DOM...");
+    await page.waitForFunction(
+        (id) => !document.querySelector(`li.session-card[data-session-id="${id}"]`),
+        createdSessionId
+    );
 
-    console.log("⏳ Waiting for the session to be removed...");
-    await page.waitForTimeout(2000);
-
-    console.log("🔍 Checking if session was deleted...");
-    await expect(sessionCard).not.toBeVisible();
-  });
+    console.log("✅ Confirming session is removed from list...");
+    await expect(page.locator(`li.session-card[data-session-id="${createdSessionId}"]`)).not.toBeVisible();
+});
 });

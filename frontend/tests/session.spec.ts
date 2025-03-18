@@ -124,12 +124,22 @@ test.describe('Session Management Tests', () => {
     const sessionCard = page.locator(`li.session-card[data-session-id="${createdSessionId}"]`);
     await sessionCard.waitFor({ state: 'visible', timeout: 5000 });
 
+    console.log("🖱️ Clicking Edit button...");
+    await sessionCard.locator('button', { hasText: 'Edit' }).click();
+
+    console.log("⏳ Waiting for edit form...");
+    const editForm = page.locator('.session-edit-form');
+    await editForm.waitFor({ state: 'visible', timeout: 5000 });
+
     console.log("✍️ Editing session...");
     const tempInput = page.locator('input[name="weatherTemp"]');
     await tempInput.fill('25');
 
     console.log("✅ Clicking Save button...");
-    await page.click('button', { hasText: 'Save' });
+    await editForm.locator('button[type="submit"]').click();
+
+    console.log("🖱️ Clicking 'Show Details' to verify the update...");
+    await sessionCard.locator('button', { hasText: 'Show Details' }).click();
 
     console.log("🔍 Checking updated text...");
     await expect(sessionCard).toContainText('Temp - 25°C');
@@ -143,15 +153,16 @@ test.describe('Session Management Tests', () => {
     await sessionCard.waitFor({ state: 'visible', timeout: 5000 });
 
     console.log("🗑️ Clicking Delete button...");
-    await page.click('button', { hasText: 'Delete' });
+    await sessionCard.locator('button.btn-danger').click();
 
-    console.log("⚠️ Waiting for confirmation dialog...");
-    await page.waitForSelector('.confirm-dialog', { timeout: 5000 });
+    console.log("⚠️ Handling confirmation dialog...");
+    page.once('dialog', async (dialog) => {
+        console.log(`🗨️ Dialog Message: ${dialog.message()}`);
+        await dialog.accept();
+    });
 
-    console.log("✅ Clicking Confirm...");
-    await page.pause();
-
-    await page.click('button', { hasText: 'Confirm' });
+    console.log("⏳ Waiting for the session to be removed...");
+    await page.waitForTimeout(2000);
 
     console.log("🔍 Checking if session was deleted...");
     await expect(sessionCard).not.toBeVisible();

@@ -55,7 +55,7 @@ const EditSessionForm: React.FC<EditSessionFormProps> = ({ session, onClose, onU
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ border: "1px solid gray", padding: "10px", marginTop: "10px" }}>
+    <form onSubmit={handleSubmit} className="session-edit-form" data-testid="edit-session-form" style={{ border: "1px solid gray", padding: "10px", marginTop: "10px" }}>
       <h3>Edit Session</h3>
 
       <label htmlFor="sessionType">Session Type:</label>

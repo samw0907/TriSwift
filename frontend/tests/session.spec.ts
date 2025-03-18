@@ -6,39 +6,52 @@ let createdSessionId: string | null = null;
 test.describe('Session Management Tests', () => {
   test.beforeEach(async ({ page }) => {
     console.log("🔑 Checking stored authentication state...");
-
+  
     await page.goto('http://localhost:3000/home', { waitUntil: 'load' });
-
+  
     const authToken = await page.evaluate(() => localStorage.getItem('token'));
     if (!authToken) {
       throw new Error("❌ No auth token found in localStorage. Playwright might not be applying storageState correctly.");
     }
-
+  
     console.log(`✅ Token retrieved from localStorage: ${authToken}`);
-
+  
     await page.reload({ waitUntil: 'load' });
-
+  
     console.log("🔍 Verifying Authentication via API...");
     const userResponse = await page.evaluate(async (token) => {
-      const response = await fetch("http://localhost:3001/graphql", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          query: `query { sessions { id sessionType date userId } }`
-        }),
-      });
-      return response.json();
+      try {
+        const response = await fetch("http://localhost:3001/graphql", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            query: `query { sessions { id sessionType date userId } }`
+          }),
+        });
+  
+        const result = await response.json();
+        console.log("📡 API Response:", result);
+        return result;
+      } catch (error) {
+        console.error("❌ Fetch failed:", error);
+        return { error: error.message };
+      }
     }, authToken);
-
+  
+    if (userResponse.error) {
+      throw new Error(`❌ API Fetch Error: ${userResponse.error}`);
+    }
+  
     if (!userResponse.data || !userResponse.data.sessions) {
+      console.error("❌ Full API Response:", userResponse);
       throw new Error("❌ Authentication failed via API. Token might be invalid.");
     }
-
+  
     console.log("✅ Authentication confirmed via API.");
-  });
+  });  
 
   test('User can create a new session', async ({ page }) => {
     await page.goto('http://localhost:3000/dashboard');
@@ -59,8 +72,10 @@ test.describe('Session Management Tests', () => {
     await page.fill('input[name="date"]', todayISO);
 
     console.log("📡 Submitting session creation request...");
+    
     await Promise.all([
       page.waitForResponse((response) => {
+        console.log(`📡 Response received from: ${response.url()}`);
         const postData = response.request().postData() || "";
         return response.url().includes('/graphql') &&
                response.request().method() === 'POST' &&
@@ -70,28 +85,42 @@ test.describe('Session Management Tests', () => {
     ]);
 
     console.log("✅ Session creation request sent.");
-    console.log("📡 Fetching sessions from API...");
     
+    console.log("📡 Fetching sessions from API...");
+
     await page.waitForTimeout(1000);
 
-    const sessionApiResponse = await page.evaluate(async () => {
-      const token = localStorage.getItem('token');
+    let sessionApiResponse;
+    let retries = 3;
 
-      console.log(`📡 Using token for session fetch: ${token}`);
+    while (retries > 0) {
+      console.log(`🔄 Attempt ${4 - retries} to fetch sessions...`);
+      sessionApiResponse = await page.evaluate(async () => {
+        const token = localStorage.getItem('token');
 
-      const response = await fetch("http://localhost:3001/graphql", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ query: `query { sessions { id sessionType date userId } }` }),
+        console.log(`📡 Using token for session fetch: ${token}`);
+
+        const response = await fetch("http://localhost:3001/graphql", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ query: `query { sessions { id sessionType date userId } }` }),
+        });
+
+        const result = await response.json();
+        console.log("📡 API Response:", result);
+        return result;
       });
 
-      const result = await response.json();
-      console.log("📡 API Response:", result);
-      return result;
-    });
+      if (sessionApiResponse.data && sessionApiResponse.data.sessions.length) {
+        break;
+      }
+      console.log("⚠️ Session not found yet, retrying...");
+      await page.waitForTimeout(2000);
+      retries--;
+    }
 
     if (!sessionApiResponse.data || !sessionApiResponse.data.sessions.length) {
       throw new Error("❌ Session not found in API response.");

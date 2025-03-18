@@ -9,11 +9,13 @@ test.describe('Authentication Tests', () => {
 
     await page.fill('input[name="email"]', 'ubolt@gmail.com');
     await page.fill('input[name="password"]', 'fastpassword');
-    
+
     await page.click('button[type="submit"]');
 
     await page.waitForURL('http://localhost:3000/home', { timeout: 10000 });
     await expect(page).toHaveURL('http://localhost:3000/home');
+    
+    await context.storageState({ path: 'auth.json' });
   });
 
   test('Login fails with incorrect credentials', async ({ page }) => {

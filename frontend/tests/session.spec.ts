@@ -58,11 +58,20 @@ test.describe('Session Management Tests', () => {
     await page.selectOption('select[name="sessionType"]', 'Run');
     await page.fill('input[name="date"]', todayISO);
 
-    await page.click('button', { hasText: 'Next' });
+    console.log("📡 Submitting session creation request...");
+    await Promise.all([
+      page.waitForResponse((response) => {
+        const postData = response.request().postData() || "";
+        return response.url().includes('/graphql') &&
+               response.request().method() === 'POST' &&
+               postData.includes('createSession');
+      }),
+      page.click('button', { hasText: 'Next' })
+    ]);
 
+    console.log("✅ Session creation request sent.");
     console.log("📡 Fetching sessions from API...");
     
-
     await page.waitForTimeout(1000);
 
     const sessionApiResponse = await page.evaluate(async () => {
@@ -79,7 +88,9 @@ test.describe('Session Management Tests', () => {
         body: JSON.stringify({ query: `query { sessions { id sessionType date userId } }` }),
       });
 
-      return response.json();
+      const result = await response.json();
+      console.log("📡 API Response:", result);
+      return result;
     });
 
     if (!sessionApiResponse.data || !sessionApiResponse.data.sessions.length) {
@@ -87,7 +98,10 @@ test.describe('Session Management Tests', () => {
     }
 
     createdSessionId = sessionApiResponse.data.sessions.find(
-      (session: any) => session.date === todayISO
+      (session: any) => {
+        const sessionDate = new Date(session.date).toISOString().split('T')[0];
+        return sessionDate === todayISO;
+      }
     )?.id || null;
 
     if (!createdSessionId) {

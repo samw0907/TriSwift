@@ -120,26 +120,40 @@ test.describe('Session Management Tests', () => {
   test('User can edit an existing session', async ({ page }) => {
     await page.goto('http://localhost:3000/dashboard');
 
+    console.log("🔍 Locating session card...");
     const sessionCard = page.locator(`li.session-card[data-session-id="${createdSessionId}"]`);
     await sessionCard.waitFor({ state: 'visible', timeout: 5000 });
 
+    console.log("✍️ Editing session...");
     const tempInput = page.locator('input[name="weatherTemp"]');
     await tempInput.fill('25');
 
+    console.log("✅ Clicking Save button...");
     await page.click('button', { hasText: 'Save' });
 
+    console.log("🔍 Checking updated text...");
     await expect(sessionCard).toContainText('Temp - 25°C');
   });
 
   test('User can delete a session', async ({ page }) => {
     await page.goto('http://localhost:3000/dashboard');
 
+    console.log("🔍 Finding session card...");
     const sessionCard = page.locator(`li.session-card[data-session-id="${createdSessionId}"]`);
     await sessionCard.waitFor({ state: 'visible', timeout: 5000 });
 
-    await page.waitForSelector('.confirm-dialog');
+    console.log("🗑️ Clicking Delete button...");
+    await page.click('button', { hasText: 'Delete' });
+
+    console.log("⚠️ Waiting for confirmation dialog...");
+    await page.waitForSelector('.confirm-dialog', { timeout: 5000 });
+
+    console.log("✅ Clicking Confirm...");
+    await page.pause();
+
     await page.click('button', { hasText: 'Confirm' });
 
+    console.log("🔍 Checking if session was deleted...");
     await expect(sessionCard).not.toBeVisible();
   });
 });

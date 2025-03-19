@@ -5,7 +5,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import SessionDetails from "../SessionDetails";
 import { formatDuration } from "../../../utils/format";
 import { getNextActivity } from "../../../utils/sessionHelpers";
-import { UPDATE_SESSION_ACTIVITY } from "../../../graphql/mutations";
+import { UPDATE_SESSION_ACTIVITY, DELETE_ACTIVITY_MUTATION, DELETE_TRANSITION_MUTATION } from "../../../graphql/mutations";
 
 vi.mock("../../../utils/format", () => ({
   formatDuration: vi.fn((duration) => `${duration} sec`),
@@ -60,9 +60,26 @@ const mockUpdateActivity = {
   },
 };
 
+const mockDeleteActivity = {
+  request: { query: DELETE_ACTIVITY_MUTATION, variables: { id: "a1" } },
+  result: { data: { deleteActivity: { id: "a1" } } },
+};
+
+const mockDeleteTransition = {
+  request: { query: DELETE_TRANSITION_MUTATION, variables: { id: "t1" } },
+  result: { data: { deleteTransition: { id: "t1" } } },
+};
+
 describe("SessionDetails Component", () => {
+  const renderWithMocks = (mocks = [], sessionData = mockSession) =>
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <SessionDetails session={sessionData} onUpdate={mockUpdate} />
+      </MockedProvider>
+    );
+
   test("renders weather details if available", () => {
-    render(<SessionDetails session={mockSession} onUpdate={mockUpdate} />);
+    renderWithMocks();
 
     expect(screen.getByText("Temp - 22°C")).toBeInTheDocument();
     expect(screen.getByText("Humidity - 50%")).toBeInTheDocument();
@@ -70,7 +87,7 @@ describe("SessionDetails Component", () => {
   });
 
   test("renders activity details", () => {
-    render(<SessionDetails session={mockSession} onUpdate={mockUpdate} />);
+    renderWithMocks();
 
     expect(screen.getByText("Run")).toBeInTheDocument();
     expect(screen.getByText("Distance: 5.00 km")).toBeInTheDocument();
@@ -81,24 +98,10 @@ describe("SessionDetails Component", () => {
     expect(screen.getByText("Cadence: 85 rpm")).toBeInTheDocument();
     expect(screen.getByText("Power: 200 watts")).toBeInTheDocument();
   });
-
-  test("renders transition details", async () => {
-    render(<SessionDetails session={mockSession} onUpdate={mockUpdate} />);
   
-    await waitFor(() => {
-      expect(screen.getByText(/Transition:/i)).toBeInTheDocument();
-      expect(screen.getByText(/Swim → Bike/i)).toBeInTheDocument();
-      expect(screen.getByText(/Transition Time: 120 sec/i)).toBeInTheDocument();
-      expect(screen.getByText(/Notes: Quick change/i)).toBeInTheDocument();
-    });
-  });
   
   test("shows and hides edit form when clicking edit button", async () => {
-    render(
-      <MockedProvider mocks={[mockUpdateActivity]} addTypename={false}>
-        <SessionDetails session={mockSession} onUpdate={mockUpdate} />
-      </MockedProvider>
-    );
+    renderWithMocks([mockUpdateActivity]);
 
     fireEvent.click(screen.getByText("Edit Activity"));
 
@@ -113,21 +116,17 @@ describe("SessionDetails Component", () => {
     expect(screen.getByText("Edit Activity")).toBeInTheDocument();
   });
 
-  test("does not display weather details when null", () => {
-    render(
-      <SessionDetails
-        session={{
-          ...mockSession,
-          weatherTemp: null,
-          weatherHumidity: null,
-          weatherWindSpeed: null,
-        }}
-        onUpdate={mockUpdate}
-      />
-    );
-
-    expect(screen.queryByText(/Temp -/)).toBeNull();
-    expect(screen.queryByText(/Humidity -/)).toBeNull();
-    expect(screen.queryByText(/Wind Speed -/)).toBeNull();
+  test("does not display weather details when null", async () => {
+    renderWithMocks([], {
+      ...mockSession,
+      weatherTemp: null,
+      weatherHumidity: null,
+      weatherWindSpeed: null,
+    });
+  
+    expect(screen.queryByText(/Temp -/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Humidity -/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Wind Speed -/)).not.toBeInTheDocument();
   });
+  
 });

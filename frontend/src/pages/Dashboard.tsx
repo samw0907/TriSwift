@@ -53,7 +53,9 @@ const Dashboard: React.FC = () => {
 
   const [showSessionForm, setShowSessionForm] = useState(false);
   const [showInputForm, setShowInputForm] = useState(false);
-  const [selectedFormType, setSelectedFormType] = useState<'activity' | 'transition'>('activity');
+  const [showActivityForm, setShowActivityForm] = useState(false);
+  const [showTransitionForm, setShowTransitionForm] = useState(false);
+  
   const [sessionType, setSessionType] = useState('');
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isMultiSportActive, setIsMultiSportActive] = useState(false);
@@ -139,30 +141,21 @@ const Dashboard: React.FC = () => {
     }
   
     try {
-      const { data } = await addSessionActivity({
+      await addSessionActivity({
         variables: {
           sessionId,
           ...activityData,
           distance: convertedDistance,
         },
       });
+
+      refetch();
   
-      if (data?.createSessionActivity) {
-        setSessions((prevSessions) =>
-          prevSessions.map((session) =>
-            session.id === sessionId
-              ? {
-                  ...session,
-                  activities: [...(session.activities || []), data.createSessionActivity],
-                  totalDistance:
-                    (session.totalDistance || 0) + convertedDistance,
-                  totalDuration:
-                    (session.totalDuration || 0) + data.createSessionActivity.duration,
-                }
-              : session
-          )
-        );
-        refetch();
+      if (isMultiSportActive) {
+        setShowActivityForm(false);
+        setShowTransitionForm(true);
+      } else {
+        setShowActivityForm(false);
       }
     } catch (error) {
       console.error("❌ Error Creating Activity:", error);
@@ -187,10 +180,9 @@ const Dashboard: React.FC = () => {
         },
       });
 
-      if (data?.createSessionTransition) {
-        await refetch();
-        setShowInputForm(false);
-      }
+      refetch();
+      setShowTransitionForm(false);
+      setShowActivityForm(true);
     } catch (error) {
       console.error("❌ Error Creating Transition:", error);
       alert("Failed to create transition. Please try again.");
@@ -201,11 +193,18 @@ const Dashboard: React.FC = () => {
     refetch();
   };
 
+  const handleCloseForms = () => {
+    setShowActivityForm(false);
+    setShowTransitionForm(false);
+    setSessionId(null);
+    setIsMultiSportActive(false);
+  };
+
   return (
     <div className="dashboard">
       <h1>Session Dashboard</h1>
 
-      {!showSessionForm && !showInputForm && (
+      {!showSessionForm && !showActivityForm && !showTransitionForm && (
         <button onClick={() => setShowSessionForm(true)}>Add Session</button>
       )}
 
@@ -216,54 +215,45 @@ const Dashboard: React.FC = () => {
         />
       )}
 
-      {showInputForm && sessionId && (
-        <div className="input-form-container">
-          {isMultiSportActive && (
-            <div className="toggle-buttons">
-              <button
-                className={selectedFormType === "activity" ? "active" : ""}
-                onClick={() => setSelectedFormType("activity")}
-              >
-                Add Activity
-              </button>
-              <button
-                className={selectedFormType === "transition" ? "active" : ""}
-                onClick={() => setSelectedFormType("transition")}
-              >
-                Add Transition
-              </button>
-            </div>
-          )}
+      {showActivityForm && sessionId && (
+        <ActivityForm
+          sessionId={sessionId}
+          sessionType={sessionType}
+          onSubmit={handleActivitySubmit}
+          onCancel={handleCloseForms}
+          onNext={() => {
+            if (isMultiSportActive) {
+              setShowActivityForm(false);
+              setShowTransitionForm(true);
+            } else {
+              setShowActivityForm(false);
+            }
+          }}
+        />
+      )}
 
-          {selectedFormType === "activity" ? (
-            <ActivityForm
-              sessionId={sessionId}
-              sessionType={sessionType}
-              onSubmit={handleActivitySubmit}
-              onCancel={() => setShowInputForm(false)}
-              onNext={() => setSelectedFormType("activity")}
-            />
-          ) : (
-            <TransitionForm
-              sessionId={sessionId}
-              onSubmit={handleTransitionSubmit}
-              onCancel={() => setShowInputForm(false)}
-              onNext={() => {
-                if (selectedFormType === "transition") {
-                  setSelectedFormType("transition");
-                } else {
-                  setShowInputForm(false);
-                }
-              }}
-            />
-          )}
-        </div>
+      {showTransitionForm && sessionId && (
+        <TransitionForm
+          sessionId={sessionId}
+          onSubmit={handleTransitionSubmit}
+          onCancel={handleCloseForms}
+          onNext={() => {
+            setShowTransitionForm(false);
+            setShowActivityForm(true);
+          }}
+        />
       )}
 
       <h2>Past Sessions</h2>
       {loading && <p>Loading sessions...</p>}
       {error && <p style={{ color: "red" }}>Error fetching sessions</p>}
-      {sessions.length > 0 && <SessionList sessions={sessions} onDelete={handleDelete}  onUpdate={handleUpdate}/>}
+      {data?.sessions && data.sessions.length > 0 && (
+        <SessionList 
+          sessions={data.sessions} 
+          onDelete={handleDelete} 
+          onUpdate={handleUpdate} 
+        />
+      )}
     </div>
   );
 };

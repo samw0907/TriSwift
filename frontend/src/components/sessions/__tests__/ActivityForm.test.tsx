@@ -11,7 +11,7 @@ describe("ActivityForm Component", () => {
   });
 
   test("renders the form correctly", () => {
-    render(<ActivityForm sessionId="123" sessionType="Run" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+    render(<ActivityForm sessionId="123" sessionType="Run" onSubmit={mockOnSubmit} onClose={mockOnCancel} />);
 
     expect(screen.getByText(/Duration:/i)).toBeInTheDocument();
     expect(screen.getByText(/Distance \(km\):/i)).toBeInTheDocument();
@@ -20,12 +20,12 @@ describe("ActivityForm Component", () => {
     expect(screen.getByLabelText(/Heart Rate Avg:/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Cadence:/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Power:/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Add Activity/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Cancel/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Submit Activity/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Save & Close/i })).toBeInTheDocument();
   });
 
   test("updates input fields correctly", () => {
-    render(<ActivityForm sessionId="123" sessionType="Run" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+    render(<ActivityForm sessionId="123" sessionType="Run" onSubmit={mockOnSubmit} onClose={mockOnCancel} />);
 
     fireEvent.change(screen.getByPlaceholderText("Hrs"), { target: { value: "1" } });
     fireEvent.change(screen.getByPlaceholderText("Mins"), { target: { value: "30" } });
@@ -39,13 +39,13 @@ describe("ActivityForm Component", () => {
   });
 
   test("submits the form with correct data", () => {
-    render(<ActivityForm sessionId="123" sessionType="Run" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+    render(<ActivityForm sessionId="123" sessionType="Run" onSubmit={mockOnSubmit} onClose={mockOnCancel} />);
 
     fireEvent.change(screen.getByPlaceholderText("Hrs"), { target: { value: "1" } });
     fireEvent.change(screen.getByPlaceholderText("Mins"), { target: { value: "10" } });
     fireEvent.change(screen.getByPlaceholderText("Secs"), { target: { value: "30" } });
     fireEvent.change(screen.getByLabelText(/Distance/i), { target: { value: "12.5" } });
-    fireEvent.click(screen.getByRole("button", { name: /Add Activity/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Submit Activity/i }));
 
     expect(mockOnSubmit).toHaveBeenCalledWith({
       sportType: "Run",
@@ -60,20 +60,20 @@ describe("ActivityForm Component", () => {
   });
 
   test("rejects invalid duration (zero)", () => {
-    render(<ActivityForm sessionId="123" sessionType="Run" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+    render(<ActivityForm sessionId="123" sessionType="Run" onSubmit={mockOnSubmit} onClose={mockOnCancel} />);
 
     fireEvent.change(screen.getByPlaceholderText("Hrs"), { target: { value: "0" } });
     fireEvent.change(screen.getByPlaceholderText("Mins"), { target: { value: "0" } });
     fireEvent.change(screen.getByPlaceholderText("Secs"), { target: { value: "0" } });
-    fireEvent.click(screen.getByRole("button", { name: /Add Activity/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Submit Activity/i }));
 
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 
   test("triggers onCancel when Cancel is clicked", () => {
-    render(<ActivityForm sessionId="123" sessionType="Run" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
-
-    fireEvent.click(screen.getByRole("button", { name: /Cancel/i }));
+    render(<ActivityForm sessionId="123" sessionType="Run" onSubmit={mockOnSubmit} onClose={mockOnCancel} />);
+    
+    fireEvent.click(screen.getByRole("button", { name: /Save & Close/i }));
 
     expect(mockOnCancel).toHaveBeenCalled();
   });

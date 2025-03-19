@@ -48,7 +48,8 @@ Date            Hours    Topic
 18.03.2025      9        E2E testing, session issues eventually resolved. Further E2E testing.
 19.03.2025      2        Add delete activity, delete & edit transtions to frotnend
                 2        E2E testing
-                4.5      Changes to Activity/Transtitions forms for clarity
+                3.5      Changes to Activity/Transtitions forms for clarity
+                1        Updating frontend tests
 20.03.2025
 21.03.2025
                 (26.5)

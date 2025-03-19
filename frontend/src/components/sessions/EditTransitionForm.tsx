@@ -62,28 +62,28 @@ const EditTransitionForm: React.FC<EditTransitionFormProps> = ({ transition, onC
 
   return (
     <form onSubmit={handleSubmit}>
-      <label>Previous Sport:</label>
-      <select name="previousSport" value={formData.previousSport} onChange={handleChange}>
+      <label  htmlFor="previousSport">Previous Sport:</label>
+      <select id="previousSport" name="previousSport" value={formData.previousSport} onChange={handleChange}>
         <option value="Swim">Swim</option>
         <option value="Bike">Bike</option>
         <option value="Run">Run</option>
       </select>
 
-      <label>Next Sport:</label>
-      <select name="nextSport" value={formData.nextSport} onChange={handleChange}>
+      <label htmlFor="nextSport">Next Sport:</label>
+      <select id="nextSport" name="nextSport" value={formData.nextSport} onChange={handleChange}>
         <option value="Swim">Swim</option>
         <option value="Bike">Bike</option>
         <option value="Run">Run</option>
       </select>
 
-      <label htmlFor="transitionTime">Transition Time:</label>
+      <label htmlFor="transitionMinutes">Transition Time:</label>
       <div style={{ display: "flex", gap: "10px" }}>
         <input type="number" id="transitionMinutes" name="minutes" value={formData.minutes} onChange={handleChange} placeholder="Minutes" />
         <input type="number" id="transitionSeconds" name="seconds" value={formData.seconds} onChange={handleChange} placeholder="Seconds" />
       </div>
 
-      <label>Comments:</label>
-      <textarea name="comments" value={formData.comments} onChange={handleChange} />
+      <label htmlFor="comments">Comments:</label>
+      <textarea id="comments" name="comments" value={formData.comments} onChange={handleChange} />
 
       <button type="submit">Save</button>
       <button type="button" onClick={onClose}>Cancel</button>

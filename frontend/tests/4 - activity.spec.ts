@@ -76,14 +76,11 @@ test('User can add an activity to a session', async ({ page }) => {
   await page.fill('input[name="seconds"]', '12');
   await page.fill('input[name="distance"]', '12.00');
 
-  console.log("🖱️ Clicking 'Add Activity'...");
+  console.log("🖱️ Clicking 'Submit Activity'...");
   await page.click('button[type="submit"]');
 
   console.log("⏳ Waiting for activity to be added...");
   await page.waitForTimeout(3000);
-
-  console.log("🖱️ Clicking 'Next' after adding activity...");
-  await page.locator('button', { hasText: 'Next' }).click();
 
   console.log("📡 Fetching session ID from API...");
   let sessionApiResponse;

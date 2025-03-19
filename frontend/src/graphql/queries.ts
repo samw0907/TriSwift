@@ -60,7 +60,7 @@ export const GET_SESSION_ACTIVITIES = gql`
 
 export const GET_SESSION_TRANSITIONS = gql`
   query GetSessionTransitions($sessionId: ID!) {
-    sessionTransitions(sessionId: $sessionId) {
+    transitions(sessionId: $sessionId) {
       id
       previousSport
       nextSport

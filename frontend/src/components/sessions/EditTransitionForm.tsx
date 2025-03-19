@@ -17,10 +17,15 @@ interface EditTransitionFormProps {
 }
 
 const EditTransitionForm: React.FC<EditTransitionFormProps> = ({ transition, onClose, onUpdate }) => {
+
+  const initialMinutes = Math.floor(transition.transitionTime / 60);
+  const initialSeconds = transition.transitionTime % 60;
+
   const [formData, setFormData] = useState({
     previousSport: transition.previousSport,
     nextSport: transition.nextSport,
-    transitionTime: transition.transitionTime.toString(),
+    minutes: initialMinutes.toString(),
+    seconds: initialSeconds.toString(),
     comments: transition.comments || "",
   });
 
@@ -37,7 +42,22 @@ const EditTransitionForm: React.FC<EditTransitionFormProps> = ({ transition, onC
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await updateTransition({ variables: { id: transition.id, input: formData } });
+
+    const totalSeconds =
+      (parseInt(formData.minutes, 10) || 0) * 60 +
+      (parseInt(formData.seconds, 10) || 0);
+
+    await updateTransition({
+      variables: {
+        id: transition.id,
+        input: {
+          previousSport: formData.previousSport,
+          nextSport: formData.nextSport,
+          transitionTime: totalSeconds,
+          comments: formData.comments.trim(),
+        },
+      },
+    });
   };
 
   return (
@@ -56,8 +76,11 @@ const EditTransitionForm: React.FC<EditTransitionFormProps> = ({ transition, onC
         <option value="Run">Run</option>
       </select>
 
-      <label>Transition Time (seconds):</label>
-      <input type="number" name="transitionTime" value={formData.transitionTime} onChange={handleChange} />
+      <label htmlFor="transitionTime">Transition Time:</label>
+      <div style={{ display: "flex", gap: "10px" }}>
+        <input type="number" id="transitionMinutes" name="minutes" value={formData.minutes} onChange={handleChange} placeholder="Minutes" />
+        <input type="number" id="transitionSeconds" name="seconds" value={formData.seconds} onChange={handleChange} placeholder="Seconds" />
+      </div>
 
       <label>Comments:</label>
       <textarea name="comments" value={formData.comments} onChange={handleChange} />

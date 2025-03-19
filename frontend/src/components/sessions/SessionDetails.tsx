@@ -3,6 +3,7 @@ import { useMutation } from "@apollo/client";
 import { formatDuration } from "../../utils/format";
 import { getNextActivity } from "../../utils/sessionHelpers";
 import EditActivityForm from "./EditActivityForm";
+import EditTransitionForm from "./EditTransitionForm";
 import { DELETE_ACTIVITY_MUTATION, DELETE_TRANSITION_MUTATION  } from "../../graphql/mutations";
 
 interface Activity {
@@ -68,7 +69,10 @@ const calculatePace = (activity: Activity): string | null => {
 
 const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) => {
   const [editingActivityId, setEditingActivityId] = useState<string | null>(null);
+  const [editingTransitionId, setEditingTransitionId] = useState<string | null>(null);
+
   const [deleteActivity] = useMutation(DELETE_ACTIVITY_MUTATION);
+  const [deleteTransition] = useMutation(DELETE_TRANSITION_MUTATION);
 
   const handleDeleteActivity = async (activityId: string) => {
     if (!window.confirm("Are you sure you want to delete this activity?")) return;
@@ -109,17 +113,16 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
     );
 
     if (transition) {
-      orderedItems.push(transition);
-      remainingTransitions = remainingTransitions.filter((t) => t.id !== transition.id);
+      if (session.transitions.some((t) => t.id === transition.id)) {
+        orderedItems.push(transition);
+      }
     }
-
+  
     currentActivity = nextActivity;
   }
 
-  remainingTransitions.forEach((transition) => {
-    orderedItems.push(transition);
-  });
-  
+  remainingTransitions = remainingTransitions.filter((t) => !orderedItems.includes(t));
+
   return (
     <div className="session-details">
       {session.weatherTemp !== null && session.weatherTemp !== undefined && (

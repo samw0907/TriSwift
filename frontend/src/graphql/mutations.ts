@@ -158,6 +158,19 @@ export const UPDATE_SESSION_ACTIVITY = gql`
   }
 `;
 
+export const UPDATE_TRANSITION_MUTATION = gql`
+  mutation UpdateTransition($id: ID!, $input: UpdateTransitionInput!) {
+    updateTransition(id: $id, input: $input) {
+      id
+      sessionId
+      previousSport
+      nextSport
+      transitionTime
+      comments
+      updated_at
+    }
+  }
+`;
 
 export const DELETE_SESSION = gql`
   mutation DeleteSession($id: ID!) {
@@ -170,6 +183,14 @@ export const DELETE_SESSION = gql`
 export const DELETE_ACTIVITY_MUTATION = gql`
   mutation DeleteSessionActivity($id: ID!) {
     deleteSessionActivity(id: $id) {
+      message
+    }
+  }
+`;
+
+export const DELETE_TRANSITION_MUTATION = gql`
+  mutation DeleteTransition($id: ID!) {
+    deleteTransition(id: $id) {
       message
     }
   }

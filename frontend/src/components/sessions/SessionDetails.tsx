@@ -77,7 +77,6 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
 
   const handleDeleteActivity = async (activityId: string) => {
     if (!window.confirm("Are you sure you want to delete this activity?")) return;
-
     try {
       await deleteActivity({ variables: { id: activityId } });
       console.log("✅ Activity deleted successfully!");
@@ -98,35 +97,37 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
     }
   };
 
+  const activities = session.activities ?? [];
+  const transitions = session.transitions ?? [];
+
   let orderedItems: (Activity | Transition)[] = [];
-  let remainingTransitions = session.transitions ? [...session.transitions] : [];
-  
-  if (!session.activities || session.activities.length === 0) {
-    console.warn("No activities found for session:", session.id);
+  let remainingTransitions = [...transitions];
+
+  if (activities.length === 0) {
+    console.warn("⚠️ No activities found for session:", session.id);
   }
-  
-  let currentActivity: Activity | undefined =
-    session.activities && session.activities.length > 0 ? session.activities[0] : undefined;
-  
+
+  let currentActivity: Activity | undefined = activities.length > 0 ? activities[0] : undefined;
+
   while (currentActivity) {
     if (currentActivity) {
       orderedItems.push(currentActivity);
     }
-  
+
     const { transition, nextActivity } = getNextActivity(
       currentActivity,
       session,
       remainingTransitions
     );
-  
+
     if (transition) {
-      if (session.transitions && session.transitions.some((t) => t.id === transition.id)) {
+      if (transitions.some((t) => t.id === transition.id)) {
         orderedItems.push(transition);
       }
     }
-  
-    currentActivity = nextActivity || undefined;
-  }  
+
+    currentActivity = nextActivity ?? undefined;
+  }
 
   return (
     <div className="session-details">

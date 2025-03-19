@@ -63,6 +63,21 @@ test.describe('Transition Management Tests', () => {
     console.log("🖱️ Clicking 'Next' to go to input form...");
     await page.locator('button', { hasText: 'Next' }).click();
 
+    console.log("🔍 Waiting for Activity form...");
+    await page.waitForSelector('form.activity-form', { timeout: 5000 });
+
+    console.log("✍️ Filling activity form...");
+    await page.fill('input[name="hours"]', '0');
+    await page.fill('input[name="minutes"]', '20');
+    await page.fill('input[name="seconds"]', '0');
+    await page.fill('input[name="distance"]', '5.00');
+
+    console.log("🖱️ Clicking 'Add Activity'...");
+    await page.click('button[type="submit"]');
+
+    console.log("⏳ Waiting for activity to be added...");
+    await page.waitForTimeout(3000);
+
     console.log("🖱️ Clicking 'Add Transition' button...");
     const addTransitionButton = page.locator('button', { hasText: 'Add Transition' });
     await expect(addTransitionButton).toBeVisible();

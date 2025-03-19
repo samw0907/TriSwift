@@ -188,7 +188,8 @@ const Dashboard: React.FC = () => {
       });
 
       if (data?.createSessionTransition) {
-        refetch();
+        await refetch();
+        setShowInputForm(false);
       }
     } catch (error) {
       console.error("❌ Error Creating Transition:", error);
@@ -246,6 +247,13 @@ const Dashboard: React.FC = () => {
               sessionId={sessionId}
               onSubmit={handleTransitionSubmit}
               onCancel={() => setShowInputForm(false)}
+              onNext={() => {
+                if (selectedFormType === "activity") {
+                  setSelectedFormType("transition");
+                } else {
+                  setShowInputForm(false);
+                }
+              }}
             />
           )}
         </div>

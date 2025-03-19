@@ -5,9 +5,10 @@ interface ActivityFormProps {
   sessionType: string;
   onSubmit: (activityData: any) => void;
   onCancel: () => void;
+  onNext: () => void;
 }
 
-const ActivityForm: React.FC<ActivityFormProps> = ({ sessionId, sessionType, onSubmit, onCancel }) => {
+const ActivityForm: React.FC<ActivityFormProps> = ({ sessionId, sessionType, onSubmit, onCancel, onNext }) => {
   const [activity, setActivity] = useState({
     sportType: sessionType !== "Multi-Sport" ? sessionType : "",
     hours: "",
@@ -48,6 +49,21 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ sessionId, sessionType, onS
       cadence: activity.cadence ? parseInt(activity.cadence) : null,
       power: activity.power ? parseInt(activity.power) : null,
     });
+
+    setActivity({
+      sportType: sessionType !== "Multi-Sport" ? sessionType : "",
+      hours: "",
+      minutes: "",
+      seconds: "",
+      distance: "",
+      heartRateMin: "",
+      heartRateMax: "",
+      heartRateAvg: "",
+      cadence: "",
+      power: "",
+    });
+
+    onNext();
   };
 
   return (

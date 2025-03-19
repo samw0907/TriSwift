@@ -4,9 +4,10 @@ interface TransitionFormProps {
   sessionId: string;
   onSubmit: (transitionData: any) => void,
   onCancel: () => void;
+  onNext: () => void;
 }
 
-const TransitionForm: React.FC<TransitionFormProps> = ({ sessionId, onSubmit, onCancel }) => {
+const TransitionForm: React.FC<TransitionFormProps> = ({ sessionId, onSubmit, onCancel, onNext }) => {
   const [transition, setTransition] = useState({
     previousSport: "",
     nextSport: "",
@@ -32,6 +33,16 @@ const TransitionForm: React.FC<TransitionFormProps> = ({ sessionId, onSubmit, on
       transitionTime: totalSeconds,
       comments: transition.comments.trim(),
     });
+
+    setTransition({
+      previousSport: "",
+      nextSport: "",
+      minutes: "",
+      seconds: "",
+      comments: "",
+    });
+
+      onNext();
   };
   
   return (
@@ -63,6 +74,7 @@ const TransitionForm: React.FC<TransitionFormProps> = ({ sessionId, onSubmit, on
 
       <button type="submit">Add Transition</button>
       <button type="button" onClick={onCancel}>Cancel</button>
+      <button type="button" onClick={onNext}>Next</button>
     </form>
   );
 };

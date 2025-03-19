@@ -3,7 +3,7 @@ import { useMutation } from "@apollo/client";
 import { formatDuration } from "../../utils/format";
 import { getNextActivity } from "../../utils/sessionHelpers";
 import EditActivityForm from "./EditActivityForm";
-import { DELETE_ACTIVITY_MUTATION } from "../../graphql/mutations";
+import { DELETE_ACTIVITY_MUTATION, DELETE_TRANSITION_MUTATION  } from "../../graphql/mutations";
 
 interface Activity {
   id: string;
@@ -79,6 +79,17 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
       onUpdate();
     } catch (error) {
       console.error("❌ Error deleting activity:", error);
+    }
+  };
+
+  const handleDeleteTransition = async (transitionId: string) => {
+    if (!window.confirm("Are you sure you want to delete this transition?")) return;
+    try {
+      await deleteTransition({ variables: { id: transitionId } });
+      console.log("✅ Transition deleted successfully!");
+      onUpdate();
+    } catch (error) {
+      console.error("❌ Error deleting transition:", error);
     }
   };
 
@@ -183,13 +194,18 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
           } else {
             return (
               <li key={item.id} className="transition">
-                <p>
-                  <strong>
-                    Transition: {item.previousSport} → {item.nextSport}
-                  </strong>
-                </p>
+                <p><strong>Transition: {item.previousSport} → {item.nextSport}</strong></p>
                 <p>Transition Time: {formatDuration(item.transitionTime)}</p>
                 {item.comments && <p>Notes: {item.comments}</p>}
+
+                <button onClick={() => setEditingTransitionId(editingTransitionId === item.id ? null : item.id)}>
+                  {editingTransitionId === item.id ? "Cancel" : "Edit Transition"}
+                </button>
+                <button className="btn-danger" onClick={() => handleDeleteTransition(item.id)}>Delete Transition</button>
+
+                {editingTransitionId === item.id && (
+                  <EditTransitionForm transition={item} onClose={() => setEditingTransitionId(null)} onUpdate={onUpdate} />
+                )}
               </li>
             );
           }

@@ -192,7 +192,11 @@ test('User can add an activity to a session', async ({ page }) => {
     });
 
     console.log("🗑️ Clicking 'Delete Activity'...");
-    await page.locator('button.btn-danger').first().click();
+    const deleteActivityButton = sessionCard.locator('button', { hasText: 'Delete Activity' });
+    await deleteActivityButton.click();
+
+    console.log("⏳ Waiting for activity to be removed...");
+    await page.waitForTimeout(3000);
 
     console.log("⏳ Waiting for activity to be removed...");
     await page.waitForTimeout(3000);

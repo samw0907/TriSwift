@@ -46,7 +46,8 @@ Date            Hours    Topic
                 
 17.03.2025      9        E2E testing, session issues still unresolved, no progress
 18.03.2025      9        E2E testing, session issues eventually resolved. Further E2E testing.
-19.03.2025
+19.03.2025      1        Add delete activity button to frontend
+                         E2E testing
 20.03.2025
 21.03.2025
                 (18)

@@ -75,6 +75,7 @@ const TransitionForm: React.FC<TransitionFormProps> = ({ sessionId, onSubmit, on
       <button type="submit">Add Transition</button>
       <button type="button" onClick={onCancel}>Cancel</button>
       <button type="button" onClick={onNext}>Next</button>
+
     </form>
   );
 };

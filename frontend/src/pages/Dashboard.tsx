@@ -241,6 +241,7 @@ const Dashboard: React.FC = () => {
               sessionType={sessionType}
               onSubmit={handleActivitySubmit}
               onCancel={() => setShowInputForm(false)}
+              onNext={() => setSelectedFormType("activity")}
             />
           ) : (
             <TransitionForm
@@ -248,7 +249,7 @@ const Dashboard: React.FC = () => {
               onSubmit={handleTransitionSubmit}
               onCancel={() => setShowInputForm(false)}
               onNext={() => {
-                if (selectedFormType === "activity") {
+                if (selectedFormType === "transition") {
                   setSelectedFormType("transition");
                 } else {
                   setShowInputForm(false);

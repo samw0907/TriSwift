@@ -27,6 +27,7 @@ interface Transition {
 }
 
 interface Session {
+  id: string;
   weatherTemp?: number | null;
   weatherHumidity?: number | null;
   weatherWindSpeed?: number | null;
@@ -98,30 +99,34 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
   };
 
   let orderedItems: (Activity | Transition)[] = [];
-  let remainingTransitions = [...session.transitions];
-
+  let remainingTransitions = session.transitions ? [...session.transitions] : [];
+  
+  if (!session.activities || session.activities.length === 0) {
+    console.warn("No activities found for session:", session.id);
+  }
+  
   let currentActivity: Activity | undefined =
-    session.activities.length > 0 ? session.activities[0] : undefined;
-
+    session.activities && session.activities.length > 0 ? session.activities[0] : undefined;
+  
   while (currentActivity) {
-    orderedItems.push(currentActivity);
-
+    if (currentActivity) {
+      orderedItems.push(currentActivity);
+    }
+  
     const { transition, nextActivity } = getNextActivity(
       currentActivity,
       session,
       remainingTransitions
     );
-
+  
     if (transition) {
-      if (session.transitions.some((t) => t.id === transition.id)) {
+      if (session.transitions && session.transitions.some((t) => t.id === transition.id)) {
         orderedItems.push(transition);
       }
     }
   
-    currentActivity = nextActivity;
-  }
-
-  remainingTransitions = remainingTransitions.filter((t) => !orderedItems.includes(t));
+    currentActivity = nextActivity || undefined;
+  }  
 
   return (
     <div className="session-details">

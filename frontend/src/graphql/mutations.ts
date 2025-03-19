@@ -167,3 +167,10 @@ export const DELETE_SESSION = gql`
   }
 `;
 
+export const DELETE_ACTIVITY_MUTATION = gql`
+  mutation DeleteSessionActivity($id: ID!) {
+    deleteSessionActivity(id: $id) {
+      message
+    }
+  }
+`;

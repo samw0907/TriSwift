@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useMutation } from "@apollo/client";
 import { formatDuration } from "../../utils/format";
 import { getNextActivity } from "../../utils/sessionHelpers";
 import EditActivityForm from "./EditActivityForm";
+import { DELETE_ACTIVITY_MUTATION } from "../../graphql/mutations";
 
 interface Activity {
   id: string;
@@ -66,6 +68,19 @@ const calculatePace = (activity: Activity): string | null => {
 
 const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) => {
   const [editingActivityId, setEditingActivityId] = useState<string | null>(null);
+  const [deleteActivity] = useMutation(DELETE_ACTIVITY_MUTATION);
+
+  const handleDeleteActivity = async (activityId: string) => {
+    if (!window.confirm("Are you sure you want to delete this activity?")) return;
+
+    try {
+      await deleteActivity({ variables: { id: activityId } });
+      console.log("✅ Activity deleted successfully!");
+      onUpdate();
+    } catch (error) {
+      console.error("❌ Error deleting activity:", error);
+    }
+  };
 
   let orderedItems: (Activity | Transition)[] = [];
   let remainingTransitions = [...session.transitions];
@@ -146,6 +161,14 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
                   }
                 >
                   {editingActivityId === item.id ? "Cancel" : "Edit Activity"}
+                </button>
+
+                <button 
+                  className="btn-danger" 
+                  onClick={() => handleDeleteActivity(item.id)}
+                  style={{ marginLeft: "10px" }}
+                >
+                  Delete Activity
                 </button>
 
                 {editingActivityId === item.id && (

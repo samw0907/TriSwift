@@ -187,8 +187,8 @@ const activityResolvers = {
               if (!activity) throw new Error("Session Activity not found.");
       
               const session = await Session.findByPk(activity.session_id, {
-                include: [SessionActivity],
-              });
+                include: [{ model: SessionActivity, as: "activities" }],
+            });
       
               if (!session || session.user_id !== user.id) throw new Error("Unauthorized.");
       

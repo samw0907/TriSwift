@@ -42,7 +42,10 @@ test.describe('Transition Management Tests', () => {
     await page.goto('http://localhost:3000/dashboard');
 
     console.log("🖱️ Clicking Add Session...");
-    await page.click('button', { hasText: 'Add Session' });
+    const addSessionButton = page.locator('button', { hasText: 'Add Session' }).first();
+    await expect(addSessionButton).toBeVisible();
+    await expect(addSessionButton).toBeEnabled();
+    await addSessionButton.click();
 
     await page.waitForSelector('input[name="date"]', { timeout: 5000 });
     console.log("✅ Session form is visible.");
@@ -66,7 +69,8 @@ test.describe('Transition Management Tests', () => {
     console.log("✍️ Filling transition form...");
     await page.selectOption('select[name="previousSport"]', 'Swim');
     await page.selectOption('select[name="nextSport"]', 'Bike');
-    await page.fill('input[name="transitionTime"]', '45');
+    await page.fill('input[name="minutes"]', '0');
+    await page.fill('input[name="seconds"]', '45');
 
     console.log("🖱️ Clicking 'Add Transition'...");
     await page.click('button[type="submit"]');
@@ -153,7 +157,8 @@ test.describe('Transition Management Tests', () => {
     await page.waitForSelector('form.transition-form', { timeout: 5000 });
 
     console.log("✍️ Updating transition time...");
-    await page.fill('input[name="transitionTime"]', '30');
+    await page.fill('input[name="minutes"]', '0');
+    await page.fill('input[name="seconds"]', '30');
     await page.click('button[type="submit"]');
 
     console.log("⏳ Waiting for transition update...");

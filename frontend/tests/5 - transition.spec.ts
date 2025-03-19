@@ -63,6 +63,12 @@ test.describe('Transition Management Tests', () => {
     console.log("🖱️ Clicking 'Next' to go to input form...");
     await page.locator('button', { hasText: 'Next' }).click();
 
+    console.log("🖱️ Clicking 'Add Transition' button...");
+    const addTransitionButton = page.locator('button', { hasText: 'Add Transition' });
+    await expect(addTransitionButton).toBeVisible();
+    await expect(addTransitionButton).toBeEnabled();
+    await addTransitionButton.click();
+
     console.log("🔍 Waiting for Transition form...");
     await page.waitForSelector('form.transition-form', { timeout: 5000 });
 

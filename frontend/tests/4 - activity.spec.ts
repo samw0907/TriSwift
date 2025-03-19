@@ -85,6 +85,48 @@ test('User can add an activity to a session', async ({ page }) => {
   console.log("🖱️ Clicking 'Next' after adding activity...");
   await page.locator('button', { hasText: 'Next' }).click();
 
+  console.log("📡 Fetching session ID from API...");
+  let sessionApiResponse;
+  let retries = 3;
+
+  while (retries > 0) {
+    sessionApiResponse = await page.evaluate(async () => {
+      const token = localStorage.getItem('token');
+      const response = await fetch("http://localhost:3001/graphql", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ query: `query { sessions { id, date } }` }),
+      });
+
+      return response.json();
+    });
+
+    if (sessionApiResponse.data && sessionApiResponse.data.sessions.length) {
+      break;
+    }
+
+    console.log("⚠️ Session not found yet, retrying...");
+    await page.waitForTimeout(2000);
+    retries--;
+  }
+
+  if (!sessionApiResponse.data || !sessionApiResponse.data.sessions.length) {
+    throw new Error("❌ Session not found in API response.");
+  }
+
+  createdSessionId = sessionApiResponse.data.sessions.find(
+    (session: any) => new Date(session.date).toISOString().split('T')[0] === todayISO
+  )?.id || null;
+
+  if (!createdSessionId) {
+    throw new Error("❌ Newly created session not found in API response.");
+  }
+
+  console.log(`✅ Created Session ID: ${createdSessionId}`);
+
   // Find the newly created session
   console.log("🔍 Finding the newly created session...");
   const sessionCard = page.locator(`li.session-card[data-session-id="${createdSessionId}"]`);

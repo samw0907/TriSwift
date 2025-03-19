@@ -52,7 +52,6 @@ const Dashboard: React.FC = () => {
   const [deleteSession] = useMutation(DELETE_SESSION, { refetchQueries: [{ query: GET_SESSIONS }] });
 
   const [showSessionForm, setShowSessionForm] = useState(false);
-  const [showInputForm, setShowInputForm] = useState(false);
   const [showActivityForm, setShowActivityForm] = useState(false);
   const [showTransitionForm, setShowTransitionForm] = useState(false);
   
@@ -110,7 +109,7 @@ const Dashboard: React.FC = () => {
         setSessions((prevSessions) => [data.createSession, ...prevSessions]);
         setSessionId(data.createSession.id);
         setShowSessionForm(false);
-        setShowInputForm(true);
+        setShowActivityForm(true);
         setIsMultiSportActive(formData.sessionType === "Multi-Sport");
         setSessionType(formData.sessionType);
 
@@ -220,15 +219,7 @@ const Dashboard: React.FC = () => {
           sessionId={sessionId}
           sessionType={sessionType}
           onSubmit={handleActivitySubmit}
-          onCancel={handleCloseForms}
-          onNext={() => {
-            if (isMultiSportActive) {
-              setShowActivityForm(false);
-              setShowTransitionForm(true);
-            } else {
-              setShowActivityForm(false);
-            }
-          }}
+          onClose={handleCloseForms}
         />
       )}
 
@@ -236,11 +227,7 @@ const Dashboard: React.FC = () => {
         <TransitionForm
           sessionId={sessionId}
           onSubmit={handleTransitionSubmit}
-          onCancel={handleCloseForms}
-          onNext={() => {
-            setShowTransitionForm(false);
-            setShowActivityForm(true);
-          }}
+          onClose={handleCloseForms}
         />
       )}
 

@@ -3,11 +3,10 @@ import React, { useState } from "react";
 interface TransitionFormProps {
   sessionId: string;
   onSubmit: (transitionData: any) => void,
-  onCancel: () => void;
-  onNext: () => void;
+  onClose: () => void;
 }
 
-const TransitionForm: React.FC<TransitionFormProps> = ({ sessionId, onSubmit, onCancel, onNext }) => {
+const TransitionForm: React.FC<TransitionFormProps> = ({ sessionId, onSubmit, onClose}) => {
   const [transition, setTransition] = useState({
     previousSport: "",
     nextSport: "",
@@ -41,8 +40,7 @@ const TransitionForm: React.FC<TransitionFormProps> = ({ sessionId, onSubmit, on
       seconds: "",
       comments: "",
     });
-
-      onNext();
+    
   };
   
   return (
@@ -72,10 +70,8 @@ const TransitionForm: React.FC<TransitionFormProps> = ({ sessionId, onSubmit, on
       <label htmlFor="comments">Comments:</label>
       <textarea id="comments" name="comments" value={transition.comments} onChange={handleChange} />
 
-      <button type="submit">Add Transition</button>
-      <button type="button" onClick={onCancel}>Cancel</button>
-      <button type="button" onClick={onNext}>Next</button>
-
+      <button type="submit">Submit Transition</button>
+      <button type="button" onClick={onClose}>Save & Close</button>
     </form>
   );
 };

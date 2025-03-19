@@ -87,6 +87,6 @@ test("displays error message on failed login", async () => {
   });
   fireEvent.click(screen.getByRole("button", { name: /Login/i }));
   await waitFor(() => {
-    expect(screen.getByText(/Incorrect credentials. Please try again/i)).toBeInTheDocument();
+    expect(screen.getByText(/Invalid email or password. Please try again/i)).toBeInTheDocument();
   });
 });

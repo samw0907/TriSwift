@@ -4,7 +4,7 @@ import '../index.css'
 
 const sportDistances = {
   Swim: ["100m", "200m", "400m", "800m", "1000m", "1500m", "2000m"],
-  Run: ["100m", "200m", "400m", "1000m", "5km", "10km", "21.1km", "42.2km"],
+  Run: ["0.1km", "0.2km", "0.4km", "1km", "5km", "10km", "21.1km", "42.2km"],
   Bike: ["10km", "20km", "40km", "50km", "80km", "100km", "150km", "200km"],
 };
 
@@ -46,23 +46,14 @@ const PaceCalculator: React.FC = () => {
       (parseInt(time.seconds) || 0);
 
 
-      let dist = 0;
-
-      if (distance) {
-        if (sport === "Run" && distance.includes("m")) {
-          dist = parseFloat(distance.replace("m", "")) / 1000; // Convert meters to km
-        } else if (sport === "Swim") {
-          dist = parseFloat(distance.replace("m", "")); // Swim stays in meters
-        } else {
-          dist = parseFloat(distance.replace("km", "")); // Bike & km distances are fine
-        }
-      }
-    
-      // Prevent division by zero
-      if (dist <= 0 || totalSeconds <= 0) {
-        setPace("Invalid input");
-        return;
-      }
+      let dist = customDistance
+      ? parseFloat(customDistance)
+      : parseFloat(distance.replace("m", "").replace("km", ""));
+  
+    if (!dist || totalSeconds === 0) {
+      setPace("Invalid input");
+      return;
+    }
 
     if (sport === "Swim") {
       const distInMeters = customDistance ? dist : dist * 1;

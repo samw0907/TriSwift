@@ -50,8 +50,9 @@ Date            Hours    Topic
                 2        E2E testing
                 3.5      Changes to Activity/Transtitions forms for clarity
                 1        Updating frontend tests
-20.03.2025
+20.03.2025      6.5      E2E testing, updates to frontend
+                2        Deployment set up with Fly
 21.03.2025
-                (26.5)
+                (35)
                 
-TOTAL HOURS     188    
+TOTAL HOURS     196.5    

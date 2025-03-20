@@ -140,7 +140,7 @@ const PaceCalculator: React.FC = () => {
         </div>
 
         <div className="pace-buttons">
-          <button onClick={calculatePace}> Calculate Pace </button>
+          <button  data-testid="calculate-pace-button" onClick={calculatePace}> Calculate Pace </button>
         </div>
 
         {pace && <h3 style={{ marginTop: "20px" }}>Target Pace: {pace}</h3>}

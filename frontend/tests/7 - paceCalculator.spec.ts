@@ -28,7 +28,7 @@ test.describe('Pace Calculator Tests', () => {
     await page.selectOption('select#sport-select', 'Run');
 
     console.log("✍️ Selecting a preset distance...");
-    await page.selectOption('select#distance-select', '5');
+    await page.selectOption('select#distance-select', '5km');
 
     console.log("✍️ Entering target time...");
     await page.fill('input#hours-input', '0');
@@ -36,7 +36,10 @@ test.describe('Pace Calculator Tests', () => {
     await page.fill('input#seconds-input', '0');
 
     console.log("🖱️ Clicking Calculate...");
-    await page.click('button', { hasText: 'Calculate Pace' });
+    await page.click('.pace-buttons button')
+
+    console.log("⏳ Waiting for the pace result to appear...");
+    await page.waitForSelector('div.pace-form h3', { timeout: 5000 });
 
     console.log("🔍 Verifying calculated pace...");
     await expect(page.locator('h3')).toContainText('5:00 min/km');
@@ -55,7 +58,7 @@ test.describe('Pace Calculator Tests', () => {
     await page.fill('input#seconds-input', '0');
 
     console.log("🖱️ Clicking Calculate...");
-    await page.click('button', { hasText: 'Calculate Pace' });
+    await page.click('.pace-buttons button')
 
     console.log("🔍 Verifying calculated speed...");
     await expect(page.locator('h3')).toContainText('30.0 km/h');
@@ -72,7 +75,7 @@ test.describe('Pace Calculator Tests', () => {
     await page.fill('input#seconds-input', '0');
 
     console.log("🖱️ Clicking Calculate...");
-    await page.click('button', { hasText: 'Calculate Pace' });
+    await page.click('.pace-buttons button')
 
     console.log("✅ Ensuring error message appears...");
     await expect(page.locator('h3')).toContainText('Invalid input');

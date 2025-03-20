@@ -64,9 +64,6 @@ test('User can add an activity to a session', async ({ page }) => {
   console.log("✅ Form submission triggered.");
 
   // Click Next to proceed to activity form
-  console.log("🖱️ Clicking 'Next' to go to activity form...");
-  await page.locator('button', { hasText: 'Next' }).click();
-
   console.log("🔍 Waiting for Activity form...");
   await page.waitForSelector('form.activity-form', { timeout: 5000 });
 
@@ -79,8 +76,8 @@ test('User can add an activity to a session', async ({ page }) => {
   console.log("🖱️ Clicking 'Submit Activity'...");
   await page.click('button[type="submit"]');
 
-  console.log("⏳ Waiting for activity to be added...");
-  await page.waitForTimeout(3000);
+  console.log("⏳ Waiting for form to close...");
+  await page.waitForSelector('form.activity-form', { state: 'hidden', timeout: 5000 });
 
   console.log("📡 Fetching session ID from API...");
   let sessionApiResponse;

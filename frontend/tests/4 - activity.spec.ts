@@ -2,7 +2,6 @@ import { test, expect } from '@playwright/test';
 
 test.use({ storageState: 'auth.json' });
 let createdSessionId: string | null = null;
-let createdActivityId: string | null = null;
 
 test.describe('Activity Management Tests', () => {
 

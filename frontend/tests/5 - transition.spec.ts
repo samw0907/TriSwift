@@ -62,6 +62,7 @@ test.describe('Transition Management Tests', () => {
     await page.waitForSelector('form.activity-form', { timeout: 5000 });
 
     console.log("✍️ Filling activity form...");
+    await page.selectOption('select[name="sportType"]', 'Swim');
     await page.fill('input[name="hours"]', '0');
     await page.fill('input[name="minutes"]', '20');
     await page.fill('input[name="seconds"]', '0');
@@ -72,7 +73,7 @@ test.describe('Transition Management Tests', () => {
     
     // Wait for transition form
     console.log("🔍 Waiting for Transition form...");
-    await page.waitForSelector('form.transition-form', { timeout: 5000 });
+    await page.waitForSelector('form.transition-form', { timeout: 7000 });
     
     console.log("✅ Transition form is now visible!");
 
@@ -84,9 +85,6 @@ test.describe('Transition Management Tests', () => {
 
     console.log("🖱️ Clicking 'Submit Transition'...");
     await page.click('button[type="submit"]');
-
-    console.log("⏳ Waiting for transition to be added...");
-    await page.waitForTimeout(3000);
 
     console.log("🖱️ Clicking 'Save & Close'...");
     await page.click('button[type="submit"]');

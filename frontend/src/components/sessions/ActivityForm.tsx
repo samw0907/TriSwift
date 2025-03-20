@@ -49,25 +49,24 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ sessionId, sessionType, onS
       power: activity.power ? parseInt(activity.power) : null,
     });
 
-    setActivity({
-      sportType: sessionType !== "Multi-Sport" ? sessionType : "",
-      hours: "",
-      minutes: "",
-      seconds: "",
-      distance: "",
-      heartRateMin: "",
-      heartRateMax: "",
-      heartRateAvg: "",
-      cadence: "",
-      power: "",
-    });
-
-    if (sessionType === "Multi-Sport") {
-      return;
+    if (sessionType !== "Multi-Sport") {
+      setActivity({
+        sportType: sessionType !== "Multi-Sport" ? sessionType : "",
+        hours: "",
+        minutes: "",
+        seconds: "",
+        distance: "",
+        heartRateMin: "",
+        heartRateMax: "",
+        heartRateAvg: "",
+        cadence: "",
+        power: "",
+      });
+  
+      onClose();
     }
-    onClose();
   };
-
+  
   return (
     <form className="activity-form" onSubmit={handleSubmit}>
       {sessionType === "Multi-Sport" && (

@@ -1,1 +1,0 @@
-{"data":{"login":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZW1haWwiOiJ1Ym9sdEBnbWFpbC5jb20iLCJpYXQiOjE3NDI0NTA3NTUsImV4cCI6MTc0MjQ1NDM1NX0.TtUql1tKFrlNog9NOssctL6Xi6P3x7xHaeH55bQgrMI","user":{"id":"4","name":"Usain Bolt","email":"ubolt@gmail.com","__typename":"User"},"__typename":"AuthPayload"}}}

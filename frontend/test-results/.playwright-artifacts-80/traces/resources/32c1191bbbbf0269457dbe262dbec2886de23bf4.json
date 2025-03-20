@@ -1,1 +1,0 @@
-{"errors":[{"message":"Login failed: Invalid credentials","locations":[{"line":2,"column":3}],"path":["login"],"extensions":{"code":"INTERNAL_SERVER_ERROR"}}],"data":{"login":null}}

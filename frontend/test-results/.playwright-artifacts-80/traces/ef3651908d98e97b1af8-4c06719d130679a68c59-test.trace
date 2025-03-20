@@ -1,0 +1,35 @@
+{"version":7,"type":"context-options","origin":"testRunner","browserName":"","options":{},"platform":"win32","wallTime":1742450757774,"monotonicTime":5529.356,"sdkLanguage":"javascript"}
+{"type":"before","callId":"hook@1","startTime":5534.623,"class":"Test","method":"step","apiName":"Before Hooks","params":{},"stack":[]}
+{"type":"before","callId":"fixture@2","parentId":"hook@1","startTime":5536.666,"class":"Test","method":"step","apiName":"fixture: context","params":{},"stack":[]}
+{"type":"before","callId":"pw:api@3","parentId":"fixture@2","startTime":5537.321,"class":"Test","method":"step","apiName":"browser.newContext","params":{"acceptDownloads":"accept","bypassCSP":"false","colorScheme":"light","hasTouch":"false","ignoreHTTPSErrors":"false","isMobile":"false","javaScriptEnabled":"true","locale":"en-US","offline":"false","viewport":"Object","baseURL":"http://localhost:3000","serviceWorkers":"allow","noDefaultViewport":"false","extraHTTPHeaders":"undefined","storageState":"undefined","recordHar":"undefined","reducedMotion":"undefined","forcedColors":"undefined","contrast":"undefined","clientCertificates":"undefined"},"stack":[]}
+{"type":"after","callId":"pw:api@3","endTime":5542.327,"annotations":[]}
+{"type":"after","callId":"fixture@2","endTime":5546.668,"annotations":[]}
+{"type":"before","callId":"fixture@4","parentId":"hook@1","startTime":5547.366,"class":"Test","method":"step","apiName":"fixture: page","params":{},"stack":[]}
+{"type":"before","callId":"pw:api@5","parentId":"fixture@4","startTime":5549.168,"class":"Test","method":"step","apiName":"browserContext.newPage","params":{},"stack":[]}
+{"type":"after","callId":"pw:api@5","endTime":5662.634,"annotations":[]}
+{"type":"after","callId":"fixture@4","endTime":5662.846,"annotations":[]}
+{"type":"after","callId":"hook@1","endTime":5662.935,"annotations":[]}
+{"type":"before","callId":"pw:api@6","startTime":5665.013,"class":"Test","method":"step","apiName":"page.goto","params":{"url":"http://localhost:3000/signup","waitUntil":"load"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\1 - auth.spec.ts","line":36,"column":16}]}
+{"type":"after","callId":"pw:api@6","endTime":6658.448,"annotations":[]}
+{"type":"before","callId":"pw:api@7","startTime":6659.708,"class":"Test","method":"step","apiName":"page.fill","params":{"selector":"input[name=\"name\"]","value":"New User"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\1 - auth.spec.ts","line":38,"column":16}]}
+{"type":"after","callId":"pw:api@7","endTime":6705.662,"annotations":[]}
+{"type":"before","callId":"pw:api@8","startTime":6707.161,"class":"Test","method":"step","apiName":"page.fill","params":{"selector":"input[name=\"email\"]","value":"user1742450753395@example.com"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\1 - auth.spec.ts","line":39,"column":16}]}
+{"type":"after","callId":"pw:api@8","endTime":6730.232,"annotations":[]}
+{"type":"before","callId":"pw:api@9","startTime":6731.874,"class":"Test","method":"step","apiName":"page.fill","params":{"selector":"input[name=\"password\"]","value":"newpassword123"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\1 - auth.spec.ts","line":40,"column":16}]}
+{"type":"after","callId":"pw:api@9","endTime":6754.947,"annotations":[]}
+{"type":"before","callId":"expect@10","startTime":6757.077,"class":"Test","method":"step","apiName":"expect.not.toBeDisabled","params":{},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\1 - auth.spec.ts","line":43,"column":36}]}
+{"type":"after","callId":"expect@10","endTime":6775.784,"annotations":[]}
+{"type":"before","callId":"pw:api@11","startTime":6778.053,"class":"Test","method":"step","apiName":"locator.click","params":{"selector":"button >> internal:has-text=\"Signup\"i","strict":"true"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\1 - auth.spec.ts","line":45,"column":24}]}
+{"type":"after","callId":"pw:api@11","endTime":6910.947,"annotations":[]}
+{"type":"before","callId":"pw:api@12","startTime":6915.93,"class":"Test","method":"step","apiName":"page.waitForFunction","params":{"timeout":"10000","pollingInterval":"undefined","expression":"() => window.location.pathname === '/login'","isFunction":"true","arg":"Object"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\1 - auth.spec.ts","line":47,"column":16}]}
+{"type":"after","callId":"pw:api@12","endTime":7283.316,"annotations":[]}
+{"type":"before","callId":"expect@13","startTime":7284.731,"class":"Test","method":"step","apiName":"expect.toHaveURL","params":{"expected":"Object"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\1 - auth.spec.ts","line":49,"column":24}]}
+{"type":"after","callId":"expect@13","endTime":7297.877,"annotations":[]}
+{"type":"before","callId":"hook@14","startTime":7298.451,"class":"Test","method":"step","apiName":"After Hooks","params":{},"stack":[]}
+{"type":"before","callId":"fixture@15","parentId":"hook@14","startTime":7298.983,"class":"Test","method":"step","apiName":"fixture: page","params":{},"stack":[]}
+{"type":"after","callId":"fixture@15","endTime":7299.076,"annotations":[]}
+{"type":"before","callId":"fixture@16","parentId":"hook@14","startTime":7299.317,"class":"Test","method":"step","apiName":"fixture: context","params":{},"stack":[]}
+{"type":"after","callId":"fixture@16","endTime":7299.428,"annotations":[]}
+{"type":"after","callId":"hook@14","endTime":7433.505,"annotations":[]}
+{"type":"before","callId":"_attach@1","startTime":7595.656,"class":"Test","method":"step","apiName":"_attach \"trace\"","params":{},"stack":[]}
+{"type":"after","callId":"_attach@1","endTime":7595.771,"attachments":[]}

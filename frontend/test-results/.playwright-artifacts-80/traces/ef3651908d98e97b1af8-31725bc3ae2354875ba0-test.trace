@@ -1,0 +1,31 @@
+{"version":7,"type":"context-options","origin":"testRunner","browserName":"","options":{},"platform":"win32","wallTime":1742450756127,"monotonicTime":3881.633,"sdkLanguage":"javascript"}
+{"type":"before","callId":"hook@1","startTime":3888.547,"class":"Test","method":"step","apiName":"Before Hooks","params":{},"stack":[]}
+{"type":"before","callId":"fixture@2","parentId":"hook@1","startTime":3891.462,"class":"Test","method":"step","apiName":"fixture: context","params":{},"stack":[]}
+{"type":"before","callId":"pw:api@3","parentId":"fixture@2","startTime":3892.65,"class":"Test","method":"step","apiName":"browser.newContext","params":{"acceptDownloads":"accept","bypassCSP":"false","colorScheme":"light","hasTouch":"false","ignoreHTTPSErrors":"false","isMobile":"false","javaScriptEnabled":"true","locale":"en-US","offline":"false","viewport":"Object","baseURL":"http://localhost:3000","serviceWorkers":"allow","noDefaultViewport":"false","extraHTTPHeaders":"undefined","storageState":"undefined","recordHar":"undefined","reducedMotion":"undefined","forcedColors":"undefined","contrast":"undefined","clientCertificates":"undefined"},"stack":[]}
+{"type":"after","callId":"pw:api@3","endTime":3900.805,"annotations":[]}
+{"type":"after","callId":"fixture@2","endTime":3914.363,"annotations":[]}
+{"type":"before","callId":"fixture@4","parentId":"hook@1","startTime":3915.377,"class":"Test","method":"step","apiName":"fixture: page","params":{},"stack":[]}
+{"type":"before","callId":"pw:api@5","parentId":"fixture@4","startTime":3917.894,"class":"Test","method":"step","apiName":"browserContext.newPage","params":{},"stack":[]}
+{"type":"after","callId":"pw:api@5","endTime":4035.135,"annotations":[]}
+{"type":"after","callId":"fixture@4","endTime":4035.398,"annotations":[]}
+{"type":"after","callId":"hook@1","endTime":4035.514,"annotations":[]}
+{"type":"before","callId":"pw:api@6","startTime":4037.956,"class":"Test","method":"step","apiName":"page.goto","params":{"url":"http://localhost:3000/login","waitUntil":"load"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\1 - auth.spec.ts","line":22,"column":16}]}
+{"type":"after","callId":"pw:api@6","endTime":4970.059,"annotations":[]}
+{"type":"before","callId":"pw:api@7","startTime":4972.006,"class":"Test","method":"step","apiName":"page.fill","params":{"selector":"input[name=\"email\"]","value":"wronguser@example.com"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\1 - auth.spec.ts","line":24,"column":16}]}
+{"type":"after","callId":"pw:api@7","endTime":5018.174,"annotations":[]}
+{"type":"before","callId":"pw:api@8","startTime":5019.816,"class":"Test","method":"step","apiName":"page.fill","params":{"selector":"input[name=\"password\"]","value":"wrongpassword"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\1 - auth.spec.ts","line":25,"column":16}]}
+{"type":"after","callId":"pw:api@8","endTime":5046.167,"annotations":[]}
+{"type":"before","callId":"pw:api@9","startTime":5047.332,"class":"Test","method":"step","apiName":"page.click","params":{"selector":"button[type=\"submit\"]"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\1 - auth.spec.ts","line":27,"column":16}]}
+{"type":"after","callId":"pw:api@9","endTime":5111.227,"annotations":[]}
+{"type":"before","callId":"pw:api@10","startTime":5112.927,"class":"Test","method":"step","apiName":"page.waitForSelector","params":{"selector":".notification","timeout":"5000"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\1 - auth.spec.ts","line":29,"column":16}]}
+{"type":"after","callId":"pw:api@10","endTime":5241.591,"annotations":[]}
+{"type":"before","callId":"expect@11","startTime":5243.174,"class":"Test","method":"step","apiName":"expect.toHaveText","params":{"expected":"Object"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\1 - auth.spec.ts","line":30,"column":49}]}
+{"type":"after","callId":"expect@11","endTime":5258.524,"annotations":[]}
+{"type":"before","callId":"hook@12","startTime":5259.026,"class":"Test","method":"step","apiName":"After Hooks","params":{},"stack":[]}
+{"type":"before","callId":"fixture@13","parentId":"hook@12","startTime":5259.7,"class":"Test","method":"step","apiName":"fixture: page","params":{},"stack":[]}
+{"type":"after","callId":"fixture@13","endTime":5259.836,"annotations":[]}
+{"type":"before","callId":"fixture@14","parentId":"hook@12","startTime":5260.299,"class":"Test","method":"step","apiName":"fixture: context","params":{},"stack":[]}
+{"type":"after","callId":"fixture@14","endTime":5260.448,"annotations":[]}
+{"type":"after","callId":"hook@12","endTime":5385.525,"annotations":[]}
+{"type":"before","callId":"_attach@1","startTime":5528.637,"class":"Test","method":"step","apiName":"_attach \"trace\"","params":{},"stack":[]}
+{"type":"after","callId":"_attach@1","endTime":5528.808,"attachments":[]}

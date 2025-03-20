@@ -1,0 +1,29 @@
+{"version":7,"type":"context-options","origin":"testRunner","browserName":"","options":{},"platform":"win32","wallTime":1742450761494,"monotonicTime":9248.952,"sdkLanguage":"javascript"}
+{"type":"before","callId":"hook@1","startTime":9257.206,"class":"Test","method":"step","apiName":"Before Hooks","params":{},"stack":[]}
+{"type":"before","callId":"fixture@2","parentId":"hook@1","startTime":9262.912,"class":"Test","method":"step","apiName":"fixture: context","params":{},"stack":[]}
+{"type":"before","callId":"pw:api@3","parentId":"fixture@2","startTime":9264.309,"class":"Test","method":"step","apiName":"browser.newContext","params":{"acceptDownloads":"accept","bypassCSP":"false","colorScheme":"light","hasTouch":"false","ignoreHTTPSErrors":"false","isMobile":"false","javaScriptEnabled":"true","locale":"en-US","offline":"false","viewport":"Object","baseURL":"http://localhost:3000","serviceWorkers":"allow","noDefaultViewport":"false","extraHTTPHeaders":"undefined","storageState":"undefined","recordHar":"undefined","reducedMotion":"undefined","forcedColors":"undefined","contrast":"undefined","clientCertificates":"undefined"},"stack":[]}
+{"type":"after","callId":"pw:api@3","endTime":9275.822,"annotations":[]}
+{"type":"after","callId":"fixture@2","endTime":9282.736,"annotations":[]}
+{"type":"before","callId":"fixture@4","parentId":"hook@1","startTime":9283.689,"class":"Test","method":"step","apiName":"fixture: page","params":{},"stack":[]}
+{"type":"before","callId":"pw:api@5","parentId":"fixture@4","startTime":9285.837,"class":"Test","method":"step","apiName":"browserContext.newPage","params":{},"stack":[]}
+{"type":"after","callId":"pw:api@5","endTime":9633.859,"annotations":[]}
+{"type":"after","callId":"fixture@4","endTime":9634.445,"annotations":[]}
+{"type":"after","callId":"hook@1","endTime":9634.587,"annotations":[]}
+{"type":"before","callId":"pw:api@6","startTime":9638.358,"class":"Test","method":"step","apiName":"page.goto","params":{"url":"http://localhost:3000","waitUntil":"load"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\2 - landingpage.spec.ts","line":4,"column":14}]}
+{"type":"after","callId":"pw:api@6","endTime":10646.282,"annotations":[]}
+{"type":"before","callId":"expect@7","startTime":10648.534,"class":"Test","method":"step","apiName":"expect.toHaveText","params":{"expected":"Welcome to TriSwift"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\2 - landingpage.spec.ts","line":6,"column":36}]}
+{"type":"after","callId":"expect@7","endTime":10681.65,"annotations":[]}
+{"type":"before","callId":"expect@8","startTime":10682.816,"class":"Test","method":"step","apiName":"expect.toContainText","params":{"expected":"The ultimate fitness tracking app for triathletes."},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\2 - landingpage.spec.ts","line":8,"column":43}]}
+{"type":"after","callId":"expect@8","endTime":10693.664,"annotations":[]}
+{"type":"before","callId":"expect@9","startTime":10694.829,"class":"Test","method":"step","apiName":"expect.toBeVisible","params":{},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\2 - landingpage.spec.ts","line":10,"column":62}]}
+{"type":"after","callId":"expect@9","endTime":10706.823,"annotations":[]}
+{"type":"before","callId":"expect@10","startTime":10708.271,"class":"Test","method":"step","apiName":"expect.toBeVisible","params":{},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\2 - landingpage.spec.ts","line":11,"column":64}]}
+{"type":"after","callId":"expect@10","endTime":10718.929,"annotations":[]}
+{"type":"before","callId":"hook@11","startTime":10719.862,"class":"Test","method":"step","apiName":"After Hooks","params":{},"stack":[]}
+{"type":"before","callId":"fixture@12","parentId":"hook@11","startTime":10721.06,"class":"Test","method":"step","apiName":"fixture: page","params":{},"stack":[]}
+{"type":"after","callId":"fixture@12","endTime":10721.23,"annotations":[]}
+{"type":"before","callId":"fixture@13","parentId":"hook@11","startTime":10721.586,"class":"Test","method":"step","apiName":"fixture: context","params":{},"stack":[]}
+{"type":"after","callId":"fixture@13","endTime":10721.709,"annotations":[]}
+{"type":"after","callId":"hook@11","endTime":10876.669,"annotations":[]}
+{"type":"before","callId":"_attach@1","startTime":11043.138,"class":"Test","method":"step","apiName":"_attach \"trace\"","params":{},"stack":[]}
+{"type":"after","callId":"_attach@1","endTime":11043.31,"attachments":[]}

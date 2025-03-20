@@ -55,14 +55,9 @@ test.describe('Transition Management Tests', () => {
     await page.selectOption('select[name="sessionType"]', 'Multi-Sport');
     await page.fill('input[name="date"]', todayISO);
 
-    console.log("📡 Submitting session creation request...");
     await page.click('button[type="submit"]');
 
-    console.log("✅ Form submission triggered.");
-
-    console.log("🖱️ Clicking 'Next' to go to input form...");
-    await page.locator('button', { hasText: 'Next' }).click();
-
+    // Wait for activity form
     console.log("🔍 Waiting for Activity form...");
     await page.waitForSelector('form.activity-form', { timeout: 5000 });
 
@@ -72,20 +67,14 @@ test.describe('Transition Management Tests', () => {
     await page.fill('input[name="seconds"]', '0');
     await page.fill('input[name="distance"]', '5.00');
 
-    console.log("🖱️ Clicking 'Add Activity'...");
+    console.log("🖱️ Clicking 'Submit Activity'...");
     await page.click('button[type="submit"]');
-
-    console.log("⏳ Waiting for activity to be added...");
-    await page.waitForTimeout(3000);
-
-    console.log("🖱️ Clicking 'Add Transition' button...");
-    const addTransitionButton = page.locator('button', { hasText: 'Add Transition' });
-    await expect(addTransitionButton).toBeVisible();
-    await expect(addTransitionButton).toBeEnabled();
-    await addTransitionButton.click();
-
+    
+    // Wait for transition form
     console.log("🔍 Waiting for Transition form...");
     await page.waitForSelector('form.transition-form', { timeout: 5000 });
+    
+    console.log("✅ Transition form is now visible!");
 
     console.log("✍️ Filling transition form...");
     await page.selectOption('select[name="previousSport"]', 'Swim');
@@ -93,11 +82,14 @@ test.describe('Transition Management Tests', () => {
     await page.fill('input[name="minutes"]', '0');
     await page.fill('input[name="seconds"]', '45');
 
-    console.log("🖱️ Clicking 'Add Transition'...");
+    console.log("🖱️ Clicking 'Submit Transition'...");
     await page.click('button[type="submit"]');
 
     console.log("⏳ Waiting for transition to be added...");
     await page.waitForTimeout(3000);
+
+    console.log("🖱️ Clicking 'Save & Close'...");
+    await page.click('button[type="submit"]');
 
     console.log("📡 Fetching session ID from API...");
     let sessionApiResponse;

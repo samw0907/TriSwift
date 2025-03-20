@@ -1,0 +1,1 @@
+{"operationName":"Signup","variables":{"name":"Usain Bolt","email":"ubolt@gmail.com","password":"fastpassword"},"query":"mutation Signup($name: String!, $email: String!, $password: String!) {\n  createUser(input: {name: $name, email: $email, password: $password}) {\n    id\n    name\n    email\n    created_at\n    __typename\n  }\n}"}

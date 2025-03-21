@@ -1,9 +1,14 @@
+/// <reference types="vite/client" />
+
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
 const httpLink = createHttpLink({
-  uri: 'http://localhost:3001/graphql',
+  uri: import.meta.env.PROD
+    ? 'https://triswift-backend.fly.dev/graphql'
+    : 'http://localhost:3001/graphql',
 });
+
 
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem('token');

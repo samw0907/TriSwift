@@ -12,7 +12,7 @@ const userResolvers = {
       
           user: async (_, __, { user }) => {
             if (!user) throw new Error("Authentication required.");
-            return await User.findByPk(user.id, { include: Session, as: "sessions" });
+            return await User.findByPk(user.id, { include: Session, as: "Sessions" });
           },
     },
     Mutation: {

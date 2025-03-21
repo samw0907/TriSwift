@@ -4,9 +4,9 @@ import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
 const httpLink = createHttpLink({
-  uri: import.meta.env.PROD
-    ? 'https://triswift-backend.fly.dev/graphql'
-    : 'http://localhost:3001/graphql',
+  uri: process.env.NODE_ENV === 'production'
+  ? 'https://triswift-backend.fly.dev/graphql'
+  : 'http://localhost:3001/graphql',
 });
 
 

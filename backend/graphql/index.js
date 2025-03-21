@@ -31,7 +31,7 @@ const setupApolloServer = async (app) => {
   });
 
   await server.start();
-  server.applyMiddleware({ app });
+  server.applyMiddleware({ app, cors: false });
 
   console.log(`🚀 GraphQL Server running at http://localhost:3001/graphql`);
 };

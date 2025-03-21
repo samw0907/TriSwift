@@ -13,7 +13,11 @@ const userRoutes = require("./routes/users");
 const authRoutes = require("./routes/auth");
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:5173", "https://triswift-frontend.fly.dev"],
+  credentials: true,
+}));
+
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);

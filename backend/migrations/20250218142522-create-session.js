@@ -4,7 +4,7 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     console.log("Running sessions migration...");
 
-    await queryInterface.createTable("sessions", {
+    await queryInterface.createTable("Sessions", {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -14,7 +14,7 @@ module.exports = {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "users",
+          model: { tableName: "Users" },
           key: "id",
         },
         onDelete: "CASCADE",
@@ -64,6 +64,6 @@ module.exports = {
 
   down: async (queryInterface) => {
     console.log("Dropping sessions table...");
-    await queryInterface.dropTable("sessions");
+    await queryInterface.dropTable("Sessions");
   },
 };

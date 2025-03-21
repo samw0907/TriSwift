@@ -13,7 +13,7 @@ PersonalRecord.init({
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: "Users",
+      model: { tableName: 'Users' },
       key: "id"
     },
     onDelete: "CASCADE"
@@ -22,7 +22,7 @@ PersonalRecord.init({
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: "Sessions",
+      model: { tableName: 'Sessions' },
       key: "id"
     },
     onDelete: "CASCADE"
@@ -31,7 +31,7 @@ PersonalRecord.init({
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: "SessionActivities",
+      model: { tableName: 'SessionActivities' },
       key: "id"
     },
     onDelete: "CASCADE"

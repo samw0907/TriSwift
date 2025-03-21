@@ -13,7 +13,7 @@ Session.init({
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Users',
+      model: { tableName: 'Users' },
       key: 'id'
     },
     onDelete: 'CASCADE'

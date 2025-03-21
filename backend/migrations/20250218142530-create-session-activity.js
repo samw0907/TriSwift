@@ -2,7 +2,7 @@ const { DataTypes } = require("sequelize");
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("session_activities", {
+    await queryInterface.createTable("SessionActivities", {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -12,7 +12,7 @@ module.exports = {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "users",
+          model: { tableName: "Users" },
           key: "id",
         },
         onDelete: "CASCADE",
@@ -21,7 +21,7 @@ module.exports = {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "sessions",
+          model: { tableName: "Sessions" },
           key: "id",
         },
         onDelete: "CASCADE",
@@ -67,6 +67,6 @@ module.exports = {
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable("session_activities");
+    await queryInterface.dropTable("SessionActivities");
   },
 };

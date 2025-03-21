@@ -13,7 +13,7 @@ Transition.init({
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Sessions',
+      model: { tableName: 'Sessions' },
       key: 'id'
     },
     onDelete: 'CASCADE'

@@ -13,7 +13,7 @@ SessionActivity.init({
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: { tableName: 'Users' },
+      model: 'Users',
       key: 'id'
     },
     onDelete: 'CASCADE'
@@ -22,7 +22,7 @@ SessionActivity.init({
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: { tableName: 'Sessions' },
+      model: 'Sessions',
       key: 'id'
     },
     onDelete: 'CASCADE'

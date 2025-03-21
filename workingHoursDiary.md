@@ -52,7 +52,7 @@ Date            Hours    Topic
                 1        Updating frontend tests
 20.03.2025      6.5      E2E testing, updates to frontend
                 2        Deployment set up with Fly
-21.03.2025
-                (35)
+21.03.2025      8        Deployment set up with Fly, fixing db migration issues
+                (43)
                 
-TOTAL HOURS     196.5    
+TOTAL HOURS     204.5    

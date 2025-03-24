@@ -11,6 +11,7 @@ interface Activity {
   sportType: string;
   duration: number;
   distance: number;
+  created_at: string;
   heartRateMin?: number;
   heartRateMax?: number;
   heartRateAvg?: number;
@@ -23,6 +24,7 @@ interface Transition {
   previousSport: string;
   nextSport: string;
   transitionTime: number;
+  created_at: string;
   comments?: string;
 }
 
@@ -97,34 +99,26 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
     }
   };
 
-  const activities = session.activities ?? [];
-  const transitions = session.transitions ?? [];
-  const seenActivityIds = new Set<string>();
+  const activities = [...(session.activities ?? [])].sort(
+    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  );
+  const transitions = [...(session.transitions ?? [])].sort(
+    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  );
   
-  let orderedItems: (Activity | Transition)[] = [];
-  let remainingTransitions = [...transitions];
+  const orderedItems: (Activity | Transition)[] = [];
+
+  activities.forEach((activity) => {
+    orderedItems.push(activity);
   
-  let currentActivity: Activity | undefined = activities.length > 0 ? activities[0] : undefined;
-  
-  while (currentActivity && !seenActivityIds.has(currentActivity.id)) {
-    orderedItems.push(currentActivity);
-    seenActivityIds.add(currentActivity.id);
-  
-    const { transition, nextActivity } = getNextActivity(
-      currentActivity,
-      session,
-      remainingTransitions
+    const matchingTransition = transitions.find(
+      (t) => t.previousSport === activity.sportType
     );
   
-    if (transition) {
-      orderedItems.push(transition);
-      remainingTransitions = remainingTransitions.filter((t) => t.id !== transition.id);
+    if (matchingTransition) {
+      orderedItems.push(matchingTransition);
     }
-  
-    currentActivity = nextActivity && !seenActivityIds.has(nextActivity.id)
-      ? nextActivity
-      : undefined;
-  }  
+  });  
 
   return (
     <div className="session-details">

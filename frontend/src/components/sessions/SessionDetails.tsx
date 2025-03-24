@@ -99,35 +99,32 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
 
   const activities = session.activities ?? [];
   const transitions = session.transitions ?? [];
-
+  const seenActivityIds = new Set<string>();
+  
   let orderedItems: (Activity | Transition)[] = [];
   let remainingTransitions = [...transitions];
-
-  if (activities.length === 0) {
-    console.warn("⚠️ No activities found for session:", session.id);
-  }
-
+  
   let currentActivity: Activity | undefined = activities.length > 0 ? activities[0] : undefined;
-
-  while (currentActivity) {
-    if (currentActivity) {
-      orderedItems.push(currentActivity);
-    }
-
+  
+  while (currentActivity && !seenActivityIds.has(currentActivity.id)) {
+    orderedItems.push(currentActivity);
+    seenActivityIds.add(currentActivity.id);
+  
     const { transition, nextActivity } = getNextActivity(
       currentActivity,
       session,
       remainingTransitions
     );
-
+  
     if (transition) {
-      if (transitions.some((t) => t.id === transition.id)) {
-        orderedItems.push(transition);
-      }
+      orderedItems.push(transition);
+      remainingTransitions = remainingTransitions.filter((t) => t.id !== transition.id);
     }
-
-    currentActivity = nextActivity ?? undefined;
-  }
+  
+    currentActivity = nextActivity && !seenActivityIds.has(nextActivity.id)
+      ? nextActivity
+      : undefined;
+  }  
 
   return (
     <div className="session-details">

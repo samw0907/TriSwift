@@ -69,8 +69,10 @@ const activityResolvers = {
               const updatedTotalDuration = 
                 (await SessionActivity.sum("duration", { where: { session_id: sessionId } })) || 0;
           
-              const updatedTotalDistance = 
+              const rawTotalDistance =
                 (await SessionActivity.sum("distance", { where: { session_id: sessionId } })) || 0;
+
+              const updatedTotalDistance = parseFloat(rawTotalDistance);     
           
               const updatedTotalTransitionTime = session.is_multi_sport
                 ? (await Transition.sum("transition_time", { where: { session_id: sessionId } })) || 0
@@ -148,9 +150,11 @@ const activityResolvers = {
               );
           
               const updatedTotalDistance = session.activities.reduce(
-                (total, act) => total + act.distance,
+                (total, act) =>
+                  total + (typeof act.distance === 'number' ? act.distance : parseFloat(act.distance)),
                 0
               );
+                            
           
               await session.update({
                 total_duration: updatedTotalDuration,

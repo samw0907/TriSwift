@@ -69,10 +69,8 @@ const activityResolvers = {
               const updatedTotalDuration = 
                 (await SessionActivity.sum("duration", { where: { session_id: sessionId } })) || 0;
           
-              const rawTotalDistance =
+              const updatedTotalDistance = 
                 (await SessionActivity.sum("distance", { where: { session_id: sessionId } })) || 0;
-
-              const updatedTotalDistance = parseFloat(rawTotalDistance);     
           
               const updatedTotalTransitionTime = session.is_multi_sport
                 ? (await Transition.sum("transition_time", { where: { session_id: sessionId } })) || 0
@@ -124,10 +122,7 @@ const activityResolvers = {
               const updatedValues = {
                 sport_type: input.sportType?.trim() ?? activity.sport_type,
                 duration: input.duration ?? activity.duration,
-                distance:
-                input.distance !== undefined
-                  ? parseFloat(input.distance)
-                  : activity.distance,
+                distance: input.distance ?? activity.distance,
                 heart_rate_min: input.heartRateMin ?? activity.heart_rate_min,
                 heart_rate_max: input.heartRateMax ?? activity.heart_rate_max,
                 heart_rate_avg: input.heartRateAvg ?? activity.heart_rate_avg,
@@ -150,11 +145,9 @@ const activityResolvers = {
               );
           
               const updatedTotalDistance = session.activities.reduce(
-                (total, act) =>
-                  total + (typeof act.distance === 'number' ? act.distance : parseFloat(act.distance)),
+                (total, act) => total + act.distance,
                 0
               );
-                            
           
               await session.update({
                 total_duration: updatedTotalDuration,

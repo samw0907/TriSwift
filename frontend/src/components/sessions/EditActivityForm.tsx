@@ -17,8 +17,8 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onClose, 
     seconds: (activity.duration % 60).toString(),
     distance:
       activity.sportType === "Swim"
-        ? String(activity.distance * 1000)
-        : String(activity.distance),
+        ? (activity.distance * 1000).toString()
+        : activity.distance.toString(),
     heartRateMin: activity.heartRateMin ? activity.heartRateMin.toString() : "",
     heartRateMax: activity.heartRateMax ? activity.heartRateMax.toString() : "",
     heartRateAvg: activity.heartRateAvg ? activity.heartRateAvg.toString() : "",
@@ -36,28 +36,21 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onClose, 
       onClose();
     },
   });
-  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
-  const parseNumber = (val: string): number | null =>
-    val.trim() === "" || isNaN(Number(val)) ? null : Number(val);
+  
+  const sanitizeInput = (value: string) => {
+    return value.trim() === "" || isNaN(Number(value)) ? null : parseInt(value, 10);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const duration =
-      (parseInt(formData.hours) || 0) * 3600 +
-      (parseInt(formData.minutes) || 0) * 60 +
-      (parseInt(formData.seconds) || 0);
-
-    const rawDistance = parseNumber(formData.distance) || 0;
-    const distance = formData.sportType === "Swim" ? rawDistance / 1000 : rawDistance;
+    const totalSeconds = 
+      (formData.hours.trim() === "" ? 0 : parseInt(formData.hours, 10) * 3600) +
+      (formData.minutes.trim() === "" ? 0 : parseInt(formData.minutes, 10) * 60) +
+      (formData.seconds.trim() === "" ? 0 : parseInt(formData.seconds, 10));
       
     try {
       await updateActivity({
@@ -65,13 +58,16 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onClose, 
           id: activity.id,
           input: {
             sportType: formData.sportType,
-            duration,
-            distance,
-            heartRateMin: parseNumber(formData.heartRateMin),
-            heartRateMax: parseNumber(formData.heartRateMax),
-            heartRateAvg: parseNumber(formData.heartRateAvg),
-            cadence: parseNumber(formData.cadence),
-            power: parseNumber(formData.power),
+            duration: totalSeconds,
+            distance:
+              formData.sportType === "Swim"
+                ? (parseFloat(formData.distance) || 0) / 1000
+                : parseFloat(formData.distance) || 0,
+            heartRateMin: sanitizeInput(formData.heartRateMin),
+            heartRateMax: sanitizeInput(formData.heartRateMax),
+            heartRateAvg: sanitizeInput(formData.heartRateAvg),
+            cadence: sanitizeInput(formData.cadence),
+            power: sanitizeInput(formData.power),
           },
         },
       });
@@ -104,7 +100,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onClose, 
       </div>
 
       <label htmlFor="distance">Distance ({formData.sportType === "Swim" ? "m" : "km"}):</label>
-      <input id="distance" type="number" name="distance" value={formData.distance} onChange={handleChange} step="any" />
+      <input id="distance" type="number" name="distance" value={formData.distance} onChange={handleChange} />
 
       <label  htmlFor="heartRateMin">Heart Rate Min:</label>
       <input id="heartRateMin" type="number" name="heartRateMin" value={formData.heartRateMin} onChange={handleChange} />

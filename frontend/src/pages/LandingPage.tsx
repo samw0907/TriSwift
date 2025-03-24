@@ -39,8 +39,8 @@ const LandingPage: React.FC = () => {
         <h3>Pacing Calculator</h3>
         <p>Calculate the exact paces required to hit your target race times. Know what it takes and plan your training accordingly.</p>
       </div>
-      <p className="home-summary">Whether you're training for your next triathlon, aiming for a new PR, or just staying active, TriSwift keeps your performance on track—and your motivation high.</p>
     </section>
+    <p className="home-summary">Whether you're training for your next triathlon, aiming for a new PR, or just staying active, TriSwift keeps your performance on track—and your motivation high.</p>
     </div>
   );
 };

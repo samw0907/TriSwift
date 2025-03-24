@@ -62,9 +62,11 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
   
         if (isNaN(distance)) return acc;
   
-        return session.sessionType === "Swim"
-          ? acc + distance * 1000
-          : acc + distance;
+        const distanceKm = activity.sportType === "Swim"
+          ? distance / 1000
+          : distance;
+  
+        return acc + distanceKm;
       }, 0);
     }
   

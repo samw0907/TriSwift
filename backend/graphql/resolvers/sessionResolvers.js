@@ -46,12 +46,14 @@ const sessionResolvers = {
           const totalDuration = activities.reduce((sum, activity) => sum + (activity.duration || 0), 0)
             + (session.is_multi_sport ? transitions.reduce((sum, t) => sum + (t.transition_time || 0), 0) : 0);
       
-            const totalDistance = activities.reduce((sum, activity) => {
-              const correctedDistance =
-                activity.sportType === "Swim" ? activity.distance / 1000 : activity.distance;
-              return sum + correctedDistance;
-            }, 0);
-      
+          const totalDistance = activities.reduce((sum, activity) => {
+            const raw = typeof activity.distance === 'number' ? activity.distance : parseFloat(activity.distance);
+            const distance = isNaN(raw) ? 0 : raw;
+            
+            const correctedDistance = activity.sportType === "Swim" ? distance / 1000 : distance;
+            return sum + correctedDistance;
+          }, 0);
+            
           return {
             id: session.id,
             userId: session.user_id,
@@ -89,8 +91,12 @@ const sessionResolvers = {
         const totalDuration = activities.reduce((sum, activity) => sum + (activity.duration || 0), 0)
           + (session.is_multi_sport ? transitions.reduce((sum, t) => sum + (t.transition_time || 0), 0) : 0);
   
-        const totalDistance = activities.reduce((sum, activity) => sum + (activity.distance || 0), 0);
-  
+        const totalDistance = activities.reduce((sum, activity) => {
+          const raw = typeof activity.distance === 'number' ? activity.distance : parseFloat(activity.distance);
+          const distance = isNaN(raw) ? 0 : raw;
+          return sum + distance;
+        }, 0);
+          
         return {
           id: session.id,
           userId: session.user_id,
@@ -181,8 +187,14 @@ const sessionResolvers = {
           const totalDuration = activities.reduce((sum, act) => sum + (act.duration || 0), 0) +
             (session.is_multi_sport ? transitions.reduce((sum, trans) => sum + (trans.transition_time || 0), 0) : 0);
   
-          const totalDistance = activities.reduce((sum, act) => sum + (act.distance || 0), 0);
-  
+          const totalDistance = activities.reduce((sum, activity) => {
+            const raw = typeof activity.distance === 'number' ? activity.distance : parseFloat(activity.distance);
+            const distance = isNaN(raw) ? 0 : raw;
+            
+            const correctedDistance = activity.sportType === "Swim" ? distance / 1000 : distance;
+            return sum + correctedDistance;
+          }, 0);
+            
           await session.update({
             session_type: input.sessionType ?? session.session_type,
             date: input.date ? new Date(input.date) : session.date,

@@ -143,11 +143,12 @@ const activityResolvers = {
                 (total, act) => total + act.duration,
                 0
               );
-          
-              const updatedTotalDistance = session.activities.reduce(
-                (total, act) => total + act.distance,
-                0
-              );
+              
+              const updatedTotalDistance = session.activities.reduce((total, act) => {
+                const raw = typeof act.distance === 'number' ? act.distance : parseFloat(act.distance);
+                const distance = isNaN(raw) ? 0 : raw;
+                return total + distance;
+              }, 0);
           
               await session.update({
                 total_duration: updatedTotalDuration,

@@ -55,4 +55,5 @@ Date            Hours    Topic
 21.03.2025      8        Deployment set up with Fly, fixing db migration issues
                 (43)
                 
+24.03.2025
 TOTAL HOURS     204.5    

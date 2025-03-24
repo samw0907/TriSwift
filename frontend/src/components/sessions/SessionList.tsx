@@ -56,6 +56,7 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
   const calculateTotalDistance = (session: any) => {
     if (session.activities && session.activities.length > 0) {
       return session.activities.reduce((acc: number, activity: any) => {
+        const distance = parseFloat(activity.distance);
         if (session.sessionType === "Swim") {
           return acc + activity.distance * 1000;
         } else {
@@ -63,7 +64,7 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
         }
       }, 0);
     }
-    return session.totalDistance || 0;
+    return typeof session.totalDistance === 'number' ? session.totalDistance : parseFloat(session.totalDistance) || 0;
   };
 
   const filteredSessions = sessions.filter((session) => {

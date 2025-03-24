@@ -122,7 +122,10 @@ const activityResolvers = {
               const updatedValues = {
                 sport_type: input.sportType?.trim() ?? activity.sport_type,
                 duration: input.duration ?? activity.duration,
-                distance: input.distance ?? activity.distance,
+                distance:
+                input.distance !== undefined
+                  ? parseFloat(input.distance)
+                  : activity.distance,
                 heart_rate_min: input.heartRateMin ?? activity.heart_rate_min,
                 heart_rate_max: input.heartRateMax ?? activity.heart_rate_max,
                 heart_rate_avg: input.heartRateAvg ?? activity.heart_rate_avg,

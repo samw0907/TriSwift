@@ -15,7 +15,10 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onClose, 
     hours: Math.floor(activity.duration / 3600).toString(),
     minutes: Math.floor((activity.duration % 3600) / 60).toString(),
     seconds: (activity.duration % 60).toString(),
-    distance: activity.distance.toString(),
+    distance:
+      activity.sportType === "Swim"
+        ? (activity.distance * 1000).toString()
+        : activity.distance.toString(),
     heartRateMin: activity.heartRateMin ? activity.heartRateMin.toString() : "",
     heartRateMax: activity.heartRateMax ? activity.heartRateMax.toString() : "",
     heartRateAvg: activity.heartRateAvg ? activity.heartRateAvg.toString() : "",
@@ -56,7 +59,10 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onClose, 
           input: {
             sportType: formData.sportType,
             duration: totalSeconds,
-            distance: parseFloat(formData.distance) || 0,
+            distance:
+              formData.sportType === "Swim"
+                ? (parseFloat(formData.distance) || 0) / 1000
+                : parseFloat(formData.distance) || 0,
             heartRateMin: sanitizeInput(formData.heartRateMin),
             heartRateMax: sanitizeInput(formData.heartRateMax),
             heartRateAvg: sanitizeInput(formData.heartRateAvg),
@@ -93,7 +99,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onClose, 
         <input  id="seconds" type="number" name="seconds" value={formData.seconds} onChange={handleChange} placeholder="Secs" min="0" />
       </div>
 
-      <label htmlFor="distance">Distance (km or m for Swim):</label>
+      <label htmlFor="distance">Distance ({formData.sportType === "Swim" ? "m" : "km"}):</label>
       <input id="distance" type="number" name="distance" value={formData.distance} onChange={handleChange} />
 
       <label  htmlFor="heartRateMin">Heart Rate Min:</label>

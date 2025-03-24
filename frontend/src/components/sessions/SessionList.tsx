@@ -62,11 +62,7 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
   
         if (isNaN(distance)) return acc;
   
-        const distanceKm = activity.sportType === "Swim"
-          ? distance / 1000
-          : distance;
-  
-        return acc + distanceKm;
+        return acc + distance;
       }, 0);
     }
   
@@ -82,17 +78,22 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
     const sessionDate = new Date(session.date);
     const sessionDistance = calculateTotalDistance(session);
 
-    const convertedDistance =
-    distanceUnit === "m" ? sessionDistance * 1000 : sessionDistance;
+    const minDistanceKm = minDistance !== ""
+    ? parseFloat(minDistance) / (distanceUnit === "m" ? 1000 : 1)
+    : null;
+  
+    const maxDistanceKm = maxDistance !== ""
+    ? parseFloat(maxDistance) / (distanceUnit === "m" ? 1000 : 1)
+    : null;
+  
+    const minPass = minDistanceKm !== null ? sessionDistance >= minDistanceKm : true;
+    const maxPass = maxDistanceKm !== null ? sessionDistance <= maxDistanceKm : true;
 
     const typeFilterPass =
       selectedFilters.length === 0 || selectedFilters.includes(session.sessionType);
 
     const fromPass = fromDate ? sessionDate >= new Date(fromDate) : true;
     const toPass = toDate ? sessionDate <= new Date(toDate) : true;
-
-    const minPass = minDistance !== "" ? convertedDistance >= parseFloat(minDistance): true;
-    const maxPass = maxDistance !== "" ? convertedDistance <= parseFloat(maxDistance): true;
 
     return typeFilterPass && fromPass && toPass && minPass && maxPass;
   })

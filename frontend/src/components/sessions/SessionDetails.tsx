@@ -99,26 +99,13 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
     }
   };
 
-  const activities = [...(session.activities ?? [])].sort(
+  const orderedItems: (Activity | Transition)[] = [
+    ...(session.activities ?? []),
+    ...(session.transitions ?? [])
+  ].sort(
     (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
   );
-  const transitions = [...(session.transitions ?? [])].sort(
-    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-  );
-  
-  const orderedItems: (Activity | Transition)[] = [];
 
-  activities.forEach((activity) => {
-    orderedItems.push(activity);
-  
-    const matchingTransition = transitions.find(
-      (t) => t.previousSport === activity.sportType
-    );
-  
-    if (matchingTransition) {
-      orderedItems.push(matchingTransition);
-    }
-  });  
 
   return (
     <div className="session-details">

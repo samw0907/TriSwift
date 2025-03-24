@@ -72,7 +72,6 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
   
     return isNaN(fallback) ? 0 : fallback;
   };
-  
 
   const filteredSessions = sessions.filter((session) => {
     const sessionDate = new Date(session.date);
@@ -254,7 +253,7 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
               <p className="session-date">{new Date(session.date).toLocaleDateString()}</p>
               <p className="session-distance">
                 {session.sessionType === "Swim"
-                  ? `${calculateTotalDistance(session).toFixed(0)} m`
+                  ? `${(calculateTotalDistance(session) * 1000).toFixed(0)} m`
                   : `${calculateTotalDistance(session).toFixed(2)} km`}
               </p>
             </div>

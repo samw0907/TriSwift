@@ -55,11 +55,12 @@ Date            Hours    Topic
 21.03.2025      8        Deployment set up with Fly, fixing db migration issues
                 (43)
                 
-24.03.2025      8.5      Frontend, fix distance conversion issues, filter issues
-25.03.2025
-26.03.2025
-27.03.2025
-28.03.2025
+24.03.2025      7      Frontend, fix distance conversion issues, filter issues
+                1.5    Frontend visual changes + CSS
+25.03.2025      
+26.03.2025      
+27.03.2025      
+28.03.2025      
                 (8.5)
                 
-TOTAL HOURS     204.5    
+TOTAL HOURS     213    

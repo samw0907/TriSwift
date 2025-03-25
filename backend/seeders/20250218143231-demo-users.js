@@ -5,14 +5,14 @@ module.exports = {
     await User.bulkCreate([
       {
         id: 1001,
-        name: 'Fast Man',
-        email: 'fastman@example.com',
+        name: 'Seed User',
+        email: 'seeduser@example.com',
         password_hash: 'hashedpassword123',
       },
       {
         id: 1002,
-        name: 'Fast Woman',
-        email: 'fastwoman@example.com',
+        name: 'Other Seed',
+        email: 'otherseed@example.com',
         password_hash: 'hashedpassword123',
       }
     ], { validate: true });

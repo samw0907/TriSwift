@@ -54,6 +54,10 @@ jobs:
         working-directory: backend
         run: npx sequelize-cli db:migrate
 
+      - name: 🌱 Run database seeders
+        working-directory: backend
+        run: npx sequelize-cli db:seed:all
+
       - name: ▶️ Start backend server
         working-directory: backend
         run: |

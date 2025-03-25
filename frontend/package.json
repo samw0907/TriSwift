@@ -19,6 +19,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "vitest",
+    "test:e2e": "playwright test",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",
     "eject": "react-scripts eject"

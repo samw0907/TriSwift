@@ -50,10 +50,20 @@ jobs:
     #    working-directory: backend
     #    run: npm run test
 
-      - name: 🧪 Run frontend tests (Vitest)
-        working-directory: frontend
-        run: npm run test
-
       - name: ⚙️ Run migrations
         working-directory: backend
         run: npx sequelize-cli db:migrate
+
+      - name: ▶️ Start backend server
+        working-directory: backend
+        run: |
+          npm run start:test &
+          sleep 5
+
+      - name: 🧪 Run Playwright E2E tests
+        working-directory: frontend
+        run: npm run test:e2e
+
+      - name: 🧪 Run frontend tests (Vitest)
+        working-directory: frontend
+        run: npm run test

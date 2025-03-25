@@ -69,7 +69,7 @@ test("renders the welcome message", async () => {
   
     await waitFor(() => {
       expect(screen.getByText(/Welcome to TriSwift/i)).toBeInTheDocument();
-      expect(screen.getByText(/Track your fitness progress with ease./i)).toBeInTheDocument();
+      expect(screen.getByText(/Your all-in-one training companion for swimming, cycling, and running./i)).toBeInTheDocument();
     });
   });
   

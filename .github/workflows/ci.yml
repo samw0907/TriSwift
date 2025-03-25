@@ -46,6 +46,10 @@ jobs:
         working-directory: frontend
         run: npm ci
 
+      - name: ⬇️ Install Playwright browsers
+        working-directory: frontend
+        run: npx playwright install --with-deps
+
     #  - name: 🧪 Run backend tests (Vitest)
     #    working-directory: backend
     #    run: npm run test
@@ -60,10 +64,10 @@ jobs:
           npm run start:test &
           sleep 5
 
-      - name: 🧪 Run Playwright E2E tests
-        working-directory: frontend
-        run: npm run test:e2e
-
       - name: 🧪 Run frontend tests (Vitest)
         working-directory: frontend
         run: npm run test
+
+      - name: 🧪 Run Playwright E2E tests
+        working-directory: frontend
+        run: npm run test:e2e

@@ -11,7 +11,8 @@ module.exports = {
     dialect: 'postgres',
   },
   test: {
+    url: process.env.DATABASE_URL,
     dialect: 'postgres',
-    storage: ':memory:',
+    logging: false,
   },
 };

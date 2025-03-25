@@ -62,8 +62,8 @@ jobs:
         working-directory: backend
         run: |
           npm run start:test &
-          sleep 5
-
+          npx wait-on http://localhost:3001/graphql
+          
       - name: 🧪 Run frontend tests (Vitest)
         working-directory: frontend
         run: npm run test

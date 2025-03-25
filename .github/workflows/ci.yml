@@ -64,6 +64,10 @@ jobs:
         working-directory: frontend
         run: npm run test
 
+      - name: 🔐 Generate auth.json from login
+        working-directory: frontend
+        run: node scripts/generateAuth.js
+
       - name: 🧪 Run Playwright E2E tests
         working-directory: frontend
         run: npm run test:e2e

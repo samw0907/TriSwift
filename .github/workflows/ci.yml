@@ -28,6 +28,7 @@ jobs:
       DATABASE_URL: postgres://postgres:Shuggie0907%21@localhost:5432/triswiftdb
       JWT_SECRET: fastsecret123
       NODE_ENV: test
+      PORT: 3001
 
     steps:
       - name: ⬇️ Checkout code
@@ -50,9 +51,10 @@ jobs:
         working-directory: backend
         run: |
           PORT=3001 npm run start:test &
+          sleep 5
       
       - name: ⏳ Wait for backend to be ready
-        run: npx wait-on http://localhost:3001/graphql
+        run: npx wait-on --timeout 60000 --httpTimeout 10000 http://localhost:3001/graphql
 
       - name: 📦 Install frontend dependencies
         working-directory: frontend

@@ -57,12 +57,6 @@ jobs:
       - name: 🌱 Run database seeders
         working-directory: backend
         run: npx sequelize-cli db:seed:all
-
-      - name: ▶️ Start backend server
-        working-directory: backend
-        run: |
-          npm run start:test &
-          npx wait-on http://localhost:3001/graphql
           
       - name: 🧪 Run frontend tests (Vitest)
         working-directory: frontend
@@ -71,6 +65,12 @@ jobs:
       - name: 🔐 Generate auth.json from login
         working-directory: frontend
         run: node scripts/generateAuth.js
+
+      - name: ▶️ Start backend server
+        working-directory: backend
+        run: |
+          npm run start:test &
+          npx wait-on http://localhost:3001/graphql
 
       - name: 🧪 Run Playwright E2E tests
         working-directory: frontend

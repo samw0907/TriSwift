@@ -6,52 +6,30 @@
   background: white;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
-  color: var(--text-color);
 }
 
 .dashboard h1 {
   text-align: center;
   color: var(--primary-dark);
-  font-size: 32px;
   margin-bottom: 20px;
-  border-bottom: 2px solid var(--primary-color);
-  padding-bottom: 10px;
 }
 
 .dashboard h2 {
   color: var(--primary-dark);
-  font-size: 24px;
-  margin-top: 40px;
-  margin-bottom: 20px;
+  margin-top: 30px;
   border-bottom: 2px solid var(--primary-color);
   padding-bottom: 5px;
-}
-
-.dashboard button {
-  background-color: var(--primary-color);
-  color: white;
-  padding: 12px 24px;
-  font-size: 16px;
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  margin-bottom: 20px;
-}
-
-.dashboard button:hover {
-  background-color: var(--primary-dark);
 }
 
 .session-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #ffffff;
-  padding: 20px;
-  margin-bottom: 15px;
-  border: 1px solid #e0e0e0;
+  background: white;
+  padding: 15px;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
+  transition: transform 0.2s ease-in-out;
 }
 
 .session-item:hover {
@@ -78,13 +56,4 @@
   color: red;
   font-weight: bold;
   text-align: center;
-}
-
-.session-item .session-info {
-  flex-grow: 1;
-}
-
-.session-item .session-actions {
-  display: flex;
-  gap: 10px;
 }

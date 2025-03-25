@@ -1,0 +1,59 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        ports: ['5432:5432']
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: Shuggie0907!
+          POSTGRES_DB: triswiftdb
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      DATABASE_URL: postgres://postgres:Shuggie0907!@localhost:5432/triswiftdb
+      JWT_SECRET: fastsecret123
+      NODE_ENV: test
+
+    steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 📦 Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: 📦 Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: 🧪 Run backend tests (Vitest)
+        working-directory: backend
+        run: npm run test
+
+      - name: 🧪 Run frontend tests (Vitest)
+        working-directory: frontend
+        run: npm run test
+
+      - name: ⚙️ Run migrations
+        working-directory: backend
+        run: npx sequelize-cli db:migrate

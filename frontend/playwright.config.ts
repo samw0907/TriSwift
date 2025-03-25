@@ -10,7 +10,6 @@ if (!fs.existsSync(storageStatePath)) {
   console.log(`✅ auth.json found at ${storageStatePath}`);
 }
 
-
 export default defineConfig({
   testDir: './tests',
   timeout: 10000,
@@ -22,6 +21,12 @@ export default defineConfig({
     browserName: 'chromium',
     screenshot: 'off',
     video: 'off',
-    trace: 'off'
+    trace: 'off',
+    storageState: storageStatePath,
+  },
+  webServer: {
+    command: 'npm start',
+    port: 3000,
+    reuseExistingServer: !process.env.CI,
   },
 });

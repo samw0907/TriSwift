@@ -40,7 +40,11 @@ jobs:
 
       - name: 📦 Install backend dependencies
         working-directory: backend
-        run: npm ci
+        run: |
+          npm run start:test &
+      
+      - name: ⏳ Wait for backend to be ready
+        run: npx wait-on http://localhost:3001/graphql
 
       - name: 📦 Install frontend dependencies
         working-directory: frontend
@@ -71,4 +75,3 @@ jobs:
       - name: 🧪 Run Playwright E2E tests
         working-directory: frontend
         run: npm run test:e2e
-        

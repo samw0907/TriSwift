@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const axios = require('axios');
 const { chromium } = require('playwright');
 
 const AUTH_JSON_PATH = path.resolve('auth.json');

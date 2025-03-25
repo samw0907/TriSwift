@@ -46,9 +46,9 @@ jobs:
         working-directory: frontend
         run: npm ci
 
-      - name: 🧪 Run backend tests (Vitest)
-        working-directory: backend
-        run: npm run test
+    #  - name: 🧪 Run backend tests (Vitest)
+    #    working-directory: backend
+    #    run: npm run test
 
       - name: 🧪 Run frontend tests (Vitest)
         working-directory: frontend

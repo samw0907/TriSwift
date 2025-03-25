@@ -4,7 +4,8 @@ module.exports = {
   up: async () => {
     await SessionActivity.bulkCreate([
       {
-        session_id: 1,
+        session_id: 1001,
+        user_id: 1001,
         sport_type: 'run',
         duration: 3600,
         distance: 10.0,
@@ -15,7 +16,8 @@ module.exports = {
         power: null,
       },
       {
-        session_id: 2,
+        session_id: 1002,
+        user_id: 1002,
         sport_type: 'swim',
         duration: 1800,
         distance: 2.0,
@@ -26,7 +28,8 @@ module.exports = {
         power: null,
       },
       {
-        session_id: 2,
+        session_id: 1002,
+        user_id: 1002,
         sport_type: 'bike',
         duration: 3600,
         distance: 28.0,
@@ -40,6 +43,6 @@ module.exports = {
   },
 
   down: async () => {
-    await SessionActivity.destroy({ where: {} });
+    await SessionActivity.destroy({ where: { session_id: [1001, 1002] } });
   }
 };

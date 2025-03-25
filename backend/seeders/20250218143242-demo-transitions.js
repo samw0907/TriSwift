@@ -4,7 +4,7 @@ module.exports = {
   up: async () => {
     await Transition.bulkCreate([
       {
-        session_id: 2,
+        session_id: 1002,
         previous_sport: 'swim',
         next_sport: 'bike',
         transition_time: 120,
@@ -14,6 +14,6 @@ module.exports = {
   },
 
   down: async () => {
-    await Transition.destroy({ where: {} });
+    await Transition.destroy({ where: { session_id: 1002 } });
   }
 };

@@ -4,6 +4,7 @@ module.exports = {
   up: async () => {
     await Session.bulkCreate([
       {
+        id: 1001,
         user_id: 4,
         session_type: 'Run',
         date: '2025-02-15',
@@ -15,6 +16,7 @@ module.exports = {
         weather_wind_speed: 10.2,
       },
       {
+        id: 1002,
         user_id: 5,
         session_type: 'Multi-sport',
         date: '2025-02-16',
@@ -29,6 +31,6 @@ module.exports = {
   },
 
   down: async () => {
-    await Session.destroy({ where: {} });
+    await Session.destroy({ where: { id: [1001, 1002] }});
   }
 };

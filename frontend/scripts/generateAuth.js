@@ -1,7 +1,7 @@
-import fs from 'fs';
-import path from 'path';
-import axios from 'axios';
-import { chromium } from 'playwright';
+const fs = require('fs');
+const path = require('path');
+const axios = require('axios');
+const { chromium } = require('playwright');
 
 const AUTH_JSON_PATH = path.resolve('auth.json');
 

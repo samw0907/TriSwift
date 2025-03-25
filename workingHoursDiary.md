@@ -57,7 +57,8 @@ Date            Hours    Topic
                 
 24.03.2025      7      Frontend, fix distance conversion issues, filter issues
                 1.5    Frontend visual changes + CSS
-25.03.2025      
+25.03.2025      0.5    Frontend visual changes + CSS
+                8      CI/CD pipline
 26.03.2025      
 27.03.2025      
 28.03.2025      

@@ -1,8 +1,8 @@
 const User = require("./user");
-const Session = require("./session");
-const SessionActivity = require("./sessionActivity");
-const Transition = require("./transition");
-const PersonalRecord = require("./personalRecord");
+const Session = require("./session.js");
+const SessionActivity = require("./sessionActivity.js");
+const Transition = require("./transition.js");
+const PersonalRecord = require("./personalRecord.js");
 
 User.hasMany(Session, { 
   foreignKey: "user_id", 

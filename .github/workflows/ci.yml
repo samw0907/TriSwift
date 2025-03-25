@@ -50,10 +50,6 @@ jobs:
         working-directory: frontend
         run: npx playwright install --with-deps
 
-    #  - name: 🧪 Run backend tests (Vitest)
-    #    working-directory: backend
-    #    run: npm run test
-
       - name: ⚙️ Run migrations
         working-directory: backend
         run: npx sequelize-cli db:migrate

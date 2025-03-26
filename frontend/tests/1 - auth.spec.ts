@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 
+test.use({ storageState: undefined });
+
 test.describe('Authentication Tests', () => {
   
   test('User can successfully log in', async ({ page }) => {

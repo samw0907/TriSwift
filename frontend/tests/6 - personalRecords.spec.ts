@@ -16,7 +16,7 @@ test.describe('Personal Records Management Tests', () => {
     console.log("✅ Token retrieved from localStorage");
 
     console.log("🚀 Navigating to the Personal Records page...");
-    await page.goto('https://triswift-frontend.fly.dev/records', { waitUntil: 'load' });
+    await page.goto('https://triswift-frontend.fly.dev/personalRecords', { waitUntil: 'load' });
 
     await page.waitForSelector('h1', { timeout: 5000 });
     await expect(page.locator('h1')).toHaveText('Personal Records');

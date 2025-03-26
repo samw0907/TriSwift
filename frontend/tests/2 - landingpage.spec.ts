@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 
+test.use({ storageState: undefined });
+
 test('Landing page should load for logged-out users', async ({ page }) => {
   await page.goto('https://triswift-frontend.fly.dev');
 

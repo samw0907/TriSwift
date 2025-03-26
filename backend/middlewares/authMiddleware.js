@@ -12,15 +12,12 @@ const authMiddleware = (req, res, next) => {
         req.user = decodedToken;
         console.log("✅ Decoded User:", decodedToken);
       }
-
-      next();
     } catch (error) {
       return res.status(401).json({ error: "Invalid token" });
     }
-  } else {
+  }
    // return res.status(401).json({ error: "Token missing" });
    next();
-  }
 };
 
 module.exports = authMiddleware;

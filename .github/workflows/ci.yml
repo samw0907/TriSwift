@@ -61,7 +61,7 @@ jobs:
       - name: ▶️ Start backend server
         working-directory: backend
         run: |
-          npm run start:test
+          npm run start:test &
           npx wait-on http://localhost:3001/
 
       - name: ▶️ Start frontend server

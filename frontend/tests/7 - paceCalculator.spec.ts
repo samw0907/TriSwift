@@ -6,7 +6,7 @@ test.describe('Pace Calculator Tests', () => {
 
   test.beforeEach(async ({ page }) => {
     console.log("🔑 Checking stored authentication state...");
-    await page.goto('http://localhost:3000/home', { waitUntil: 'load' });
+    await page.goto('https://triswift-frontend.fly.dev/home', { waitUntil: 'load' });
 
     const authToken = await page.evaluate(() => localStorage.getItem('token'));
     if (!authToken) {
@@ -16,7 +16,7 @@ test.describe('Pace Calculator Tests', () => {
     console.log("✅ Token retrieved from localStorage");
 
     console.log("🚀 Navigating to the Pace Calculator page...");
-    await page.goto('http://localhost:3000/paceCalculator', { waitUntil: 'load' });
+    await page.goto('https://triswift-frontend.fly.dev/paceCalculator', { waitUntil: 'load' });
 
     console.log("🔍 Checking if the Pace Calculator is loaded...");
     await page.waitForSelector('h2', { timeout: 5000 });

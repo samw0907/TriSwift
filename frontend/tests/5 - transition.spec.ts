@@ -8,7 +8,7 @@ test.describe('Transition Management Tests', () => {
   
   test.beforeEach(async ({ page }) => {
     console.log("🔑 Checking stored authentication state...");
-    await page.goto('http://localhost:3000/home', { waitUntil: 'load' });
+    await page.goto('https://triswift-frontend.fly.dev/home', { waitUntil: 'load' });
 
     const authToken = await page.evaluate(() => localStorage.getItem('token'));
     if (!authToken) {
@@ -19,7 +19,7 @@ test.describe('Transition Management Tests', () => {
 
     console.log("🔍 Verifying Authentication via API...");
     const userResponse = await page.evaluate(async (token) => {
-      const response = await fetch("http://localhost:3001/graphql", {
+      const response = await fetch("https://triswift-backend.fly.dev/graphql", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,11 +35,11 @@ test.describe('Transition Management Tests', () => {
     }
 
     console.log("✅ Authentication confirmed via API.");
-    await page.goto('http://localhost:3000/dashboard', { waitUntil: 'load' });
+    await page.goto('https://triswift-frontend.fly.dev/dashboard', { waitUntil: 'load' });
   });
 
   test('User can add a transition to a session', async ({ page }) => {
-    await page.goto('http://localhost:3000/dashboard');
+    await page.goto('https://triswift-frontend.fly.dev/dashboard');
 
     console.log("🖱️ Clicking Add Session...");
     const addSessionButton = page.locator('button', { hasText: 'Add Session' }).first();
@@ -96,7 +96,7 @@ test.describe('Transition Management Tests', () => {
     while (retries > 0) {
       sessionApiResponse = await page.evaluate(async () => {
         const token = localStorage.getItem('token');
-        const response = await fetch("http://localhost:3001/graphql", {
+        const response = await fetch("https://triswift-backend.fly.dev/graphql", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -153,7 +153,7 @@ test.describe('Transition Management Tests', () => {
   });
 
   test('User can edit a transition', async ({ page }) => {
-    await page.goto('http://localhost:3000/dashboard');
+    await page.goto('https://triswift-frontend.fly.dev/dashboard');
 
     console.log("🔍 Finding session card...");
     const sessionCard = page.locator(`li.session-card[data-session-id="${createdSessionId}"]`);
@@ -181,7 +181,7 @@ test.describe('Transition Management Tests', () => {
   });
 
   test('User can delete a transition', async ({ page }) => {
-    await page.goto('http://localhost:3000/dashboard');
+    await page.goto('https://triswift-frontend.fly.dev/dashboard');
 
     console.log("🔍 Finding session card...");
     const sessionCard = page.locator(`li.session-card[data-session-id="${createdSessionId}"]`);

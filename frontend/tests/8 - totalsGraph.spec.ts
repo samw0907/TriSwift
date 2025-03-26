@@ -6,7 +6,7 @@ test.describe('Totals Graph Tests', () => {
 
   test.beforeEach(async ({ page }) => {
     console.log("🔑 Checking stored authentication state...");
-    await page.goto('http://localhost:3000/home', { waitUntil: 'load' });
+    await page.goto('https://triswift-frontend.fly.dev/home', { waitUntil: 'load' });
 
     const authToken = await page.evaluate(() => localStorage.getItem('token'));
     if (!authToken) {
@@ -27,7 +27,7 @@ test.describe('Totals Graph Tests', () => {
 
     console.log("🖱️ Selecting 'Bike'...");
     await page.click('button:has-text("Bike")');
-    await page.waitForTimeout(1000); // Allow time for update
+    await page.waitForTimeout(1000);
 
     console.log("🖱️ Selecting 'Swim'...");
     await page.click('button:has-text("Swim")');

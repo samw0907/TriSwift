@@ -6,7 +6,7 @@ test.describe('Personal Records Management Tests', () => {
 
   test.beforeEach(async ({ page }) => {
     console.log("🔑 Checking stored authentication state...");
-    await page.goto('http://localhost:3000/home', { waitUntil: 'load' });
+    await page.goto('https://triswift-frontend.fly.dev/home', { waitUntil: 'load' });
 
     const authToken = await page.evaluate(() => localStorage.getItem('token'));
     if (!authToken) {
@@ -16,7 +16,7 @@ test.describe('Personal Records Management Tests', () => {
     console.log("✅ Token retrieved from localStorage");
 
     console.log("🚀 Navigating to the Personal Records page...");
-    await page.goto('http://localhost:3000/records', { waitUntil: 'load' });
+    await page.goto('https://triswift-frontend.fly.dev/records', { waitUntil: 'load' });
 
     await page.waitForSelector('h1', { timeout: 5000 });
     await expect(page.locator('h1')).toHaveText('Personal Records');

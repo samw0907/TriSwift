@@ -78,6 +78,12 @@ jobs:
         working-directory: frontend
         run: npm run test
 
+      - name: Deploy frontend to Fly.io
+        working-directory: frontend
+        run: fly deploy --remote-only --build-arg BUILDKIT_INLINE_CACHE=0 --dockerfile Dockerfile --config fly.toml --image-label ci
+        env:
+          FLY_API_TOKEN: ${{ secrets.FRONTEND_FLY_API_TOKEN }}
+
       - name: 🧪 Run Playwright E2E tests
         working-directory: frontend
         run: npm run test:e2e

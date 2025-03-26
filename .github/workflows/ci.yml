@@ -61,8 +61,7 @@ jobs:
       - name: ▶️ Start backend server
         working-directory: backend
         run: |
-          npm run start:test &
-          npx wait-on http://localhost:3001/graphql
+          npm run start:test
 
       - name: ▶️ Start frontend server
         working-directory: frontend

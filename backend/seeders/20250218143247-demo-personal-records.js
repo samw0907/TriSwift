@@ -25,6 +25,6 @@ module.exports = {
   },
 
   down: async () => {
-    await PersonalRecord.destroy({ where: { user_id: [4, 5] } });
+    await PersonalRecord.destroy({ where: { user_id: [1001, 1002] } });
   }
 };

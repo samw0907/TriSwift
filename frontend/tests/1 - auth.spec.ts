@@ -17,7 +17,6 @@ test.describe('Authentication Tests', () => {
     await page.waitForURL('https://triswift-frontend.fly.dev/home', { timeout: 10000 });
     await expect(page).toHaveURL('https://triswift-frontend.fly.dev/home');
     
-    await page.context().storageState({ path: 'auth.json' });
   });
 
   test('Login fails with incorrect credentials', async ({ page }) => {

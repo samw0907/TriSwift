@@ -22,10 +22,18 @@ const setupApolloServer = async (app) => {
     typeDefs,
     resolvers,
     context: async ({ req }) => {
-      console.log("Received Headers:", req.headers); 
+
+      if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
+        console.log("Received Headers:", req.headers);
+      }
+
       const token = req.headers.authorization?.split("Bearer ")[1];
       const user = await getUserFromToken(token);
-      console.log("Decoded User:", user);
+
+      if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
+          console.log("Decoded User:", user);
+      }
+
       return { user };
     }
   });

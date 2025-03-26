@@ -37,11 +37,21 @@ app.use((err, req, res, next) => {
 });
 
 const start = async () => {
-  await connectToDatabase();
-  await setupApolloServer(app);
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-  });
+  try {
+    await connectToDatabase();
+    await setupApolloServer(app);
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("🔥 Server failed to start:", error);
+    process.exit(1);
+  }
 };
 
 start();
+
+process.on("unhandledRejection", (err) => {
+  console.error("🚨 Unhandled rejection:", err);
+  process.exit(1);
+});

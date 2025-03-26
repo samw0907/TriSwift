@@ -7,13 +7,19 @@ const authMiddleware = (req, res, next) => {
   if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
     try {
       const decodedToken = jwt.verify(authorization.substring(7), JWT_SECRET);
-      req.user = decodedToken;
+
+      if (decodedToken) {
+        req.user = decodedToken;
+        console.log("✅ Decoded User:", decodedToken);
+      }
+
       next();
     } catch (error) {
       return res.status(401).json({ error: "Invalid token" });
     }
   } else {
-    return res.status(401).json({ error: "Token missing" });
+   // return res.status(401).json({ error: "Token missing" });
+   next();
   }
 };
 

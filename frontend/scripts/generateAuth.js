@@ -9,7 +9,7 @@ const AUTH_JSON_PATH = path.resolve('auth.json');
   const context = await browser.newContext();
   const page = await context.newPage();
 
-  await page.goto('http://localhost:3000/login');
+  await page.goto('https://triswift-frontend.fly.dev/login');
 
   await page.fill('input[name="email"]', 'seeduser@example.com');
   await page.fill('input[name="password"]', 'password123');

@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Authentication Tests', () => {
   
   test('User can successfully log in', async ({ page }) => {
-    await page.goto('http://localhost:3000/login');
+    await page.goto('https://triswift-frontend.fly.dev/login');
 
     await page.waitForSelector('input[name="email"]', { timeout: 5000 });
 
@@ -12,14 +12,14 @@ test.describe('Authentication Tests', () => {
 
     await page.click('button[type="submit"]');
 
-    await page.waitForURL('http://localhost:3000/home', { timeout: 10000 });
-    await expect(page).toHaveURL('http://localhost:3000/home');
+    await page.waitForURL('https://triswift-frontend.fly.dev/home', { timeout: 10000 });
+    await expect(page).toHaveURL('https://triswift-frontend.fly.dev/home');
     
     await page.context().storageState({ path: 'auth.json' });
   });
 
   test('Login fails with incorrect credentials', async ({ page }) => {
-    await page.goto('http://localhost:3000/login');
+    await page.goto('https://triswift-frontend.fly.dev/login');
 
     await page.fill('input[name="email"]', 'wronguser@example.com');
     await page.fill('input[name="password"]', 'wrongpassword');
@@ -33,7 +33,7 @@ test.describe('Authentication Tests', () => {
   const randomEmail = `user${Date.now()}@example.com`;
 
   test('User can successfully sign up and is redirected to login', async ({ page }) => {
-    await page.goto('http://localhost:3000/signup');
+    await page.goto('https://triswift-frontend.fly.dev/signup');
 
     await page.fill('input[name="name"]', 'New User');
     await page.fill('input[name="email"]', randomEmail);
@@ -50,7 +50,7 @@ test.describe('Authentication Tests', () => {
   });
 
   test('Signup fails if email already exists', async ({ page }) => {
-    await page.goto('http://localhost:3000/signup');
+    await page.goto('https://triswift-frontend.fly.dev/signup');
 
     await page.fill('input[name="name"]', 'Usain Bolt');
     await page.fill('input[name="email"]', 'ubolt@gmail.com');

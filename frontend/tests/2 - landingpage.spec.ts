@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('Landing page should load for logged-out users', async ({ page }) => {
-  await page.goto('http://localhost:3000');
+  await page.goto('https://triswift-frontend.fly.dev');
 
   await expect(page.locator('h1')).toHaveText('Welcome to TriSwift');
 

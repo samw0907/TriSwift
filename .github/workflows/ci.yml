@@ -67,7 +67,7 @@ jobs:
       - name: ▶️ Start frontend server
         working-directory: frontend
         run: |
-          npm run dev & 
+          npm start & 
           npx wait-on http://localhost:3000
 
       - name: 🔐 Generate auth.json from login

@@ -56,9 +56,6 @@ jobs:
           export PATH="$HOME/.fly/bin:$PATH"
           echo "$HOME/.fly/bin" >> $GITHUB_PATH
 
-      - name: 🛠️ Authenticate Fly.io CLI
-        run: flyctl auth login --access-token FlyV1fm2_lJPECAAAAAAAAqxyxBAdyA1W6FmAMdiBweejYUfEwrVodHRwczovL2FwaS5mbHkuaW8vdjGWAJLOAAuOYx8Lk7lodHRwczovL2FwaS5mbHkuaW8vYWFhL3YxxDwtbiKx8V9BJasuU1gIINm72sUAb+wurf5VF3EAwQVs7EDekCZeU21iOljyXw+9flpUnIq//D3wwBP+E2TETu9q4HKpWFE6dCJKEw4U7SElqFJ8UA/EPiXlAEDqQ3SNNTLKJCh7pTZSZDcN6kYvWRJAysGeUP6P2rErOnOwPgrJXRFC0aPdtqhEMB0cIw2SlAORgc4Aa1sZHwWRgqdidWlsZGVyH6J3Zx8BxCBTDJyXRiI2RzoKKBqbl8+MMaRZu7KWeP00uGBSfN/kHA==,fm2_lJPETu9q4HKpWFE6dCJKEw4U7SElqFJ8UA/EPiXlAEDqQ3SNNTLKJCh7pTZSZDcN6kYvWRJAysGeUP6P2rErOnOwPgrJXRFC0aPdtqhEMB0cI8QQ+BtKLmwddJV9tuOKIdZGXsO5aHR0cHM6Ly9hcGkuZmx5LmlvL2FhYS92MZgEks5n5AWDzwAAAAEj3COhF84ACz7hCpHOAAs+4QzEEKPjfXtrmRZWiaogyK5an4HEIO2/Yffj+dkb1lioxs8m/B8ZNWGJUEXdiJal+UCn+MLU
-
       - name: ⚙️ Run migrations
         working-directory: backend
         run: npx sequelize-cli db:migrate
@@ -96,3 +93,4 @@ jobs:
       - name: 🧪 Run Playwright E2E tests
         working-directory: frontend
         run: npm run test:e2e
+        

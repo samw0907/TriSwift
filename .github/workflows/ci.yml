@@ -56,6 +56,9 @@ jobs:
           export PATH="$HOME/.fly/bin:$PATH"
           echo "$HOME/.fly/bin" >> $GITHUB_PATH
 
+      - name: 🛠️ Authenticate Fly.io CLI
+        run: flyctl auth login --access-token ${{ secrets.FLY_API_TOKEN }}
+
       - name: ⚙️ Run migrations
         working-directory: backend
         run: npx sequelize-cli db:migrate

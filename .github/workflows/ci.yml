@@ -64,6 +64,12 @@ jobs:
           npm run start:test &
           npx wait-on http://localhost:3001/graphql
 
+      - name: 🐛 Check if backend server crashed
+        if: failure()
+        run: |
+        echo "Backend server might have crashed or never started"
+        docker ps -a 
+
       - name: ▶️ Start frontend server
         working-directory: frontend
         run: |

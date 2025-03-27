@@ -38,18 +38,6 @@ module.exports = {
         weather_temp: 17.2,
         weather_humidity: 60,
         weather_wind_speed: 9.0,
-      },
-      {
-        id: 1003,
-        user_id: 1001,
-        session_type: 'Run',
-        date: '2025-03-17',
-        total_duration: '1500',
-        total_distance: 5.0,
-        is_multi_sport: false,
-        weather_temp: 17.2,
-        weather_humidity: 60,
-        weather_wind_speed: 9.0,
       }
     ], { validate: true });
   },

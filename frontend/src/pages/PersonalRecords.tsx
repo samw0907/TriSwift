@@ -47,7 +47,12 @@ const PersonalRecords: React.FC = () => {
     }
   }, [selectedSport, refetch]);
   
-
+  useEffect(() => {
+    if (data) {
+      console.log("📊 PR Query Data:", data.personalRecords);
+    }
+  }, [data]);
+  
   return (
     <div className="personal-records">
       <h1>Personal Records</h1>

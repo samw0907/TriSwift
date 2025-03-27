@@ -5,6 +5,8 @@ test.use({ storageState: undefined });
 test('Landing page should load for logged-out users', async ({ page }) => {
   await page.goto('https://triswift-frontend.fly.dev');
 
+  await page.evaluate(() => localStorage.clear());
+
   await expect(page.locator('h1')).toHaveText('Welcome to TriSwift');
 
   await expect(page.locator('p').first()).toContainText('The ultimate fitness tracking app for triathletes.');

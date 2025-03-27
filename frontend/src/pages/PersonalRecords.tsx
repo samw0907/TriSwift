@@ -1,118 +1,125 @@
-import { test, expect } from '@playwright/test';
+import React, { useState, useEffect } from 'react';
+import { useQuery } from '@apollo/client';
+import { GET_PERSONAL_RECORDS } from '../graphql/queries';
+import '../index.css'
+import '../styles/personalRecords.css'
 
-test.use({ storageState: 'auth.json' });
+const distances = {
+  Run: [0.1, 0.2, 0.4, 1, 5, 10, 21.1, 42.2],
+  Bike: [10, 20, 40, 50, 80, 100, 150, 200],
+  Swim: [0.1, 0.2, 0.4, 0.8, 1, 1.5, 2],
+};
 
-test.describe('Personal Records Management Tests', () => {
-  const todayISO = new Date().toISOString().split('T')[0];
+const formatTime = (seconds: number) => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const sec = seconds % 60;
 
-  const createSessionWithRunActivity = async (page, durationInSeconds: number) => {
-    const [minutes, seconds] = [
-      Math.floor(durationInSeconds / 60),
-      durationInSeconds % 60,
-    ];
+  return `${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
+};
 
-    await page.goto('https://triswift-frontend.fly.dev/dashboard');
+const sportTypeMapping: { [key: string]: string } = {
+  Run: "Run",
+  Bike: "Bike",
+  Swim: "Swim",
+};
 
-    const addSessionButton = page.locator('button', { hasText: 'Add Session' });
-    await addSessionButton.click();
+const PersonalRecords: React.FC = () => {
+  const [selectedSport, setSelectedSport] = useState<string>("Swim");
+  const mappedSportType = selectedSport ? sportTypeMapping[selectedSport] : null;
 
-    await page.waitForSelector('input[name="date"]', { timeout: 5000 });
-    await page.selectOption('select[name="sessionType"]', 'Run');
-    await page.fill('input[name="date"]', todayISO);
-    await page.click('button[type="submit"]');
+  const { loading, error, data, refetch } = useQuery(GET_PERSONAL_RECORDS, {
+    variables: { sportType: mappedSportType },
+    skip: !mappedSportType,
+    fetchPolicy: "network-only",
+  });
 
-    await page.waitForSelector('form.activity-form', { timeout: 5000 });
-
-    await page.selectOption('select[name="sportType"]', 'Run');
-    await page.fill('input[name="hours"]', '0');
-    await page.fill('input[name="minutes"]', minutes.toString());
-    await page.fill('input[name="seconds"]', seconds.toString());
-    await page.fill('input[name="distance"]', '5.00');
-
-    await page.click('button[type="submit"]');
-    await page.waitForSelector('form.activity-form', { state: 'hidden', timeout: 5000 });
+  const handleSportSelection = (sport: string) => {
+    setSelectedSport(sport);
+    setTimeout(() => refetch({ sportType: sportTypeMapping[sport] }), 0);
   };
 
-  test.beforeEach(async ({ page }) => {
-    console.log("🚀 Creating PR test data...");
-    await createSessionWithRunActivity(page, 1200); // 20 mins
-    await createSessionWithRunActivity(page, 1500); // 25 mins
-  });
-
-  test('User can view personal records', async ({ page }) => {
-    await page.goto('https://triswift-frontend.fly.dev/personalRecords', { waitUntil: 'networkidle' });
-
-    const runButton = page.locator('[data-testid="sport-button-run"]');
-    console.log("🔍 Waiting for 'Run' filter button...");
-    await expect(runButton).toBeVisible({ timeout: 15000 });
-
-    console.log("🔍 Clicking 'Run' filter...");
-    await runButton.click();
-    await page.waitForResponse((res) => res.url().includes('/graphql') && res.status() === 200, { timeout: 10000 });
-
-    const recordsTable = page.locator('.records-table');
-    console.log("📊 Checking if records table is visible...");
-    await expect(recordsTable).toBeVisible({ timeout: 7000 });
-
-    await expect(recordsTable.locator('th')).toContainText(['Distance', '1st', '2nd', '3rd']);
-
-    const firstRow = recordsTable.locator('tbody tr').first();
-    await expect(firstRow).toBeVisible();
-    console.log("✅ Records are shown.");
-  });
-
-  test('User can filter personal records by sport type', async ({ page }) => {
-    await page.goto('https://triswift-frontend.fly.dev/personalRecords', { waitUntil: 'networkidle' });
-
-    const bikeButton = page.locator('[data-testid="sport-button-bike"]');
-    await expect(bikeButton).toBeVisible({ timeout: 15000 });
-
-    console.log("🔍 Clicking Bike...");
-    await bikeButton.click();
-    await page.waitForResponse(res => res.url().includes('/graphql') && res.status() === 200, { timeout: 10000 });
-
-    const table = page.locator('.records-table');
-    const noDataMessage = page.locator('p', { hasText: 'No personal records found for Bike.' });
-    await expect(table.or(noDataMessage)).toBeVisible();
-
-    console.log("🔄 Switching to Run...");
-    const runButton = page.locator('[data-testid="sport-button-run"]');
-    await runButton.click();
-    await page.waitForResponse(res => res.url().includes('/graphql') && res.status() === 200, { timeout: 10000 });
-
-    await expect(page.locator('.records-table').or(page.locator('p', { hasText: 'No personal records found for Run.' }))).toBeVisible();
-  });
-
-  test('Records display in the correct order (fastest first)', async ({ page }) => {
-    await page.goto('https://triswift-frontend.fly.dev/personalRecords', { waitUntil: 'networkidle' });
-
-    const runButton = page.locator('[data-testid="sport-button-run"]');
-    await expect(runButton).toBeVisible({ timeout: 15000 });
-
-    console.log("🔍 Clicking Run filter...");
-    await runButton.click();
-    await page.waitForResponse(res => res.url().includes('/graphql') && res.status() === 200, { timeout: 10000 });
-
-    const validRow = page.locator('.records-table tbody tr')
-      .locator('td:nth-child(2)')
-      .filter({ hasText: /^\d{2}:\d{2}:\d{2}$/ })
-      .first();
-
-    const firstPlaceTime = await validRow.innerText();
-    expect(firstPlaceTime).toMatch(/^\d{2}:\d{2}:\d{2}$/);
-    console.log(`🥇 First place time: ${firstPlaceTime}`);
-
-    const secondPlaceTimeLocator = validRow.locator('xpath=following-sibling::td[1]');
-    if (await secondPlaceTimeLocator.isVisible()) {
-      const secondPlaceTime = await secondPlaceTimeLocator.innerText();
-      if (secondPlaceTime !== "-") {
-        expect(secondPlaceTime).toMatch(/^\d{2}:\d{2}:\d{2}$/);
-        console.log(`🥈 Second place time: ${secondPlaceTime}`);
-      } else {
-        console.log("⚠️ No second place PR yet.");
-      }
+  useEffect(() => {
+    if (selectedSport) {
+      refetch({ sportType: sportTypeMapping[selectedSport] });
     }
+  }, [selectedSport, refetch]);
+  
+  useEffect(() => {
+    if (data) {
+      console.log("📊 PR Query Data:", data.personalRecords);
+    }
+  }, [data]);
+  
+  return (
+    <div className="personal-records">
+      <h1>Personal Records</h1>
+      <div className="sport-buttons">
+        {["Swim", "Run", "Bike"].map((sport) => (
+          <button
+            key={sport}
+            data-testid={`sport-button-${sport.toLowerCase()}`} 
+            className={`sport-button ${selectedSport === sport ? 'active' : ''}`}
+            onClick={() => handleSportSelection(sport)}
+            disabled={loading}
+          >
+            {sport}
+          </button>
+        ))}
+      </div>
 
-    console.log("✅ PRs displayed and ordered correctly.");
-  });
-});
+      {selectedSport && (
+        <div className="records-container">
+          <h2>{sportTypeMapping[selectedSport]} Records</h2>
+          {loading && <p>Loading...</p>}
+          {error && <p style={{ color: 'red' }}>Error fetching records. Please try again.</p>}
+
+          {data?.personalRecords && data.personalRecords.length > 0 ? (
+            <table className="records-table" role="table">
+              <thead>
+                <tr>
+                  <th>Distance</th>
+                  <th>1st</th>
+                  <th>2nd</th>
+                  <th>3rd</th>
+                </tr>
+              </thead>
+              <tbody>
+                {distances[selectedSport as keyof typeof distances].map((dist) => {
+                  let matchingRecords = data.personalRecords
+                    .filter((r: any) => {
+                      const storedDistance = selectedSport === "Swim" ? Number(r.distance) * 1000 : Number(r.distance);
+                      const displayDistance = selectedSport === "Swim" ? dist * 1000 : dist;
+                      return storedDistance === displayDistance;
+                    })
+                    .sort((a: any, b: any) => Number(a.bestTime) - Number(b.bestTime));
+
+                  let recordTimes = Array.from(new Set(matchingRecords.map((r: { bestTime: number }) => r.bestTime)));
+
+                  recordTimes = [...recordTimes, null, null].slice(0, 3);
+
+                  return (
+                    <tr key={dist}>
+                      <td>{selectedSport === "Swim" ? `${dist * 1000}m` : `${dist}km`}</td>
+                      {[0, 1, 2].map((index) => (
+                        <td key={index}>
+                          {recordTimes[index] ? formatTime(Number(recordTimes[index])) : "-"}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          ) : (
+            <p>No personal records found for {sportTypeMapping[selectedSport]}.</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default PersonalRecords;

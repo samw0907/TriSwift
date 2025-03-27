@@ -23,6 +23,7 @@ test.describe('Personal Records Management Tests', () => {
 
     await page.waitForSelector('form.activity-form', { timeout: 5000 });
 
+    await page.selectOption('select[name="sportType"]', 'Run');
     await page.fill('input[name="hours"]', '0');
     await page.fill('input[name="minutes"]', minutes.toString());
     await page.fill('input[name="seconds"]', seconds.toString());
@@ -41,78 +42,56 @@ test.describe('Personal Records Management Tests', () => {
   test('User can view personal records', async ({ page }) => {
     await page.goto('https://triswift-frontend.fly.dev/personalRecords', { waitUntil: 'networkidle' });
 
-    await page.waitForSelector('.records-filters', { timeout: 10000 });
-
+    const runButton = page.locator('[data-testid="sport-button-run"]');
     console.log("🔍 Waiting for 'Run' filter button...");
-    const runButton = page.locator('button[data-testid="sport-button-run"]');
-    try {
-      await expect(runButton).toBeVisible({ timeout: 15000 });
-    } catch (error) {
-      console.log("❌ Run button not visible. Page content dump:");
-      console.log(await page.content());
-      throw error;
-    }
+    await expect(runButton).toBeVisible({ timeout: 15000 });
 
     console.log("🔍 Clicking 'Run' filter...");
     await runButton.click();
     await page.waitForResponse((res) => res.url().includes('/graphql') && res.status() === 200, { timeout: 10000 });
 
-    console.log("🔍 Checking if records table is visible...");
-    await expect(page.locator('.records-table')).toBeVisible({ timeout: 7000 });
+    const recordsTable = page.locator('.records-table');
+    console.log("📊 Checking if records table is visible...");
+    await expect(recordsTable).toBeVisible({ timeout: 7000 });
 
-    console.log("✅ Records table is present.");
-    await expect(page.locator('th')).toContainText(['Distance', '1st', '2nd', '3rd']);
+    await expect(recordsTable.locator('th')).toContainText(['Distance', '1st', '2nd', '3rd']);
 
-    const firstRecordRow = page.locator('.records-table tbody tr').first();
-    await expect(firstRecordRow).toBeVisible();
+    const firstRow = recordsTable.locator('tbody tr').first();
+    await expect(firstRow).toBeVisible();
+    console.log("✅ Records are shown.");
   });
 
   test('User can filter personal records by sport type', async ({ page }) => {
     await page.goto('https://triswift-frontend.fly.dev/personalRecords', { waitUntil: 'networkidle' });
-    await page.waitForSelector('.records-filters', { timeout: 10000 });
 
-    const bikeButton = page.locator('button[data-testid="sport-button-bike"]');
-    try {
-      await expect(bikeButton).toBeVisible({ timeout: 15000 });
-    } catch (error) {
-      console.log("❌ Bike button not visible. Page content dump:");
-      console.log(await page.content());
-      throw error;
-    }
+    const bikeButton = page.locator('[data-testid="sport-button-bike"]');
+    await expect(bikeButton).toBeVisible({ timeout: 15000 });
 
-    console.log("🔍 Selecting 'Bike' filter...");
+    console.log("🔍 Clicking Bike...");
     await bikeButton.click();
-    await page.waitForResponse((res) => res.url().includes('/graphql') && res.status() === 200, { timeout: 10000 });
+    await page.waitForResponse(res => res.url().includes('/graphql') && res.status() === 200, { timeout: 10000 });
 
-    const recordsTable = page.locator('.records-table');
-    const noRecordsMessage = page.locator('p', { hasText: 'No personal records found for Bike.' });
-    await expect(recordsTable.or(noRecordsMessage)).toBeVisible();
+    const table = page.locator('.records-table');
+    const noDataMessage = page.locator('p', { hasText: 'No personal records found for Bike.' });
+    await expect(table.or(noDataMessage)).toBeVisible();
 
-    console.log("🔍 Switching to 'Run' filter...");
-    const runButton = page.locator('button[data-testid="sport-button-run"]');
+    console.log("🔄 Switching to Run...");
+    const runButton = page.locator('[data-testid="sport-button-run"]');
     await runButton.click();
-    await page.waitForResponse((res) => res.url().includes('/graphql') && res.status() === 200, { timeout: 10000 });
+    await page.waitForResponse(res => res.url().includes('/graphql') && res.status() === 200, { timeout: 10000 });
 
-    await expect(page.locator('.records-table').or(
-      page.locator('p', { hasText: 'No personal records found for Run.' })
-    )).toBeVisible();
+    await expect(page.locator('.records-table').or(page.locator('p', { hasText: 'No personal records found for Run.' }))).toBeVisible();
   });
 
   test('Records display in the correct order (fastest first)', async ({ page }) => {
     await page.goto('https://triswift-frontend.fly.dev/personalRecords', { waitUntil: 'networkidle' });
-    await page.waitForSelector('.records-filters', { timeout: 10000 });
 
-    const runButton = page.locator('button[data-testid="sport-button-run"]');
-    try {
-      await expect(runButton).toBeVisible({ timeout: 15000 });
-    } catch (error) {
-      console.log("❌ Run button not visible for order test. Page content dump:");
-      console.log(await page.content());
-      throw error;
-    }
+    const runButton = page.locator('[data-testid="sport-button-run"]');
+    await expect(runButton).toBeVisible({ timeout: 15000 });
 
+    console.log("🔍 Clicking Run filter...");
     await runButton.click();
-    await page.waitForResponse((res) => res.url().includes('/graphql') && res.status() === 200, { timeout: 10000 });
+    await page.waitForResponse(res => res.url().includes('/graphql') && res.status() === 200, { timeout: 10000 });
 
     const validRow = page.locator('.records-table tbody tr')
       .locator('td:nth-child(2)')
@@ -121,19 +100,19 @@ test.describe('Personal Records Management Tests', () => {
 
     const firstPlaceTime = await validRow.innerText();
     expect(firstPlaceTime).toMatch(/^\d{2}:\d{2}:\d{2}$/);
-    console.log(`✅ First valid record time: ${firstPlaceTime}`);
+    console.log(`🥇 First place time: ${firstPlaceTime}`);
 
     const secondPlaceTimeLocator = validRow.locator('xpath=following-sibling::td[1]');
     if (await secondPlaceTimeLocator.isVisible()) {
       const secondPlaceTime = await secondPlaceTimeLocator.innerText();
       if (secondPlaceTime !== "-") {
         expect(secondPlaceTime).toMatch(/^\d{2}:\d{2}:\d{2}$/);
-        console.log(`✅ Second place time: ${secondPlaceTime}`);
+        console.log(`🥈 Second place time: ${secondPlaceTime}`);
       } else {
-        console.log("⚠️ No valid second-place time found.");
+        console.log("⚠️ No second place PR yet.");
       }
     }
 
-    console.log("✅ PRs are displayed and ordered correctly.");
+    console.log("✅ PRs displayed and ordered correctly.");
   });
 });

@@ -11,7 +11,7 @@ module.exports = {
         name: 'Seed User',
         email: 'seeduser@example.com',
         password_hash: passwordHash,
-      },pas
+      },
       {
         id: 1002,
         name: 'Other Seed',

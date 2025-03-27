@@ -5,9 +5,10 @@ test.use({ storageState: undefined });
 test.describe('Authentication Tests', () => {
   
   test('User can successfully log in', async ({ page }) => {
-    await page.goto('https://triswift-frontend.fly.dev/login');
+    await page.goto('https://triswift-frontend.fly.dev/login', { waitUntil: 'networkidle' });
 
-    await page.waitForSelector('input[name="email"]', { timeout: 5000 });
+
+    await page.waitForSelector('input[name="email"]', { state: 'visible', timeout: 10000 });
 
     await page.fill('input[name="email"]', 'ubolt@gmail.com');
     await page.fill('input[name="password"]', 'fastpassword');
@@ -20,22 +21,24 @@ test.describe('Authentication Tests', () => {
   });
 
   test('Login fails with incorrect credentials', async ({ page }) => {
-    await page.goto('https://triswift-frontend.fly.dev/login');
+    await page.goto('https://triswift-frontend.fly.dev/login', { waitUntil: 'networkidle' });
 
+    await page.waitForSelector('input[name="email"]', { state: 'visible', timeout: 10000 });
     await page.fill('input[name="email"]', 'wronguser@example.com');
     await page.fill('input[name="password"]', 'wrongpassword');
 
     await page.click('button[type="submit"]');
 
-    await page.waitForSelector('.notification', { timeout: 5000 });
+    await page.waitForSelector('.notification', { state: 'visible', timeout: 10000 });
     await expect(page.locator('.notification')).toHaveText(/Invalid email or password\. Please try again\./i);
   });
 
   const randomEmail = `user${Date.now()}@example.com`;
 
   test('User can successfully sign up and is redirected to login', async ({ page }) => {
-    await page.goto('https://triswift-frontend.fly.dev/signup');
+    await page.goto('https://triswift-frontend.fly.dev/signup', { waitUntil: 'networkidle' });
 
+    await page.waitForSelector('input[name="name"]', { state: 'visible', timeout: 10000 });
     await page.fill('input[name="name"]', 'New User');
     await page.fill('input[name="email"]', randomEmail);
     await page.fill('input[name="password"]', 'newpassword123');
@@ -51,8 +54,9 @@ test.describe('Authentication Tests', () => {
   });
 
   test('Signup fails if email already exists', async ({ page }) => {
-    await page.goto('https://triswift-frontend.fly.dev/signup');
+    await page.goto('https://triswift-frontend.fly.dev/signup', { waitUntil: 'networkidle' });
 
+    await page.waitForSelector('input[name="name"]', { state: 'visible', timeout: 10000 });
     await page.fill('input[name="name"]', 'Usain Bolt');
     await page.fill('input[name="email"]', 'ubolt@gmail.com');
     await page.fill('input[name="password"]', 'fastpassword');
@@ -61,6 +65,7 @@ test.describe('Authentication Tests', () => {
 
     await page.waitForSelector('.notification', { timeout: 5000 });
 
+    await page.waitForSelector('.notification', { state: 'visible', timeout: 10000 });
     await expect(page.locator('.notification')).toHaveText(/This email is already registered. Try logging in./i);
   });
 });

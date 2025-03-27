@@ -60,7 +60,7 @@ Date            Hours    Topic
 25.03.2025      0.5      Frontend visual changes + CSS
                 8        CI/CD pipeline
 26.03.2025      8.5      CI/CD pipeline
-27.03.2025      
+27.03.2025      8.5      CI/CD pipeline
 28.03.2025      
                 (17)
                 

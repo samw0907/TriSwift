@@ -22,7 +22,7 @@ test.describe('Personal Records Management Tests', () => {
     await page.click('button[type="submit"]');
 
     await page.waitForSelector('form.activity-form', { timeout: 5000 });
-    await page.selectOption('select[name="sportType"]', 'Run');
+    
     await page.fill('input[name="hours"]', '0');
     await page.fill('input[name="minutes"]', minutes.toString());
     await page.fill('input[name="seconds"]', seconds.toString());

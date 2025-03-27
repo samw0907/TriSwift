@@ -5,23 +5,30 @@ test.use({ storageState: 'auth.json' });
 test.describe('Personal Records Management Tests', () => {
   const todayISO = new Date().toISOString().split('T')[0];
 
-  const createSessionWithRunActivity = async (page, durationInSeconds: number) => {
+  const createSessionWithRunActivity = async (page, durationInSeconds: number, sessionType = 'Run') => {
     const [minutes, seconds] = [
       Math.floor(durationInSeconds / 60),
       durationInSeconds % 60,
     ];
   
+    const todayISO = new Date().toISOString().split('T')[0];
+  
     await page.goto('https://triswift-frontend.fly.dev/dashboard');
   
     const addSessionButton = page.locator('button', { hasText: 'Add Session' });
+    await expect(addSessionButton).toBeVisible({ timeout: 5000 });
     await addSessionButton.click();
   
     await page.waitForSelector('input[name="date"]', { timeout: 5000 });
-    await page.selectOption('select[name="sessionType"]', 'Run');
+    await page.selectOption('select[name="sessionType"]', sessionType);
     await page.fill('input[name="date"]', todayISO);
     await page.click('button[type="submit"]');
   
     await page.waitForSelector('form.activity-form', { timeout: 5000 });
+  
+    if (sessionType === 'Multi-Sport') {
+      await page.selectOption('select[name="sportType"]', 'Run');
+    }
   
     await page.fill('input[name="hours"]', '0');
     await page.fill('input[name="minutes"]', minutes.toString());

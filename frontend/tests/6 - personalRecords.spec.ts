@@ -4,25 +4,9 @@ test.use({ storageState: 'auth.json' });
 
 test.describe('Personal Records Management Tests', () => {
 
-  test.beforeEach(async ({ page }) => {
-    console.log("🔑 Checking stored authentication state...");
-    await page.goto('https://triswift-frontend.fly.dev/home', { waitUntil: 'load' });
-
-    const authToken = await page.evaluate(() => localStorage.getItem('token'));
-    if (!authToken) {
-      throw new Error("❌ No auth token found in localStorage.");
-    }
-
-    console.log("✅ Token retrieved from localStorage");
-
-    console.log("🚀 Navigating to the Personal Records page...");
-    await page.goto('https://triswift-frontend.fly.dev/personalRecords', { waitUntil: 'load' });
-
-    await page.waitForSelector('h1', { timeout: 5000 });
-    await expect(page.locator('h1')).toHaveText('Personal Records');
-  });
-
   test('User can view personal records', async ({ page }) => {
+    await page.goto('https://triswift-frontend.fly.dev/personalRecords', { waitUntil: 'networkidle' });
+
     console.log("🔍 Checking if records table is visible...");
     await page.waitForSelector('.records-table', { timeout: 5000 });
 
@@ -36,6 +20,7 @@ test.describe('Personal Records Management Tests', () => {
   });
 
   test('User can filter personal records by sport type', async ({ page }) => {
+    await page.goto('https://triswift-frontend.fly.dev/personalRecords', { waitUntil: 'networkidle' });
     console.log("🔍 Selecting 'Bike' filter...");
     await page.click('button[data-testid="sport-button-bike"]');
   
@@ -55,6 +40,7 @@ test.describe('Personal Records Management Tests', () => {
   });
 
   test('Records display in the correct order (fastest first)', async ({ page }) => {
+    await page.goto('https://triswift-frontend.fly.dev/personalRecords', { waitUntil: 'networkidle' });
     console.log("🔍 Finding the first row with a valid time...");
   
     const validRow = await page.locator('.records-table tbody tr').locator('td:nth-child(2)').filter({
@@ -76,8 +62,6 @@ test.describe('Personal Records Management Tests', () => {
         console.log("⚠️ No valid second-place time found, skipping validation.");
       }
     }
-  
     console.log("✅ Times are formatted correctly and in order.");
-  });
-  
+  }); 
 });

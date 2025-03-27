@@ -8,8 +8,8 @@ module.exports = {
         session_id: 1001,
         user_id: 1001,
         sport_type: 'run',
-        duration: 3600,
-        distance: 10.0,
+        duration: 1200,
+        distance: 5.0,
         heart_rate_min: 120,
         heart_rate_max: 180,
         heart_rate_avg: 150,
@@ -41,11 +41,24 @@ module.exports = {
         heart_rate_avg: 145,
         cadence: 85,
         power: 250,
+      },
+      {
+        id: 1004,
+        session_id: 1003,
+        user_id: 1001,
+        sport_type: 'run',
+        duration: 1500,
+        distance: 5.0,
+        heart_rate_min: 125,
+        heart_rate_max: 175,
+        heart_rate_avg: 155,
+        cadence: null,
+        power: null,
       }
     ], { validate: true });
   },
 
   down: async () => {
-    await SessionActivity.destroy({ where: { id: [1001, 1002, 1003] } });
+    await SessionActivity.destroy({ where: { id: [1001, 1002, 1003, 1004] } });
   }
 };

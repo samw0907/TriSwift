@@ -12,3 +12,4 @@ test('Landing page should load for logged-out users', async ({ page }) => {
   await expect(page.locator('button', { hasText: 'Login' })).toBeVisible();
   await expect(page.locator('button', { hasText: 'Sign Up' })).toBeVisible();
 });
+

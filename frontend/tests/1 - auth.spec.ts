@@ -1,12 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-test.use({ storageState: undefined });
-
 test.describe('Authentication Tests', () => {
   
   test('User can successfully log in', async ({ page }) => {
     await page.goto('https://triswift-frontend.fly.dev/login', { waitUntil: 'networkidle' });
-
 
     await page.waitForSelector('input[name="email"]', { state: 'visible', timeout: 10000 });
 

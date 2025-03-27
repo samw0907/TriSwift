@@ -22,7 +22,7 @@ export default defineConfig({
     screenshot: 'off',
     video: 'off',
     trace: 'off',
-    storageState: storageStatePath,
+    storageState: undefined,
   },
   webServer: {
     command: 'npm start',

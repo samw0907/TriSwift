@@ -10,25 +10,24 @@ test.describe('Personal Records Management Tests', () => {
       Math.floor(durationInSeconds / 60),
       durationInSeconds % 60,
     ];
-
+  
     await page.goto('https://triswift-frontend.fly.dev/dashboard');
-
+  
     const addSessionButton = page.locator('button', { hasText: 'Add Session' });
     await addSessionButton.click();
-
+  
     await page.waitForSelector('input[name="date"]', { timeout: 5000 });
     await page.selectOption('select[name="sessionType"]', 'Run');
     await page.fill('input[name="date"]', todayISO);
     await page.click('button[type="submit"]');
-
+  
     await page.waitForSelector('form.activity-form', { timeout: 5000 });
-
-    await page.selectOption('select[name="sportType"]', 'Run');
+  
     await page.fill('input[name="hours"]', '0');
     await page.fill('input[name="minutes"]', minutes.toString());
     await page.fill('input[name="seconds"]', seconds.toString());
     await page.fill('input[name="distance"]', '5.00');
-
+  
     await page.click('button[type="submit"]');
     await page.waitForSelector('form.activity-form', { state: 'hidden', timeout: 5000 });
   };

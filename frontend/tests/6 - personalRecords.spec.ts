@@ -7,6 +7,10 @@ test.describe('Personal Records Management Tests', () => {
   test('User can view personal records', async ({ page }) => {
     await page.goto('https://triswift-frontend.fly.dev/personalRecords', { waitUntil: 'networkidle' });
 
+    console.log("🔍 Clicking 'Run' filter to view seeduser's records...");
+    await page.click('button[data-testid="sport-button-run"]');
+    await page.waitForResponse((res) => res.url().includes('/graphql') && res.status() === 200);
+
     console.log("🔍 Checking if records table is visible...");
     await page.waitForSelector('.records-table', { timeout: 5000 });
 

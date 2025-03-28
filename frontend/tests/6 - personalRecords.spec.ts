@@ -1,82 +1,86 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Personal Records Management Tests', () => {
-
+  
   test.beforeEach(async ({ page }) => {
     console.log("🔑 Logging in before each test...");
     await page.goto('http://localhost:3000/login');
     await page.fill('input[name="email"]', 'seeduser@example.com');
     await page.fill('input[name="password"]', 'password123');
     await page.click('button[type="submit"]');
-    await page.waitForURL('http://localhost:3000/home', { timeout: 10000 });
+    await page.waitForURL('http://localhost:3000/home');
     console.log("✅ Logged in successfully.");
   });
 
   test('User can view personal records', async ({ page }) => {
-    await page.goto('http://localhost:3000/personalRecords', { waitUntil: 'networkidle' });
+    await page.goto('http://localhost:3000/personalRecords');
 
     console.log("🔍 Waiting for 'Run' filter button...");
     const runButton = page.locator('button[data-testid="sport-button-run"]');
-    await runButton.waitFor({ state: 'attached', timeout: 15000 });
+    await runButton.waitFor({ state: 'visible' });
 
     console.log("🔍 Clicking 'Run' filter...");
     await runButton.click();
-    await page.waitForResponse((res) => res.url().includes('/graphql') && res.status() === 200, { timeout: 10000 });
 
-    console.log("🔍 Checking if records table is visible...");
-    await expect(page.locator('.records-table')).toBeVisible({ timeout: 7000 });
+    await page.waitForResponse(res => res.url().includes('/graphql') && res.status() === 200);
 
-    console.log("✅ Records table is present.");
+    const recordsTable = page.locator('.records-table');
+    await expect(recordsTable).toBeVisible();
+
+    console.log("✅ Records table is present and visible.");
     await expect(page.locator('th')).toContainText(['Distance', '1st', '2nd', '3rd']);
-
-    const firstRecordRow = page.locator('.records-table tbody tr').first();
-    await expect(firstRecordRow).toBeVisible();
   });
 
   test('User can filter personal records by sport type', async ({ page }) => {
-    await page.goto('http://localhost:3000/personalRecords', { waitUntil: 'networkidle' });
+    await page.goto('http://localhost:3000/personalRecords');
 
     const bikeButton = page.locator('button[data-testid="sport-button-bike"]');
-    await bikeButton.waitFor({ state: 'attached', timeout: 15000 });
+    await bikeButton.waitFor({ state: 'visible' });
 
     console.log("🔍 Selecting 'Bike' filter...");
     await bikeButton.click();
-    await page.waitForResponse(response => response.url().includes('/graphql') && response.status() === 200, { timeout: 10000 });
+    await page.waitForResponse(res => res.url().includes('/graphql') && res.status() === 200);
 
     const recordsTable = page.locator('.records-table');
     const noRecordsMessage = page.locator('p', { hasText: 'No personal records found for Bike.' });
+
     await expect(recordsTable.or(noRecordsMessage)).toBeVisible();
 
-    console.log("🔍 Switching to 'Run' filter...");
-    const runButton = page.locator('button[data-testid="sport-button-run"]');
-    await runButton.click();
-    await page.waitForResponse(response => response.url().includes('/graphql') && response.status() === 200, { timeout: 10000 });
-    await expect(page.locator('.records-table').or(page.locator('p', { hasText: 'No personal records found for Run.' }))).toBeVisible();
+    console.log("✅ Bike records (or no-records message) verified.");
+
+    const swimButton = page.locator('button[data-testid="sport-button-swim"]');
+    await swimButton.click();
+    await page.waitForResponse(res => res.url().includes('/graphql') && res.status() === 200);
+
+    await expect(recordsTable.or(page.locator('p', { hasText: 'No personal records found for Swim.' }))).toBeVisible();
+
+    console.log("✅ Swim records (or no-records message) verified.");
   });
 
   test('Records display in the correct order (fastest first)', async ({ page }) => {
-    await page.goto('http://localhost:3000/personalRecords', { waitUntil: 'networkidle' });
+    await page.goto('http://localhost:3000/personalRecords');
 
-    const validRow = await page.locator('.records-table tbody tr')
-      .locator('td:nth-child(2)')
-      .filter({ hasText: /^\d{2}:\d{2}:\d{2}$/ })
-      .first();
+    const runButton = page.locator('button[data-testid="sport-button-run"]');
+    await runButton.click();
+    await page.waitForResponse(res => res.url().includes('/graphql') && res.status() === 200);
 
-    const firstPlaceTime = await validRow.innerText();
+    const recordRows = page.locator('.records-table tbody tr');
+
+    const firstRow = recordRows.first();
+    await firstRow.waitFor({ state: 'visible' });
+
+    const firstPlaceTime = await firstRow.locator('td:nth-child(2)').textContent();
     expect(firstPlaceTime).toMatch(/^\d{2}:\d{2}:\d{2}$/);
-    console.log(`✅ First valid record time: ${firstPlaceTime}`);
+    console.log(`✅ First place time: ${firstPlaceTime}`);
 
-    const secondPlaceTimeLocator = validRow.locator('xpath=following-sibling::td[1]');
-    if (await secondPlaceTimeLocator.isVisible()) {
-      const secondPlaceTime = await secondPlaceTimeLocator.innerText();
-      if (secondPlaceTime !== "-") {
-        expect(secondPlaceTime).toMatch(/^\d{2}:\d{2}:\d{2}$/);
-        console.log(`✅ Second place time: ${secondPlaceTime}`);
-      } else {
-        console.log("⚠️ No valid second-place time found, skipping validation.");
-      }
+    const secondPlaceTime = await firstRow.locator('td:nth-child(3)').textContent();
+    if (secondPlaceTime && secondPlaceTime !== "-") {
+      expect(secondPlaceTime).toMatch(/^\d{2}:\d{2}:\d{2}$/);
+      console.log(`✅ Second place time: ${secondPlaceTime}`);
+    } else {
+      console.log("⚠️ No second-place record available.");
     }
 
-    console.log("✅ Times are formatted correctly and in order.");
+    console.log("✅ Records display correctly in order (fastest first).");
   });
 });

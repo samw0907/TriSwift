@@ -1,19 +1,15 @@
 import { test, expect } from '@playwright/test';
 
-test.use({ storageState: undefined });
-
 test('Landing page should load for logged-out users', async ({ page }) => {
-  await page.goto('http://localhost:3000/', { waitUntil: 'networkidle' });
+  await page.goto('http://localhost:3000/');
 
   await page.evaluate(() => localStorage.removeItem('token'));
-  const token = await page.evaluate(() => localStorage.getItem('token'));
-  console.log("📦 Token in localStorage:", token);
+  await page.reload({ waitUntil: 'networkidle' });
 
-  await page.waitForSelector('h1', { state: 'visible', timeout: 10000 });
+  await page.waitForSelector('h1', { state: 'visible' });
   await expect(page.locator('h1')).toHaveText('Welcome to TriSwift');
 
   await expect(page.locator('p').first()).toContainText('The ultimate fitness tracking app for triathletes.');
   await expect(page.locator('button', { hasText: 'Login' })).toBeVisible();
   await expect(page.locator('button', { hasText: 'Sign Up' })).toBeVisible();
 });
-

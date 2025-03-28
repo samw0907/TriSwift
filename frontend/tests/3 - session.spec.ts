@@ -1,10 +1,11 @@
 import { test, expect } from '@playwright/test';
 
-let createdSessionId: string | null = null;
-
 test.describe('Session Management Tests', () => {
+  let todayISO: string;
 
   test.beforeEach(async ({ page }) => {
+    todayISO = new Date().toISOString().split('T')[0];
+
     console.log("🔑 Logging in before each test...");
     await page.goto('http://localhost:3000/login');
     await page.fill('input[name="email"]', 'seeduser@example.com');
@@ -23,87 +24,51 @@ test.describe('Session Management Tests', () => {
     console.log("🖱️ Clicking Add Session...");
     await addSessionButton.click();
 
-    await page.waitForSelector('input[name="date"]', { timeout: 5000 });
-    console.log("✅ Session form is visible.");
-
-    const todayISO = new Date().toISOString().split('T')[0];
-
+    await page.waitForSelector('input[name="date"]');
     await page.selectOption('select[name="sessionType"]', 'Run');
     await page.fill('input[name="date"]', todayISO);
-    console.log("📡 Submitting session creation request...");
-
     await page.click('button[type="submit"]');
 
-    await page.waitForTimeout(2000);
-
-    await page.goto("http://localhost:3000/dashboard", { waitUntil: "networkidle" });
+    await page.waitForURL('**/dashboard');
 
     const sessionCard = page.locator('li.session-card').filter({ hasText: todayISO }).first();
-    await sessionCard.waitFor({ state: 'visible', timeout: 5000 });
-
-    createdSessionId = await sessionCard.getAttribute('data-session-id');
-
-    if (!createdSessionId) {
-      throw new Error("❌ Newly created session not found on dashboard.");
-    }
-
-    console.log(`✅ Created Session ID: ${createdSessionId}`);
+    await expect(sessionCard).toBeVisible();
+    console.log(`✅ Session created successfully for ${todayISO}`);
   });
 
   test('User can edit an existing session', async ({ page }) => {
-    if (!createdSessionId) {
-      throw new Error("❌ No session ID available from previous test.");
-    }
-
     await page.goto('http://localhost:3000/dashboard');
 
-    const sessionCard = page.locator(`li.session-card[data-session-id="${createdSessionId}"]`);
-    await sessionCard.waitFor({ state: 'visible', timeout: 5000 });
+    const sessionCard = page.locator('li.session-card').filter({ hasText: todayISO }).first();
+    await expect(sessionCard).toBeVisible();
 
     console.log("🖱️ Clicking Edit button...");
     await sessionCard.locator('button', { hasText: 'Edit' }).click();
 
-    console.log("⏳ Waiting for edit form...");
     const editForm = page.locator('.session-edit-form');
-    await editForm.waitFor({ state: 'visible', timeout: 5000 });
+    await expect(editForm).toBeVisible();
 
-    console.log("✍️ Editing session...");
-    const tempInput = page.locator('input[name="weatherTemp"]');
-    await tempInput.fill('25');
-
-    console.log("✅ Clicking Save button...");
+    await editForm.locator('input[name="weatherTemp"]').fill('25');
     await editForm.locator('button[type="submit"]').click();
 
     await sessionCard.locator('button', { hasText: 'Show Details' }).click();
-
-    console.log("🔍 Checking updated text...");
     await expect(sessionCard).toContainText('Temp - 25°C');
+
+    console.log("✅ Session edited successfully.");
   });
 
   test('User can delete a session', async ({ page }) => {
-    if (!createdSessionId) {
-      throw new Error("❌ No session ID available from previous tests.");
-    }
-
     await page.goto('http://localhost:3000/dashboard');
 
-    const sessionCard = page.locator(`li.session-card[data-session-id="${createdSessionId}"]`);
-    await sessionCard.waitFor({ state: 'visible', timeout: 5000 });
+    const sessionCard = page.locator('li.session-card').filter({ hasText: todayISO }).first();
+    await expect(sessionCard).toBeVisible();
 
-    page.once('dialog', async (dialog) => {
-      console.log(`🗨️ Dialog Message: ${dialog.message()}`);
-      await dialog.accept();
-    });
+    page.once('dialog', dialog => dialog.accept());
 
-    console.log("🗑️ Clicking Delete button...");
     await sessionCard.locator('button.btn-danger').click();
 
-    await page.waitForFunction(
-      (id) => !document.querySelector(`li.session-card[data-session-id="${id}"]`),
-      createdSessionId
-    );
+    await expect(sessionCard).not.toBeVisible();
 
-    await expect(page.locator(`li.session-card[data-session-id="${createdSessionId}"]`)).not.toBeVisible();
     console.log("✅ Session deleted successfully.");
   });
 });

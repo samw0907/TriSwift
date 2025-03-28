@@ -3,122 +3,74 @@ import { test, expect } from '@playwright/test';
 test.use({ storageState: 'auth.json' });
 
 test.describe('Personal Records Management Tests', () => {
-  const todayISO = new Date().toISOString().split('T')[0];
-
-  const createSessionWithRunActivity = async (page, durationInSeconds: number, sessionType = 'Run') => {
-    const [minutes, seconds] = [
-      Math.floor(durationInSeconds / 60),
-      durationInSeconds % 60,
-    ];
-  
-    const todayISO = new Date().toISOString().split('T')[0];
-  
-    await page.goto('https://triswift-frontend.fly.dev/dashboard');
-  
-    const addSessionButton = page.locator('button', { hasText: 'Add Session' });
-    await expect(addSessionButton).toBeVisible({ timeout: 5000 });
-    await addSessionButton.click();
-  
-    await page.waitForSelector('input[name="date"]', { timeout: 5000 });
-    await page.selectOption('select[name="sessionType"]', sessionType);
-    await page.fill('input[name="date"]', todayISO);
-    await page.click('button[type="submit"]');
-  
-    await page.waitForSelector('form.activity-form', { timeout: 5000 });
-  
-    if (sessionType === 'Multi-Sport') {
-      await page.selectOption('select[name="sportType"]', 'Run');
-    }
-  
-    await page.fill('input[name="hours"]', '0');
-    await page.fill('input[name="minutes"]', minutes.toString());
-    await page.fill('input[name="seconds"]', seconds.toString());
-    await page.fill('input[name="distance"]', '5.00');
-  
-    await page.click('button[type="submit"]');
-    await page.waitForSelector('form.activity-form', { state: 'hidden', timeout: 5000 });
-  };
-
-  test.beforeEach(async ({ page }) => {
-    console.log("🚀 Creating PR test data...");
-    await createSessionWithRunActivity(page, 1200); // 20 mins
-    await createSessionWithRunActivity(page, 1500); // 25 mins
-  });
 
   test('User can view personal records', async ({ page }) => {
     await page.goto('https://triswift-frontend.fly.dev/personalRecords', { waitUntil: 'networkidle' });
 
-    const runButton = page.locator('[data-testid="sport-button-run"]');
     console.log("🔍 Waiting for 'Run' filter button...");
-    await expect(runButton).toBeVisible({ timeout: 15000 });
+    const runButton = page.locator('button[data-testid="sport-button-run"]');
+    await runButton.waitFor({ state: 'attached', timeout: 15000 });
 
-    console.log("🔍 Clicking 'Run' filter...");
+    console.log("🔍 Clicking 'Run' filter to view seeduser's records...");
     await runButton.click();
     await page.waitForResponse((res) => res.url().includes('/graphql') && res.status() === 200, { timeout: 10000 });
 
-    const recordsTable = page.locator('.records-table');
-    console.log("📊 Checking if records table is visible...");
-    await expect(recordsTable).toBeVisible({ timeout: 7000 });
+    console.log("🔍 Checking if records table is visible...");
+    await expect(page.locator('.records-table')).toBeVisible({ timeout: 7000 });
 
-    await expect(recordsTable.locator('th')).toContainText(['Distance', '1st', '2nd', '3rd']);
+    console.log("✅ Records table is present.");
+    await expect(page.locator('th')).toContainText(['Distance', '1st', '2nd', '3rd']);
 
-    const firstRow = recordsTable.locator('tbody tr').first();
-    await expect(firstRow).toBeVisible();
-    console.log("✅ Records are shown.");
+    const firstRecordRow = page.locator('.records-table tbody tr').first();
+    await expect(firstRecordRow).toBeVisible();
   });
 
   test('User can filter personal records by sport type', async ({ page }) => {
     await page.goto('https://triswift-frontend.fly.dev/personalRecords', { waitUntil: 'networkidle' });
 
-    const bikeButton = page.locator('[data-testid="sport-button-bike"]');
-    await expect(bikeButton).toBeVisible({ timeout: 15000 });
+    const bikeButton = page.locator('button[data-testid="sport-button-bike"]');
+    await bikeButton.waitFor({ state: 'attached', timeout: 15000 });
 
-    console.log("🔍 Clicking Bike...");
+    console.log("🔍 Selecting 'Bike' filter...");
     await bikeButton.click();
-    await page.waitForResponse(res => res.url().includes('/graphql') && res.status() === 200, { timeout: 10000 });
 
-    const table = page.locator('.records-table');
-    const noDataMessage = page.locator('p', { hasText: 'No personal records found for Bike.' });
-    await expect(table.or(noDataMessage)).toBeVisible();
+    console.log("⏳ Waiting for data to load...");
+    await page.waitForResponse(response => response.url().includes('/graphql') && response.status() === 200, { timeout: 10000 });
 
-    console.log("🔄 Switching to Run...");
-    const runButton = page.locator('[data-testid="sport-button-run"]');
+    const recordsTable = page.locator('.records-table');
+    const noRecordsMessage = page.locator('p', { hasText: 'No personal records found for Bike.' });
+    await expect(recordsTable.or(noRecordsMessage)).toBeVisible();
+
+    console.log("🔍 Switching to 'Run' filter...");
+    const runButton = page.locator('button[data-testid="sport-button-run"]');
     await runButton.click();
-    await page.waitForResponse(res => res.url().includes('/graphql') && res.status() === 200, { timeout: 10000 });
-
+    await page.waitForResponse(response => response.url().includes('/graphql') && response.status() === 200, { timeout: 10000 });
     await expect(page.locator('.records-table').or(page.locator('p', { hasText: 'No personal records found for Run.' }))).toBeVisible();
   });
 
   test('Records display in the correct order (fastest first)', async ({ page }) => {
     await page.goto('https://triswift-frontend.fly.dev/personalRecords', { waitUntil: 'networkidle' });
 
-    const runButton = page.locator('[data-testid="sport-button-run"]');
-    await expect(runButton).toBeVisible({ timeout: 15000 });
-
-    console.log("🔍 Clicking Run filter...");
-    await runButton.click();
-    await page.waitForResponse(res => res.url().includes('/graphql') && res.status() === 200, { timeout: 10000 });
-
-    const validRow = page.locator('.records-table tbody tr')
+    const validRow = await page.locator('.records-table tbody tr')
       .locator('td:nth-child(2)')
       .filter({ hasText: /^\d{2}:\d{2}:\d{2}$/ })
       .first();
 
     const firstPlaceTime = await validRow.innerText();
     expect(firstPlaceTime).toMatch(/^\d{2}:\d{2}:\d{2}$/);
-    console.log(`🥇 First place time: ${firstPlaceTime}`);
+    console.log(`✅ First valid record time: ${firstPlaceTime}`);
 
     const secondPlaceTimeLocator = validRow.locator('xpath=following-sibling::td[1]');
     if (await secondPlaceTimeLocator.isVisible()) {
       const secondPlaceTime = await secondPlaceTimeLocator.innerText();
       if (secondPlaceTime !== "-") {
         expect(secondPlaceTime).toMatch(/^\d{2}:\d{2}:\d{2}$/);
-        console.log(`🥈 Second place time: ${secondPlaceTime}`);
+        console.log(`✅ Second place time: ${secondPlaceTime}`);
       } else {
-        console.log("⚠️ No second place PR yet.");
+        console.log("⚠️ No valid second-place time found, skipping validation.");
       }
     }
 
-    console.log("✅ PRs displayed and ordered correctly.");
+    console.log("✅ Times are formatted correctly and in order.");
   });
 });

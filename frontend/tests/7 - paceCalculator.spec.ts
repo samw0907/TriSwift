@@ -1,24 +1,20 @@
 import { test, expect } from '@playwright/test';
 
-test.use({ storageState: 'auth.json' });
-
 test.describe('Pace Calculator Tests', () => {
 
   test.beforeEach(async ({ page }) => {
-    console.log("🔑 Checking stored authentication state...");
-    await page.goto('https://triswift-frontend.fly.dev/home', { waitUntil: 'load' });
+    console.log("🔑 Logging in before each test...");
+    await page.goto('http://localhost:3000/login');
+    await page.fill('input[name="email"]', 'seeduser@example.com');
+    await page.fill('input[name="password"]', 'password123');
+    await page.click('button[type="submit"]');
+    await page.waitForURL('http://localhost:3000/home', { timeout: 10000 });
+    console.log("✅ Logged in successfully.");
 
-    const authToken = await page.evaluate(() => localStorage.getItem('token'));
-    if (!authToken) {
-      throw new Error("❌ No auth token found in localStorage.");
-    }
+    console.log("🚀 Navigating to Pace Calculator...");
+    await page.goto('http://localhost:3000/paceCalculator', { waitUntil: 'load' });
 
-    console.log("✅ Token retrieved from localStorage");
-
-    console.log("🚀 Navigating to the Pace Calculator page...");
-    await page.goto('https://triswift-frontend.fly.dev/paceCalculator', { waitUntil: 'load' });
-
-    console.log("🔍 Checking if the Pace Calculator is loaded...");
+    console.log("🔍 Checking Pace Calculator loaded...");
     await page.waitForSelector('h2', { timeout: 5000 });
     await expect(page.locator('h2')).toHaveText('Pace Calculator');
   });
@@ -36,9 +32,9 @@ test.describe('Pace Calculator Tests', () => {
     await page.fill('input#seconds-input', '0');
 
     console.log("🖱️ Clicking Calculate...");
-    await page.click('.pace-buttons button')
+    await page.click('.pace-buttons button');
 
-    console.log("⏳ Waiting for the pace result to appear...");
+    console.log("⏳ Waiting for pace result...");
     await page.waitForSelector('div.pace-form h3', { timeout: 5000 });
 
     console.log("🔍 Verifying calculated pace...");
@@ -58,9 +54,10 @@ test.describe('Pace Calculator Tests', () => {
     await page.fill('input#seconds-input', '0');
 
     console.log("🖱️ Clicking Calculate...");
-    await page.click('.pace-buttons button')
+    await page.click('.pace-buttons button');
 
     console.log("🔍 Verifying calculated speed...");
+    await page.waitForSelector('div.pace-form h3', { timeout: 5000 });
     await expect(page.locator('h3')).toContainText('30.0 km/h');
   });
 
@@ -75,9 +72,10 @@ test.describe('Pace Calculator Tests', () => {
     await page.fill('input#seconds-input', '0');
 
     console.log("🖱️ Clicking Calculate...");
-    await page.click('.pace-buttons button')
+    await page.click('.pace-buttons button');
 
     console.log("✅ Ensuring error message appears...");
+    await page.waitForSelector('div.pace-form h3', { timeout: 5000 });
     await expect(page.locator('h3')).toContainText('Invalid input');
   });
 

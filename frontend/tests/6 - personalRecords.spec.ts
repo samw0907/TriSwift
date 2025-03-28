@@ -1,17 +1,25 @@
 import { test, expect } from '@playwright/test';
 
-test.use({ storageState: 'auth.json' });
-
 test.describe('Personal Records Management Tests', () => {
 
+  test.beforeEach(async ({ page }) => {
+    console.log("🔑 Logging in before each test...");
+    await page.goto('http://localhost:3000/login');
+    await page.fill('input[name="email"]', 'seeduser@example.com');
+    await page.fill('input[name="password"]', 'password123');
+    await page.click('button[type="submit"]');
+    await page.waitForURL('http://localhost:3000/home', { timeout: 10000 });
+    console.log("✅ Logged in successfully.");
+  });
+
   test('User can view personal records', async ({ page }) => {
-    await page.goto('https://triswift-frontend.fly.dev/personalRecords', { waitUntil: 'networkidle' });
+    await page.goto('http://localhost:3000/personalRecords', { waitUntil: 'networkidle' });
 
     console.log("🔍 Waiting for 'Run' filter button...");
     const runButton = page.locator('button[data-testid="sport-button-run"]');
     await runButton.waitFor({ state: 'attached', timeout: 15000 });
 
-    console.log("🔍 Clicking 'Run' filter to view seeduser's records...");
+    console.log("🔍 Clicking 'Run' filter...");
     await runButton.click();
     await page.waitForResponse((res) => res.url().includes('/graphql') && res.status() === 200, { timeout: 10000 });
 
@@ -26,15 +34,13 @@ test.describe('Personal Records Management Tests', () => {
   });
 
   test('User can filter personal records by sport type', async ({ page }) => {
-    await page.goto('https://triswift-frontend.fly.dev/personalRecords', { waitUntil: 'networkidle' });
+    await page.goto('http://localhost:3000/personalRecords', { waitUntil: 'networkidle' });
 
     const bikeButton = page.locator('button[data-testid="sport-button-bike"]');
     await bikeButton.waitFor({ state: 'attached', timeout: 15000 });
 
     console.log("🔍 Selecting 'Bike' filter...");
     await bikeButton.click();
-
-    console.log("⏳ Waiting for data to load...");
     await page.waitForResponse(response => response.url().includes('/graphql') && response.status() === 200, { timeout: 10000 });
 
     const recordsTable = page.locator('.records-table');
@@ -49,7 +55,7 @@ test.describe('Personal Records Management Tests', () => {
   });
 
   test('Records display in the correct order (fastest first)', async ({ page }) => {
-    await page.goto('https://triswift-frontend.fly.dev/personalRecords', { waitUntil: 'networkidle' });
+    await page.goto('http://localhost:3000/personalRecords', { waitUntil: 'networkidle' });
 
     const validRow = await page.locator('.records-table tbody tr')
       .locator('td:nth-child(2)')

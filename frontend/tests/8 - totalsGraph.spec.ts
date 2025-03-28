@@ -1,19 +1,15 @@
 import { test, expect } from '@playwright/test';
 
-test.use({ storageState: 'auth.json' });
-
 test.describe('Totals Graph Tests', () => {
 
   test.beforeEach(async ({ page }) => {
-    console.log("🔑 Checking stored authentication state...");
-    await page.goto('https://triswift-frontend.fly.dev/home', { waitUntil: 'load' });
-
-    const authToken = await page.evaluate(() => localStorage.getItem('token'));
-    if (!authToken) {
-      throw new Error("❌ No auth token found in localStorage.");
-    }
-
-    console.log("✅ Token retrieved from localStorage");
+    console.log("🔑 Logging in before each test...");
+    await page.goto('http://localhost:3000/login');
+    await page.fill('input[name="email"]', 'seeduser@example.com');
+    await page.fill('input[name="password"]', 'password123');
+    await page.click('button[type="submit"]');
+    await page.waitForURL('http://localhost:3000/home', { timeout: 10000 });
+    console.log("✅ Logged in successfully.");
 
     console.log("🔍 Checking if the Totals Graph is loaded...");
     await page.waitForSelector('.totals-graph-container', { timeout: 5000 });
@@ -62,7 +58,7 @@ test.describe('Totals Graph Tests', () => {
     await page.waitForTimeout(1000);
 
     console.log("🔍 Checking if graph has data...");
-    const graphPoints = await page.locator('.totals-graph-container .graph-container canvas');
+    const graphPoints = page.locator('.totals-graph-container .graph-container canvas');
     await expect(graphPoints).toBeVisible();
 
     console.log("✅ Graph has rendered correctly.");

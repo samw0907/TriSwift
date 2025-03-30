@@ -48,8 +48,7 @@ test.describe('Session Management Tests', () => {
 
     await page.click('button[type="submit"]');
 
-    const sessionCard = page.locator('li.session-card');
-    
+    const sessionCard = page.locator('li.session-card').first();
     await sessionCard.waitFor({ state: 'visible', timeout: 5000 });
 
     createdSessionId = await sessionCard.getAttribute('data-session-id');

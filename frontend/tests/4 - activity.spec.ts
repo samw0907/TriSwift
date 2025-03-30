@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 
+let createdSessionId: string | null = null;
+
 test.describe('Activity Management Tests', () => {
 
   test.beforeEach(async ({ page }) => {
@@ -52,7 +54,7 @@ test.describe('Activity Management Tests', () => {
     await expect(maxDistanceInput).toBeVisible();
     await maxDistanceInput.fill('12');
 
-    const sessionCard = page.locator('li.session-card').filter({ hasText: todayISO }).first();
+    const sessionCard = page.locator('li.session-card').first();
     await sessionCard.waitFor({ state: 'visible', timeout: 5000 });
 
     const createdSessionId = await sessionCard.getAttribute('data-session-id');
@@ -76,25 +78,31 @@ test.describe('Activity Management Tests', () => {
 
   test('User can edit an activity', async ({ page }) => {
     await page.goto('http://localhost:3000/dashboard');
-    await page.click('button:has-text("Add Session")');
-    await page.waitForSelector('input[name="date"]');
-    await page.selectOption('select[name="sessionType"]', 'Bike');
-    const todayISO = new Date().toISOString().split('T')[0];
-    await page.fill('input[name="date"]', todayISO);
-    await page.click('button[type="submit"]');
-    await page.waitForSelector('form.activity-form');
-    await page.fill('input[name="hours"]', '0');
-    await page.fill('input[name="minutes"]', '12');
-    await page.fill('input[name="seconds"]', '12');
-    await page.fill('input[name="distance"]', '12.00');
-    await page.click('button[type="submit"]');
-    await page.waitForSelector('form.activity-form', { state: 'hidden', timeout: 5000 });
 
-    const sessionCard = page.locator('li.session-card').filter({ hasText: todayISO }).first();
+    const showFiltersButton = page.locator('button.btn-filter-toggle');
+    await showFiltersButton.click();
+
+    const bikeCheckbox = page.locator('label >> text=Bike >> input[type="checkbox"]');
+    await expect(bikeCheckbox).toBeVisible();
+    await bikeCheckbox.click();
+
+    const minDistanceInput = page.locator('input[name="maxDistance"]');
+    await expect(minDistanceInput).toBeVisible();
+    await minDistanceInput.fill('12');
+
+    const maxDistanceInput = page.locator('input[name="maxDistance"]');
+    await expect(maxDistanceInput).toBeVisible();
+    await maxDistanceInput.fill('12');
+
+    const sessionCard = page.locator('li.session-card').first();
     await sessionCard.waitFor({ state: 'visible', timeout: 5000 });
 
-    await sessionCard.locator('button:has-text("Show Details")').click();
-    await sessionCard.locator('button:has-text("Edit Activity")').first().click();
+    console.log("🖱️ Clicking 'Show Details'...");
+    await sessionCard.locator('button', { hasText: 'Show Details' }).click();
+    await page.waitForTimeout(1000);
+
+    console.log("🖱️ Clicking 'Edit Activity'...");
+    await page.locator('button', { hasText: 'Edit Activity' }).first().click();
     await page.waitForSelector('form.edit-activity-form', { timeout: 5000 });
 
     console.log("✍️ Updating activity distance...");
@@ -109,24 +117,27 @@ test.describe('Activity Management Tests', () => {
 
   test('User can delete an activity', async ({ page }) => {
     await page.goto('http://localhost:3000/dashboard');
-    await page.click('button:has-text("Add Session")');
-    await page.waitForSelector('input[name="date"]');
-    await page.selectOption('select[name="sessionType"]', 'Bike');
-    const todayISO = new Date().toISOString().split('T')[0];
-    await page.fill('input[name="date"]', todayISO);
-    await page.click('button[type="submit"]');
-    await page.waitForSelector('form.activity-form');
-    await page.fill('input[name="hours"]', '0');
-    await page.fill('input[name="minutes"]', '12');
-    await page.fill('input[name="seconds"]', '12');
-    await page.fill('input[name="distance"]', '12.00');
-    await page.click('button[type="submit"]');
-    await page.waitForSelector('form.activity-form', { state: 'hidden', timeout: 5000 });
 
-    const sessionCard = page.locator('li.session-card').filter({ hasText: todayISO }).first();
+    const showFiltersButton = page.locator('button.btn-filter-toggle');
+    await showFiltersButton.click();
+
+    const bikeCheckbox = page.locator('label >> text=Bike >> input[type="checkbox"]');
+    await expect(bikeCheckbox).toBeVisible();
+    await bikeCheckbox.click();
+
+    const minDistanceInput = page.locator('input[name="maxDistance"]');
+    await expect(minDistanceInput).toBeVisible();
+    await minDistanceInput.fill('6');
+
+    const maxDistanceInput = page.locator('input[name="maxDistance"]');
+    await expect(maxDistanceInput).toBeVisible();
+    await maxDistanceInput.fill('6');
+
+    const sessionCard = page.locator('li.session-card').first();
     await sessionCard.waitFor({ state: 'visible', timeout: 5000 });
 
-    await sessionCard.locator('button:has-text("Show Details")').click();
+    console.log("🖱️ Clicking 'Show Details'...");
+    await sessionCard.locator('button', { hasText: 'Show Details' }).click();
 
     page.once('dialog', async (dialog) => {
       console.log(`🗨️ Dialog Message: ${dialog.message()}`);

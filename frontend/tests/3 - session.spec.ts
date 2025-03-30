@@ -1,12 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Session Management Tests', () => {
-  let todayISO: string;
   let createdSessionId: string | null = null;
 
   test.beforeEach(async ({ page }) => {
-    todayISO = new Date().toISOString().split('T')[0];
-
     console.log("🔑 Logging in before each test...");
     await page.goto('http://localhost:3000/login');
     await page.fill('input[name="email"]', 'seeduser@example.com');
@@ -23,27 +20,43 @@ test.describe('Session Management Tests', () => {
 
   test('User can create a new session', async ({ page }) => {
     await page.goto('http://localhost:3000/dashboard');
-
+  
     const addSessionButton = page.locator('button', { hasText: 'Add Session' });
     await expect(addSessionButton).toBeVisible();
-
+  
     console.log("🖱️ Clicking Add Session...");
     await addSessionButton.click();
     await page.waitForSelector('input[name="date"]', { timeout: 5000 });
-
+  
+    const todayFormatted = new Date().toISOString().split('T')[0];
     await page.selectOption('select[name="sessionType"]', 'Run');
-    await page.fill('input[name="date"]', todayISO);
+    await page.fill('input[name="date"]', todayFormatted);
     await page.click('button[type="submit"]');
     console.log("📡 Submitted new session");
 
-    const sessionCard = page.locator('li.session-card').filter({ hasText: todayISO }).first();
-    await expect(sessionCard).toBeVisible({ timeout: 5000 });
+    const showFiltersButton = page.locator('button.btn-filter-toggle');
+    await showFiltersButton.click();
+
+    const runCheckbox = page.locator('label >> text=Run >> input[type="checkbox"]');
+    await expect(runCheckbox).toBeVisible();
+    await runCheckbox.click();
+
+
+    const maxDistanceInput = page.locator('input[name="maxDistance"]');
+    await expect(maxDistanceInput).toBeVisible();
+    await maxDistanceInput.fill('0');
+
+    await page.click('button[type="submit"]');
+
+    const sessionCard = page.locator('li.session-card');
+    
+    await sessionCard.waitFor({ state: 'visible', timeout: 5000 });
 
     createdSessionId = await sessionCard.getAttribute('data-session-id');
     if (!createdSessionId) {
       throw new Error("❌ Could not find created session ID.");
     }
-
+  
     console.log(`✅ Session created successfully: ID = ${createdSessionId}`);
   });
 

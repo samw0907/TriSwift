@@ -171,6 +171,7 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
             Min:{" "}
             <input
               type="number"
+              name="minDistance"
               value={minDistance}
               onChange={(e) => setMinDistance(e.target.value)}
               placeholder="Enter min distance"
@@ -181,6 +182,7 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
             Max:{" "}
             <input
               type="number"
+               name="maxDistance"
               value={maxDistance}
               onChange={(e) => setMaxDistance(e.target.value)}
               placeholder="Enter max distance"

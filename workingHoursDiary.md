@@ -59,9 +59,14 @@ Date            Hours    Topic
                 1.5      Frontend visual changes + CSS
 25.03.2025      0.5      Frontend visual changes + CSS
                 8        CI/CD pipeline
-26.03.2025      8.5      CI/CD pipeline
-27.03.2025      8.5      CI/CD pipeline
-28.03.2025      
-                (17)
-                
-TOTAL HOURS     221.5    
+26.03.2025      8.5      CI/CD pipeline, e2e test changes
+27.03.2025      8.5      CI/CD pipeline, e2e test changes
+28.03.2025      10       CI/CD pipeline, e2e test changes
+29.03.2025      2        CI/CD pipeline, e2e test changes
+30.03.2025      1        CI/CD pipeline, e2e test changes  
+                (47)
+
+31.03.2025      
+                ()
+
+TOTAL HOURS     250.5    

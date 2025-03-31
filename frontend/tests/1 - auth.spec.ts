@@ -7,8 +7,8 @@ test.describe('Authentication Tests', () => {
 
     await page.waitForSelector('input[name="email"]', { state: 'visible', timeout: 10000 });
 
-    await page.fill('input[name="email"]', 'ubolt@gmail.com');
-    await page.fill('input[name="password"]', 'fastpassword');
+    await page.fill('input[name="email"]', 'seeduser@example.com');
+    await page.fill('input[name="password"]', 'password123');
 
     await page.click('button[type="submit"]');
 
@@ -54,9 +54,9 @@ test.describe('Authentication Tests', () => {
     await page.goto('http://localhost:3000/signup', { waitUntil: 'networkidle' });
 
     await page.waitForSelector('input[name="name"]', { state: 'visible', timeout: 10000 });
-    await page.fill('input[name="name"]', 'Usain Bolt');
-    await page.fill('input[name="email"]', 'ubolt@gmail.com');
-    await page.fill('input[name="password"]', 'fastpassword');
+    await page.fill('input[name="name"]', 'Seed User');
+    await page.fill('input[name="email"]', 'seeduser@example.com');
+    await page.fill('input[name="password"]', 'password123');
 
     await page.click('button[type="submit"]');
 

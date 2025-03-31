@@ -2,14 +2,50 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Personal Records Management Tests', () => {
   
-  test.beforeEach(async ({ page }) => {
-    console.log("🔑 Logging in before each test...");
+  test.beforeAll(async ({ page }) => {
+    console.log("🔑 Logging in before all tests...");
     await page.goto('http://localhost:3000/login');
     await page.fill('input[name="email"]', 'seeduser@example.com');
     await page.fill('input[name="password"]', 'password123');
     await page.click('button[type="submit"]');
     await page.waitForURL('http://localhost:3000/home');
     console.log("✅ Logged in successfully.");
+
+    console.log("🔧 Creating sessions and activities...");
+
+    await page.goto('http://localhost:3000/dashboard');
+    await page.click('button:has-text("Add Session")');
+    await page.selectOption('select[name="sessionType"]', 'Single Sport');
+    await page.fill('input[name="date"]', new Date().toISOString().split('T')[0]);
+    await page.selectOption('select[name="sportType"]', 'Swim');
+    await page.fill('input[name="distance"]', '1000');
+    await page.fill('input[name="hours"]', '0');
+    await page.fill('input[name="minutes"]', '19');
+    await page.fill('input[name="seconds"]', '0');
+    await page.click('button[type="submit"]');
+    
+    await page.click('button:has-text("Add Session")');
+    await page.selectOption('select[name="sessionType"]', 'Single Sport');
+    await page.fill('input[name="date"]', new Date().toISOString().split('T')[0]);
+    await page.selectOption('select[name="sportType"]', 'Run');
+    await page.fill('input[name="distance"]', '5000');
+    await page.fill('input[name="hours"]', '0');
+    await page.fill('input[name="minutes"]', '19');
+    await page.fill('input[name="seconds"]', '0');
+    await page.click('button[type="submit"]');
+
+    await page.click('button:has-text("Add Session")');
+    await page.selectOption('select[name="sessionType"]', 'Single Sport');
+    await page.fill('input[name="date"]', new Date().toISOString().split('T')[0]);
+    await page.selectOption('select[name="sportType"]', 'Run');
+    await page.fill('input[name="distance"]', '5000');
+    await page.fill('input[name="hours"]', '0');
+    await page.fill('input[name="minutes"]', '20');
+    await page.fill('input[name="seconds"]', '0');
+    await page.click('button[type="submit"]');
+    
+    await page.waitForTimeout(2000);
+    console.log("✅ Sessions and activities created successfully.");
   });
 
   test('User can view personal records', async ({ page }) => {

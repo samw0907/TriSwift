@@ -102,14 +102,14 @@ test.describe('Personal Records Management Tests', () => {
 
     const recordRows = page.locator('.records-table tbody tr');
 
-    const firstRow = recordRows.first();
-    await firstRow.waitFor({ state: 'visible' });
+    const fiveKmRow = recordRows.locator('td', { hasText: '5km' }).locator('..');
+    await fiveKmRow.waitFor({ state: 'visible' });
 
-    const firstPlaceTime = await firstRow.locator('td:nth-child(2)').textContent();
+    const firstPlaceTime = await fiveKmRow.locator('td:nth-child(2)').textContent();
     expect(firstPlaceTime).toMatch(/^\d{2}:\d{2}:\d{2}$/);
     console.log(`✅ First place time: ${firstPlaceTime}`);
 
-    const secondPlaceTime = await firstRow.locator('td:nth-child(3)').textContent();
+    const secondPlaceTime = await fiveKmRow.locator('td:nth-child(3)').textContent();
     if (secondPlaceTime && secondPlaceTime !== "-") {
       expect(secondPlaceTime).toMatch(/^\d{2}:\d{2}:\d{2}$/);
       console.log(`✅ Second place time: ${secondPlaceTime}`);

@@ -149,7 +149,7 @@ test.describe('Activity Management Tests', () => {
     await deleteActivityButton.click();
 
     await page.waitForTimeout(2000);
-    await expect(sessionCard).not.toContainText('12.00 km');
+    await expect(sessionCard).toContainText('0.00 km');
 
     console.log("✅ Activity deleted successfully!");
   });

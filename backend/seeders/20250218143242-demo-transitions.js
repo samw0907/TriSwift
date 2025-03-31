@@ -14,6 +14,6 @@ module.exports = {
   },
 
   down: async () => {
-    await Transition.destroy({ where: {} });
+    await Transition.destroy({ where: { session_id: 2 } });
   }
 };

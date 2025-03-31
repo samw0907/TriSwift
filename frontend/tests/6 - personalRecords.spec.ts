@@ -23,9 +23,7 @@ test.describe('Personal Records Management Tests', () => {
     await page.waitForSelector('form.activity-form', { timeout: 5000 });
 
     await page.fill('input[name="distance"]', '1000');
-    await page.fill('input[name="hours"]', '0');
     await page.fill('input[name="minutes"]', '19');
-    await page.fill('input[name="seconds"]', '0');
     await page.click('button[type="submit"]');
 
     await page.click('button:has-text("Add Session")');
@@ -35,9 +33,7 @@ test.describe('Personal Records Management Tests', () => {
     await page.waitForSelector('form.activity-form', { timeout: 5000 });
 
     await page.fill('input[name="distance"]', '5');
-    await page.fill('input[name="hours"]', '0');
     await page.fill('input[name="minutes"]', '19');
-    await page.fill('input[name="seconds"]', '0');
     await page.click('button[type="submit"]');
 
     await page.click('button:has-text("Add Session")');
@@ -47,15 +43,13 @@ test.describe('Personal Records Management Tests', () => {
     await page.waitForSelector('form.activity-form', { timeout: 5000 });
     
     await page.fill('input[name="distance"]', '5');
-    await page.fill('input[name="hours"]', '0');
     await page.fill('input[name="minutes"]', '20');
-    await page.fill('input[name="seconds"]', '0');
     await page.click('button[type="submit"]');
 
     await page.waitForTimeout(2000);
     console.log("✅ Sessions and activities created successfully.");
 
-    await page.goto('http://localhost:3000/personalRecords');
+    await page.goto('http://localhost:3000/records');
 
     console.log("🔍 Waiting for 'Run' filter button...");
     const runButton = page.locator('button[data-testid="sport-button-run"]');
@@ -74,7 +68,7 @@ test.describe('Personal Records Management Tests', () => {
   });
 
   test('User can filter personal records by sport type', async ({ page }) => {
-    await page.goto('http://localhost:3000/personalRecords');
+    await page.goto('http://localhost:3000/records');
 
     const bikeButton = page.locator('button[data-testid="sport-button-bike"]');
     await bikeButton.waitFor({ state: 'visible' });
@@ -100,7 +94,7 @@ test.describe('Personal Records Management Tests', () => {
   });
 
   test('Records display in the correct order (fastest first)', async ({ page }) => {
-    await page.goto('http://localhost:3000/personalRecords');
+    await page.goto('http://localhost:3000/records');
 
     const runButton = page.locator('button[data-testid="sport-button-run"]');
     await runButton.click();

@@ -12,7 +12,7 @@ test.describe('Totals Graph Tests', () => {
     console.log("✅ Logged in successfully.");
 
     console.log("📈 Navigating to Totals Graph...");
-    await page.goto('http://localhost:3000/dashboard');
+    await page.goto('http://localhost:3000/home');
     await expect(page.locator('.totals-graph-container h2')).toContainText('Last 7 Days Distance');
   });
 
@@ -24,7 +24,7 @@ test.describe('Totals Graph Tests', () => {
       await page.click(`button:has-text("${sport}")`);
 
       console.log("⏳ Waiting for graph update...");
-      await page.waitForTimeout(1000); // Adjust if a response or update indicator is available
+      await page.waitForTimeout(1000);
 
       const updatedLabel = await page.locator('.totals-graph-container h2').textContent();
       expect(updatedLabel).toMatch(/Last 7 Days Distance|Past Month Distance|Past Year Distance/);

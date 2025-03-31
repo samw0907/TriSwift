@@ -1,0 +1,25 @@
+{"version":7,"type":"context-options","origin":"testRunner","browserName":"","options":{},"platform":"win32","wallTime":1743406194586,"monotonicTime":3646.263,"sdkLanguage":"javascript"}
+{"type":"before","callId":"hook@1","startTime":3668.482,"class":"Test","method":"step","apiName":"Before Hooks","params":{},"stack":[]}
+{"type":"before","callId":"hook@2","parentId":"hook@1","startTime":3671.352,"class":"Test","method":"step","apiName":"beforeEach hook","params":{},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\6 - personalRecords.spec.ts","line":5,"column":8}]}
+{"type":"before","callId":"fixture@3","parentId":"hook@2","startTime":3696.593,"class":"Test","method":"step","apiName":"fixture: browser","params":{},"stack":[]}
+{"type":"before","callId":"pw:api@4","parentId":"fixture@3","startTime":3705.517,"class":"Test","method":"step","apiName":"browserType.launch","params":{"handleSIGINT":"false","tracesDir":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\test-results\\.playwright-artifacts-65\\traces","headless":"true","ignoreDefaultArgs":"undefined","ignoreAllDefaultArgs":"false","env":"undefined"},"stack":[]}
+{"type":"after","callId":"pw:api@4","endTime":4039.28,"annotations":[]}
+{"type":"after","callId":"fixture@3","endTime":4040.056,"annotations":[]}
+{"type":"before","callId":"fixture@5","parentId":"hook@2","startTime":4042.14,"class":"Test","method":"step","apiName":"fixture: context","params":{},"stack":[]}
+{"type":"before","callId":"pw:api@6","parentId":"fixture@5","startTime":4050.027,"class":"Test","method":"step","apiName":"browser.newContext","params":{"acceptDownloads":"accept","bypassCSP":"false","colorScheme":"light","hasTouch":"false","ignoreHTTPSErrors":"false","isMobile":"false","javaScriptEnabled":"true","locale":"en-US","offline":"false","viewport":"Object","baseURL":"http://localhost:3000","serviceWorkers":"allow","noDefaultViewport":"false","extraHTTPHeaders":"undefined","storageState":"undefined","recordHar":"undefined","reducedMotion":"undefined","forcedColors":"undefined","contrast":"undefined","clientCertificates":"undefined"},"stack":[]}
+{"type":"after","callId":"pw:api@6","endTime":4067.967,"annotations":[]}
+{"type":"after","callId":"fixture@5","endTime":4093.652,"annotations":[]}
+{"type":"before","callId":"fixture@7","parentId":"hook@2","startTime":4094.684,"class":"Test","method":"step","apiName":"fixture: page","params":{},"stack":[]}
+{"type":"before","callId":"pw:api@8","parentId":"fixture@7","startTime":4097.86,"class":"Test","method":"step","apiName":"browserContext.newPage","params":{},"stack":[]}
+{"type":"after","callId":"pw:api@8","endTime":4648.564,"annotations":[]}
+{"type":"after","callId":"fixture@7","endTime":4649.166,"annotations":[]}
+{"type":"stdout","timestamp":4650.519,"text":"🔑 Logging in before each test...\n"}
+{"type":"before","callId":"pw:api@9","parentId":"hook@2","startTime":4655.479,"class":"Test","method":"step","apiName":"page.goto","params":{"url":"http://localhost:3000/login","waitUntil":"load"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\6 - personalRecords.spec.ts","line":7,"column":16}]}
+{"type":"after","callId":"pw:api@9","endTime":6687.078,"annotations":[]}
+{"type":"before","callId":"pw:api@10","parentId":"hook@2","startTime":6690.224,"class":"Test","method":"step","apiName":"page.fill","params":{"selector":"input[name=\"email\"]","value":"seeduser@example.com"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\6 - personalRecords.spec.ts","line":8,"column":16}]}
+{"type":"after","callId":"pw:api@10","endTime":6891.925,"annotations":[]}
+{"type":"before","callId":"pw:api@11","parentId":"hook@2","startTime":6894.465,"class":"Test","method":"step","apiName":"page.fill","params":{"selector":"input[name=\"password\"]","value":"password123"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\6 - personalRecords.spec.ts","line":9,"column":16}]}
+{"type":"after","callId":"pw:api@11","endTime":6940.798,"annotations":[]}
+{"type":"before","callId":"pw:api@12","parentId":"hook@2","startTime":6943.449,"class":"Test","method":"step","apiName":"page.click","params":{"selector":"button[type=\"submit\"]"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\6 - personalRecords.spec.ts","line":10,"column":16}]}
+{"type":"after","callId":"pw:api@12","endTime":7111.62,"annotations":[]}
+{"type":"before","callId":"pw:api@13","parentId":"hook@2","startTime":7117.331,"class":"Test","method":"step","apiName":"page.waitForURL","params":{"info":"Object"},"stack":[{"file":"C:\\Users\\swill\\Desktop\\Helsinki University Projects\\PortfolioProjects\\TriSwift\\frontend\\tests\\6 - personalRecords.spec.ts","line":11,"column":16}]}

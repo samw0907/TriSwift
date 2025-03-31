@@ -5,7 +5,7 @@ module.exports = {
     await Session.bulkCreate([
       {
         id: 1001,
-        user_id: 1001,
+        user_id: 1002,
         session_type: 'Run',
         date: '2025-03-15',
         total_duration: '1200',
@@ -29,7 +29,7 @@ module.exports = {
       },
       {
         id: 1003,
-        user_id: 1001,
+        user_id: 1002,
         session_type: 'Run',
         date: '2025-03-17',
         total_duration: '1500',

@@ -6,7 +6,7 @@ module.exports = {
       {
         id: 1001,
         session_id: 1001,
-        user_id: 1001,
+        user_id: 1002,
         sport_type: 'run',
         duration: 1200,
         distance: 5.0,
@@ -45,7 +45,7 @@ module.exports = {
       {
         id: 1004,
         session_id: 1003,
-        user_id: 1001,
+        user_id: 1002,
         sport_type: 'run',
         duration: 1500,
         distance: 5.0,

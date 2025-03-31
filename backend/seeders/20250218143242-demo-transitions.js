@@ -17,3 +17,4 @@ module.exports = {
     await Transition.destroy({ where: { session_id: 1002 } });
   }
 };
+

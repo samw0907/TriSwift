@@ -1,10 +1,8 @@
 TriSwift - Triathlon Activity Tracking Tool
 
-TriSwift is a full-stack fitness tracking app designed specifically with traithletes in mind. It enables users to log and track swimming, cycling, and running workouts, either individually or as part of a triathlon, including transition times between activities. The app provides insights, goal tracking, and performance analysis to help athletes optimize their training.
+https://triswift-frontend.fly.dev/
 
-Project Status
-This project is in early development.** Features and functionality will be added progressively.
-
+TriSwift is a full-stack fitness tracking app designed specifically with traithletes in mind. It enables users to log and track swimming, cycling, and running workouts, either individually or as part of a triathlon, including transition times between activities. The app provides running totals, automated personal records and target pace calculator functions.
 
 Features
 -User Authentication (Sign up, Login, JWT-based authentication)
@@ -36,3 +34,5 @@ Frontend Tech Stack
 Contact Details
 -Email: swilliamson_0907@outlook.com
 -Github: https://github.com/samw0907/TriSwift
+
+Working hours diary can be found in the wokringHoursDiary.md in the TriSwift root directory.

@@ -77,4 +77,4 @@ TriSwift is a full-stack fitness tracking app designed specifically with traithl
 -Github: https://github.com/samw0907/TriSwift
 
 # Time Diary
-Working hours diary can be found in the workingHoursDiary.md in the TriSwift root directory.
+- Working hours diary: [`workingHoursDiary.md`](./workingHoursDiary.md)

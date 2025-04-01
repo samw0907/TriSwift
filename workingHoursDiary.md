@@ -66,7 +66,8 @@ Date            Hours    Topic
 30.03.2025      1        CI/CD pipeline, e2e test changes  
                 (47)
 
-31.03.2025      
-                ()
+31.03.2025      4       CI/CD pipeline, e2e test changes
+01.04.2025      6       Updating README, minor styling changes and polish   
+                (10)
 
-TOTAL HOURS     250.5    
+TOTAL HOURS     260.5    

@@ -7,8 +7,6 @@
     "start": "node index.js",
     "start:test": "NODE_ENV=test node index.js",
     "dev": "nodemon index.js",
-    "lint": "eslint . --ext .js",
-    "format": "prettier --write .",
     "migration:up": "npx sequelize-cli db:migrate",
     "migration:down": "npx sequelize-cli db:migrate:undo"
   },
@@ -32,10 +30,8 @@
   "devDependencies": {
     "@eslint/js": "^9.20.0",
     "@flydotio/dockerfile": "^0.7.8",
-    "eslint": "^9.20.1",
     "globals": "^15.15.0",
     "nodemon": "^3.1.9",
-    "prettier": "^3.5.1",
     "vitest": "^3.0.9",
     "wait-on": "^8.0.3"
   }

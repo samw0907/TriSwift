@@ -70,4 +70,4 @@ Date            Hours    Topic
 01.04.2025      6       Updating README, minor styling changes and polish   
                 (10)
 
-TOTAL HOURS     260.5    
+TOTAL HOURS     260.5 

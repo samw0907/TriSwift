@@ -45,7 +45,12 @@
 .pace-form input[type="number"] {
     text-align: center;
   }
-  
+
+.pace-form .pace-time-inputs input[type="number"] {
+  width: 80px !important;
+  max-width: none;
+  }
+
 .pace-time-inputs {
     display: flex;
     justify-content: center;
@@ -53,13 +58,14 @@
   }
   
 .pace-time-inputs input {
-    width: 60px;
+    width: 100px;
     text-align: center;
   }
   
 .pace-buttons {
     margin-top: 10px;
   }
+  
   
 .pace-buttons button {
     background: var(--primary-color);

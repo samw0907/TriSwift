@@ -98,7 +98,7 @@ const PaceCalculator: React.FC = () => {
         <input
           id="custom-distance"
           type="number"
-          placeholder="Custom Distance"
+          placeholder="Custom"
           value={customDistance}
           onChange={handleCustomDistanceChange}
           style={{ width: "100px" }}

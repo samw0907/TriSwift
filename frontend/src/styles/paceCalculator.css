@@ -88,6 +88,10 @@
     font-weight: bold;
     color: var(--secondary-dark);
   }
+
+.pace-form select#sport-select {
+  max-width: 120px;
+  }
   
 @media (max-width: 768px) {
 .pace-calculator-container {

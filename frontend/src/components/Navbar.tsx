@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import '../index.css';
 import '../styles/navbar.css';
 
 const Navbar: React.FC = () => {
@@ -15,21 +16,21 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="navbar-blue">
-      <div className="navbar-left">
-        <Link to="/home" className="nav-link">Home</Link>
-        <Link to="/dashboard" className="nav-link">Dashboard</Link>
-        <Link to="/records" className="nav-link">Personal Records</Link>
-        <Link to="/paceCalculator" className="nav-link">Pace Calculator</Link>
+    <nav className="navbar">
+      <div className="nav-links">
+        <Link to="/home">Home</Link>
+        <Link to="/dashboard">Dashboard</Link>
+        <Link to="/records">Personal Records</Link>
+        <Link to="/paceCalculator">Pace Calculator</Link>
       </div>
-      <div className="navbar-right">
+      <div className="nav-auth">
         {!auth.isAuthenticated ? (
           <>
-            <Link to="/login" className="btn nav-btn login-btn">Login</Link>
-            <Link to="/signup" className="btn nav-btn signup-btn">Signup</Link>
+            <Link to="/login" className="nav-btn">Login</Link>
+            <Link to="/signup" className="nav-btn">Signup</Link>
           </>
         ) : (
-          <button onClick={handleLogout} className="btn nav-btn logout-btn">Logout</button>
+          <button onClick={handleLogout} className="logout-btn">Logout</button>
         )}
       </div>
     </nav>

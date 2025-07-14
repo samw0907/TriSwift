@@ -1,90 +1,79 @@
-.navbar-blue {
+.navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #114AB1;
-  padding: 16px 32px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  background: #5ac3b0;
+  padding: 15px 30px;
   color: white;
-  font-family: "Josefin Sans", sans-serif;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.navbar-left,
-.navbar-right {
+.nav-links {
   display: flex;
-  align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
+  gap: 20px;
 }
 
-.nav-link {
+.nav-links a {
   color: white;
   text-decoration: none;
-  font-size: 1rem;
-  padding: 8px 12px;
+  font-size: 16px;
+  padding: 8px 14px;
   border-radius: 6px;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease-in-out;
 }
 
-.nav-link:hover {
-  background-color: #6793AC;
+.nav-links a:hover {
+  background-color: #44b2a0;
+}
+
+.nav-auth {
+  display: flex;
+  gap: 10px;
 }
 
 .nav-btn {
-  font-size: 0.95rem;
-  font-weight: 600;
-  padding: 10px 18px;
-  border: none;
+  background: #f7cd46;
+  color: #013f2f;
+  padding: 8px 14px;
+  text-decoration: none;
   border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.25s ease;
+  transition: background 0.3s ease-in-out;
 }
 
-.login-btn {
-  background-color: transparent;
-  color: #FFD372;
-  border: 2px solid #FFD372;
-}
-
-.login-btn:hover {
-  background-color: #FFD372;
-  color: #114AB1;
-}
-
-.signup-btn {
-  background-color: #E4580B;
+.nav-btn:hover {
+  background: #e0b934;
   color: white;
-}
-
-.signup-btn:hover {
-  background-color: #c74803;
 }
 
 .logout-btn {
-  background-color: #6793AC;
+  background: #de5935;
   color: white;
+  padding: 8px 14px;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.3s ease-in-out;
 }
 
 .logout-btn:hover {
-  background-color: #557b93;
+  background: #c94620;
 }
 
 @media (max-width: 768px) {
-  .navbar-blue {
+  .navbar {
     flex-direction: column;
-    align-items: flex-start;
-    padding: 16px;
+    text-align: center;
+    padding: 15px;
   }
 
-  .navbar-left,
-  .navbar-right {
+  .nav-links {
     flex-direction: row;
-    justify-content: flex-start;
-    gap: 12px;
-    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .nav-auth {
+    flex-direction: row;
+    gap: 10px;
     margin-top: 10px;
   }
 }

@@ -1,7 +1,7 @@
-.landing-hero {
+.landing-palette3 {
   font-family: "Josefin Sans", sans-serif;
-  background: #f6f9fc;
-  color: #2c2c2c;
+  background: #fefdf8;
+  color: #1f1f1f;
   min-height: 100vh;
   padding: 60px 20px;
   display: flex;
@@ -12,14 +12,14 @@
 
 .hero-title {
   font-size: 4rem;
-  color: #114AB1;
+  color: #de5935; /* warm red-orange */
   letter-spacing: 1px;
   margin-bottom: 10px;
 }
 
-.hero-tagline {
+.hero-subtitle {
   font-size: 1.4rem;
-  color: #2c2c2c;
+  color: #444;
   font-weight: 400;
   margin-bottom: 8px;
 }
@@ -28,10 +28,10 @@
   font-size: 1.05rem;
   max-width: 640px;
   margin: 0 auto 30px;
-  color: #555;
+  color: #666;
 }
 
-.hero-buttons {
+.cta-buttons {
   display: flex;
   gap: 18px;
   margin-bottom: 60px;
@@ -49,53 +49,44 @@
   border: 2px solid transparent;
 }
 
-.btn.login-btn {
+.btn-outline {
   background: transparent;
-  border: 2px solid #114AB1;
-  color: #114AB1;
+  border: 2px solid #de5935;
+  color: #de5935;
 }
 
-.btn.login-btn:hover {
-  background-color: #114AB1;
+.btn-outline:hover {
+  background-color: #de5935;
   color: white;
   transform: scale(1.04);
 }
 
-.btn.signup-btn {
-  background-color: #E4580B;
+.btn-solid {
+  background-color: #5ac3b0; /* mint green */
   color: white;
 }
 
-.btn.signup-btn:hover {
-  background-color: #c04407;
+.btn-solid:hover {
+  background-color: #44b2a0;
   transform: scale(1.04);
 }
 
-.features-section {
-  padding: 40px 20px;
-  background: #ffffff;
-}
-
-.features-heading {
-  font-size: 2rem;
-  color: #114AB1;
-  margin-bottom: 30px;
-}
-
-.features-grid {
+.feature-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 26px;
+  width: 100%;
   max-width: 1100px;
-  margin: 0 auto;
+  margin: 0 auto 50px;
+  padding: 0 20px;
 }
 
 .feature-card {
-  background-color: #ffffff;
-  border: 1px solid #ddd;
+  background-color: white;
+  border: 1px solid #eee;
   border-radius: 10px;
   padding: 24px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease;
 }
 
@@ -105,7 +96,7 @@
 
 .feature-card h3 {
   font-size: 1.2rem;
-  color: #114AB1;
+  color: #f7cd46; /* gold */
   margin-bottom: 8px;
 }
 
@@ -114,9 +105,10 @@
   font-size: 0.95rem;
 }
 
-.landing-footer {
+.tagline {
   margin-top: 40px;
   font-size: 1rem;
-  color: #555;
-  padding: 20px;
+  color: #777;
+  max-width: 720px;
+  line-height: 1.5;
 }

@@ -2,10 +2,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #16519f;
+  background: #1d2228;
   padding: 15px 30px;
-  color: white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: #e1e2e2;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 .nav-links {
@@ -14,7 +14,7 @@
 }
 
 .nav-links a {
-  color: white;
+  color: #e1e2e2;
   text-decoration: none;
   font-size: 16px;
   padding: 8px 14px;
@@ -23,7 +23,8 @@
 }
 
 .nav-links a:hover {
-  background-color: #f07e74;
+  background-color: #fb8122;
+  color: #1d2228;
 }
 
 .nav-auth {
@@ -32,31 +33,31 @@
 }
 
 .nav-btn {
-  background: #f8dd2e;
-  color: #1a1a1a;
+  background: #e1e2e2;
+  color: #1d2228;
   padding: 8px 14px;
-  border-radius: 6px;
   text-decoration: none;
-  font-weight: 600;
+  border-radius: 6px;
   transition: background 0.3s ease-in-out;
 }
 
 .nav-btn:hover {
-  background: #f4ce00;
+  background: #fb8122;
+  color: #1d2228;
 }
 
 .logout-btn {
-  background: #f07e74;
+  background: #d9534f;
   color: white;
+  padding: 8px 14px;
   border: none;
   cursor: pointer;
-  padding: 8px 14px;
   border-radius: 6px;
   transition: background 0.3s ease-in-out;
 }
 
 .logout-btn:hover {
-  background: #db5c5c;
+  background: #c9302c;
 }
 
 @media (max-width: 768px) {

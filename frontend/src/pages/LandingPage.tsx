@@ -4,12 +4,13 @@ import "../styles/landing.css";
 
 const LandingPage: React.FC = () => {
   return (
-    <div className="landing-bold">
+    <div className="landing-dark">
       <h1 className="hero-title">TriSwift</h1>
       <p className="hero-subtitle">Train. Track. Triumph.</p>
       <p className="hero-description">
         Your all-in-one performance companion for triathlon training.
       </p>
+
       <div className="cta-buttons">
         <Link to="/login">
           <button className="btn btn-outline">Login</button>

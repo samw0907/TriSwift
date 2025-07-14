@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import '../index.css';
 import '../styles/navbar.css';
 
 const Navbar: React.FC = () => {
@@ -16,7 +15,7 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="navbar dark-navbar">
+    <nav className="navbar">
       <div className="nav-links">
         <Link to="/home">Home</Link>
         <Link to="/dashboard">Dashboard</Link>
@@ -26,11 +25,11 @@ const Navbar: React.FC = () => {
       <div className="nav-auth">
         {!auth.isAuthenticated ? (
           <>
-            <Link to="/login" className="nav-btn light">Login</Link>
-            <Link to="/signup" className="nav-btn solid">Signup</Link>
+            <Link to="/login" className="nav-btn">Login</Link>
+            <Link to="/signup" className="nav-btn">Signup</Link>
           </>
         ) : (
-          <button onClick={handleLogout} className="nav-btn logout">Logout</button>
+          <button onClick={handleLogout} className="logout-btn">Logout</button>
         )}
       </div>
     </nav>

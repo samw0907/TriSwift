@@ -1,6 +1,6 @@
-.landing-bold {
+.landing-dark {
   font-family: "Josefin Sans", sans-serif;
-  background: #1d2228;
+  background-color: #1d2228;
   color: #e1e2e2;
   min-height: 100vh;
   padding: 60px 20px;
@@ -19,8 +19,8 @@
 
 .hero-subtitle {
   font-size: 1.4rem;
-  color: #e1e2e2;
-  font-weight: 400;
+  color: #00bfff;
+  font-weight: 500;
   margin-bottom: 8px;
 }
 
@@ -28,7 +28,7 @@
   font-size: 1.05rem;
   max-width: 640px;
   margin: 0 auto 30px;
-  color: #cfcfcf;
+  color: #cccccc;
 }
 
 .cta-buttons {
@@ -51,12 +51,12 @@
 
 .btn-outline {
   background: transparent;
-  border: 2px solid #fb8122;
-  color: #fb8122;
+  border: 2px solid #00bfff;
+  color: #00bfff;
 }
 
 .btn-outline:hover {
-  background-color: #fb8122;
+  background-color: #00bfff;
   color: #1d2228;
   transform: scale(1.04);
 }
@@ -67,7 +67,7 @@
 }
 
 .btn-solid:hover {
-  background-color: #d86c14;
+  background-color: #e66f12;
   transform: scale(1.04);
 }
 
@@ -82,8 +82,8 @@
 }
 
 .feature-card {
-  background-color: #2b2f36;
-  border: 1px solid #444;
+  background-color: #2a2f36;
+  border: 1px solid #3a3f47;
   border-radius: 10px;
   padding: 24px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
@@ -96,19 +96,19 @@
 
 .feature-card h3 {
   font-size: 1.2rem;
-  color: #fb8122;
+  color: #00bfff;
   margin-bottom: 8px;
 }
 
 .feature-card p {
-  color: #ccc;
+  color: #cccccc;
   font-size: 0.95rem;
 }
 
 .tagline {
   margin-top: 40px;
   font-size: 1rem;
-  color: #aaa;
+  color: #aaaaaa;
   max-width: 720px;
   line-height: 1.5;
 }

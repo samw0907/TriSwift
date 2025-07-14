@@ -1,46 +1,47 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "../styles/landing.css";
-import "../styles/home.css";
 
 const LandingPage: React.FC = () => {
   return (
-    <div className="landing-container">
-      <h1>Welcome to TriSwift</h1>
-      <p>The ultimate fitness tracking app for triathletes.</p>
-      <p>Log your workouts, track your progress, and optimize your training.</p>
-      
-      <div className="landing-buttons">
+    <div className="landing-hero">
+      <h1 className="hero-title">TriSwift</h1>
+      <p className="hero-subtitle">Train. Track. Triumph.</p>
+      <p className="hero-description">
+        Your all-in-one performance companion for triathlon training.
+      </p>
+
+      <div className="cta-buttons">
         <Link to="/login">
-          <button className="landing-button">Login</button>
+          <button className="btn btn-outline">Login</button>
         </Link>
         <Link to="/signup">
-          <button className="landing-button signup-button">Sign Up</button>
+          <button className="btn btn-solid">Sign Up</button>
         </Link>
       </div>
 
-      <section className="home-features">
-      <div className="feature">
-        <h3>Session Logging</h3>
-        <p>Easily log your workouts across all three sports. Record distances, durations, heart rate, cadence, power, and more.</p>
-      </div>
+      <section className="feature-grid">
+        <div className="feature-card">
+          <h3>Workout Logging</h3>
+          <p>Capture detailed sessions across swim, bike, and run — all in one place.</p>
+        </div>
+        <div className="feature-card">
+          <h3>Progress Graphs</h3>
+          <p>Visualize weekly, monthly, and yearly distance trends across disciplines.</p>
+        </div>
+        <div className="feature-card">
+          <h3>Personal Bests</h3>
+          <p>Your fastest efforts are automatically tracked and updated in real-time.</p>
+        </div>
+        <div className="feature-card">
+          <h3>Pacing Tools</h3>
+          <p>Plan your race pace with precise calculators tailored for triathletes.</p>
+        </div>
+      </section>
 
-      <div className="feature">
-        <h3>Progress Tracking</h3>
-        <p>Track your running totals for the week, month, year or lifetime distance. Also viewable as filterable line graphs. </p>
-      </div>
-
-      <div className="feature">
-        <h3>Personal Bests</h3>
-         <p>Automatically track your fastest times for a variety of event distanmces for each discipline. Top 3 times will update automatically as new activities are added</p>
-      </div>
-
-      <div className="feature">
-        <h3>Pacing Calculator</h3>
-        <p>Calculate the exact paces required to hit your target race times. Know what it takes and plan your training accordingly.</p>
-      </div>
-    </section>
-     <p className="home-summary">Whether you're training for your next triathlon, aiming for a new PR, or just staying active, TriSwift keeps your performance on track!</p>
+      <p className="tagline">
+        Whether you're chasing your first finish or next podium — TriSwift has your back.
+      </p>
     </div>
   );
 };

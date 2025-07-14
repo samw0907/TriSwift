@@ -18,15 +18,15 @@ const Navbar: React.FC = () => {
   return (
     <nav className="navbar">
       <div className="nav-links">
-        <Link to="/home">Home</Link> |  
-        <Link to="/dashboard">Dashboard</Link> |  
-        <Link to="/records">Personal Records</Link> |  
+        <Link to="/home">Home</Link>
+        <Link to="/dashboard">Dashboard</Link>
+        <Link to="/records">Personal Records</Link>
         <Link to="/paceCalculator">Pace Calculator</Link>
       </div>
       <div className="nav-auth">
         {!auth.isAuthenticated ? (
           <>
-            <Link to="/login" className="nav-btn">Login</Link> |  
+            <Link to="/login" className="nav-btn">Login</Link>
             <Link to="/signup" className="nav-btn">Signup</Link>
           </>
         ) : (

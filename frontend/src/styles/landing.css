@@ -1,7 +1,7 @@
 .landing-hero {
   font-family: "Josefin Sans", sans-serif;
-  background: #f9f9f9;
-  color: #01345b;
+  background: #f8f9fc;
+  color: #1a1a1a;
   min-height: 100vh;
   padding: 60px 20px;
   display: flex;
@@ -12,14 +12,14 @@
 
 .hero-title {
   font-size: 4rem;
-  color: #5ce0d8;
+  color: #16519f;
   letter-spacing: 1px;
   margin-bottom: 10px;
 }
 
-.hero-tagline {
+.hero-subtitle {
   font-size: 1.4rem;
-  color: #01345b;
+  color: #4fcbe9;
   font-weight: 400;
   margin-bottom: 8px;
 }
@@ -31,7 +31,7 @@
   color: #444;
 }
 
-.hero-buttons {
+.cta-buttons {
   display: flex;
   gap: 18px;
   margin-bottom: 60px;
@@ -49,50 +49,44 @@
   border: 2px solid transparent;
 }
 
-.login-btn {
-  background-color: #01345b;
+.btn-outline {
+  background: transparent;
+  border: 2px solid #f07e74;
+  color: #f07e74;
+}
+
+.btn-outline:hover {
+  background-color: #f07e74;
   color: white;
+  transform: scale(1.04);
 }
 
-.login-btn:hover {
-  background-color: #011f38;
+.btn-solid {
+  background-color: #f8dd2e;
+  color: #1a1a1a;
 }
 
-.signup-btn {
-  background-color: #ffcf43;
-  color: #01345b;
+.btn-solid:hover {
+  background-color: #f4ce00;
+  transform: scale(1.04);
 }
 
-.signup-btn:hover {
-  background-color: #f4c120;
-}
-
-.features-section {
-  width: 100%;
-  max-width: 1100px;
-  padding: 60px 20px;
-  margin: 0 auto;
-}
-
-.features-heading {
-  text-align: center;
-  color: #01345b;
-  font-size: 2rem;
-  margin-bottom: 40px;
-}
-
-.features-grid {
+.feature-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 26px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto 50px;
+  padding: 0 20px;
 }
 
 .feature-card {
   background-color: white;
-  border: 2px solid #5ce0d8;
+  border: 1px solid #ddd;
   border-radius: 10px;
   padding: 24px;
-  box-shadow: 0 4px 12px rgba(1, 52, 91, 0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
   transition: transform 0.3s ease;
 }
 
@@ -102,7 +96,7 @@
 
 .feature-card h3 {
   font-size: 1.2rem;
-  color: #01345b;
+  color: #16519f;
   margin-bottom: 8px;
 }
 
@@ -111,10 +105,10 @@
   font-size: 0.95rem;
 }
 
-.landing-footer {
-  margin-top: 60px;
-  padding: 30px;
-  background: #01345b;
-  color: white;
+.tagline {
+  margin-top: 40px;
   font-size: 1rem;
+  color: #666;
+  max-width: 720px;
+  line-height: 1.5;
 }

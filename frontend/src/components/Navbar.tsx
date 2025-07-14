@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import '../index.css';
-import '../styles/navbar.css';
+import React, { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import "../index.css";
+import "../styles/navbar.css";
 
 const Navbar: React.FC = () => {
   const auth = useContext(AuthContext);

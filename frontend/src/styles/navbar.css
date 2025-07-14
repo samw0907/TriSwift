@@ -1,79 +1,90 @@
-.navbar {
+.navbar-blue {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #2C3D73;
-  padding: 15px 30px;
+  background-color: #114AB1;
+  padding: 16px 32px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
   color: white;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: "Josefin Sans", sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
-.nav-links {
+.navbar-left,
+.navbar-right {
   display: flex;
-  gap: 20px;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
 }
 
-.nav-links a {
+.nav-link {
   color: white;
   text-decoration: none;
-  font-size: 16px;
-  padding: 8px 14px;
+  font-size: 1rem;
+  padding: 8px 12px;
   border-radius: 6px;
-  transition: background 0.3s ease-in-out;
+  transition: background 0.3s ease;
 }
 
-.nav-links a:hover {
-  background-color: #7CAADC;
-}
-
-.nav-auth {
-  display: flex;
-  gap: 10px;
+.nav-link:hover {
+  background-color: #6793AC;
 }
 
 .nav-btn {
-  background: #FFD372;
-  color: #2C3D73;
-  padding: 8px 14px;
-  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 10px 18px;
+  border: none;
   border-radius: 6px;
-  transition: background 0.3s ease-in-out;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
-.nav-btn:hover {
-  background: #F15B42;
+.login-btn {
+  background-color: transparent;
+  color: #FFD372;
+  border: 2px solid #FFD372;
+}
+
+.login-btn:hover {
+  background-color: #FFD372;
+  color: #114AB1;
+}
+
+.signup-btn {
+  background-color: #E4580B;
   color: white;
+}
+
+.signup-btn:hover {
+  background-color: #c74803;
 }
 
 .logout-btn {
-  background: #F49CC4;
+  background-color: #6793AC;
   color: white;
-  padding: 8px 14px;
-  border: none;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background 0.3s ease-in-out;
 }
 
 .logout-btn:hover {
-  background: #F15B42;
+  background-color: #557b93;
 }
 
 @media (max-width: 768px) {
-  .navbar {
+  .navbar-blue {
     flex-direction: column;
-    text-align: center;
-    padding: 15px;
+    align-items: flex-start;
+    padding: 16px;
   }
 
-  .nav-links {
+  .navbar-left,
+  .navbar-right {
     flex-direction: row;
-    margin-top: 10px;
-  }
-
-  .nav-auth {
-    flex-direction: row;
-    gap: 10px;
+    justify-content: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
     margin-top: 10px;
   }
 }

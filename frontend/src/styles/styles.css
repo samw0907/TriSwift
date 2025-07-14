@@ -160,4 +160,22 @@
     border-radius: var(--border-radius);
     margin-bottom: 10px;
   }
+  :root {
+  --primary-color: #114AB1;
+  --primary-dark: #0e3a8f;
+  --secondary-color: #6793AC;
+  --accent-color: #E4580B;
+  --text-color: #2c2c2c;
+  --border-radius: 8px;
+  --box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+body {
+  font-family: "Josefin Sans", sans-serif;
+  background: #f6f9fc;
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+}
+
   

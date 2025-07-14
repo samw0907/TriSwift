@@ -5,43 +5,57 @@ import "../styles/landing.css";
 const LandingPage: React.FC = () => {
   return (
     <div className="landing-hero">
-      <h1 className="hero-title">TriSwift</h1>
-      <p className="hero-subtitle">Train. Track. Triumph.</p>
-      <p className="hero-description">
-        Your all-in-one performance companion for triathlon training.
-      </p>
-
-      <div className="cta-buttons">
-        <Link to="/login">
-          <button className="btn btn-outline">Login</button>
-        </Link>
-        <Link to="/signup">
-          <button className="btn btn-solid">Sign Up</button>
-        </Link>
+      <div className="hero-content">
+        <h1 className="hero-title">TriSwift</h1>
+        <p className="hero-tagline">
+          Track your training. Crush your goals. Conquer your next race.
+        </p>
+        <div className="hero-buttons">
+          <Link to="/login">
+            <button className="btn login-btn">Log In</button>
+          </Link>
+          <Link to="/signup">
+            <button className="btn signup-btn">Sign Up</button>
+          </Link>
+        </div>
       </div>
 
-      <section className="feature-grid">
-        <div className="feature-card">
-          <h3>Workout Logging</h3>
-          <p>Capture detailed sessions across swim, bike, and run — all in one place.</p>
-        </div>
-        <div className="feature-card">
-          <h3>Progress Graphs</h3>
-          <p>Visualize weekly, monthly, and yearly distance trends across disciplines.</p>
-        </div>
-        <div className="feature-card">
-          <h3>Personal Bests</h3>
-          <p>Your fastest efforts are automatically tracked and updated in real-time.</p>
-        </div>
-        <div className="feature-card">
-          <h3>Pacing Tools</h3>
-          <p>Plan your race pace with precise calculators tailored for triathletes.</p>
+      <section className="features-section">
+        <h2 className="features-heading">Why TriSwift?</h2>
+        <div className="features-grid">
+          <div className="feature-card">
+            <h3>Session Logging</h3>
+            <p>
+              Log swims, rides, and runs with distance, time, pace, and metrics.
+            </p>
+          </div>
+          <div className="feature-card">
+            <h3>Progress Tracking</h3>
+            <p>
+              Monitor your totals weekly, monthly, or yearly through dynamic
+              graphs.
+            </p>
+          </div>
+          <div className="feature-card">
+            <h3>Personal Records</h3>
+            <p>
+              Your fastest 5K, 10K, or long ride — automatically tracked and
+              ranked.
+            </p>
+          </div>
+          <div className="feature-card">
+            <h3>Pacing Calculator</h3>
+            <p>
+              Dial in your target race times with pace and speed estimates.
+            </p>
+          </div>
         </div>
       </section>
 
-      <p className="tagline">
-        Whether you're chasing your first finish or next podium — TriSwift has your back.
-      </p>
+      <footer className="landing-footer">
+        Whether you're chasing your first triathlon or your next PR — TriSwift
+        has you covered.
+      </footer>
     </div>
   );
 };

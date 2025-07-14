@@ -1,7 +1,7 @@
 .landing-hero {
   font-family: "Josefin Sans", sans-serif;
-  background: #FFD372;
-  color: #2C3D73;
+  background: #f6f9fc;
+  color: #2c2c2c;
   min-height: 100vh;
   padding: 60px 20px;
   display: flex;
@@ -12,14 +12,14 @@
 
 .hero-title {
   font-size: 4rem;
-  color: #F15B42;
+  color: #114AB1;
   letter-spacing: 1px;
   margin-bottom: 10px;
 }
 
-.hero-subtitle {
+.hero-tagline {
   font-size: 1.4rem;
-  color: #2C3D73;
+  color: #2c2c2c;
   font-weight: 400;
   margin-bottom: 8px;
 }
@@ -28,10 +28,10 @@
   font-size: 1.05rem;
   max-width: 640px;
   margin: 0 auto 30px;
-  color: #2C3D73;
+  color: #555;
 }
 
-.cta-buttons {
+.hero-buttons {
   display: flex;
   gap: 18px;
   margin-bottom: 60px;
@@ -49,45 +49,53 @@
   border: 2px solid transparent;
 }
 
-.btn-outline {
+.btn.login-btn {
   background: transparent;
-  border: 2px solid #F15B42;
-  color: #F15B42;
+  border: 2px solid #114AB1;
+  color: #114AB1;
 }
 
-.btn-outline:hover {
-  background-color: #F15B42;
+.btn.login-btn:hover {
+  background-color: #114AB1;
   color: white;
   transform: scale(1.04);
 }
 
-.btn-solid {
-  background-color: #7CAADC;
+.btn.signup-btn {
+  background-color: #E4580B;
   color: white;
 }
 
-.btn-solid:hover {
-  background-color: #2C3D73;
-  color: #FFD372;
+.btn.signup-btn:hover {
+  background-color: #c04407;
   transform: scale(1.04);
 }
 
-.feature-grid {
+.features-section {
+  padding: 40px 20px;
+  background: #ffffff;
+}
+
+.features-heading {
+  font-size: 2rem;
+  color: #114AB1;
+  margin-bottom: 30px;
+}
+
+.features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 26px;
-  width: 100%;
   max-width: 1100px;
-  margin: 0 auto 50px;
-  padding: 0 20px;
+  margin: 0 auto;
 }
 
 .feature-card {
-  background-color: white;
-  border: 2px solid #F49CC4;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
   border-radius: 10px;
   padding: 24px;
-  box-shadow: 0 4px 10px rgba(44, 61, 115, 0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
   transition: transform 0.3s ease;
 }
 
@@ -97,19 +105,18 @@
 
 .feature-card h3 {
   font-size: 1.2rem;
-  color: #F15B42;
+  color: #114AB1;
   margin-bottom: 8px;
 }
 
 .feature-card p {
-  color: #2C3D73;
+  color: #444;
   font-size: 0.95rem;
 }
 
-.tagline {
+.landing-footer {
   margin-top: 40px;
   font-size: 1rem;
-  color: #2C3D73;
-  max-width: 720px;
-  line-height: 1.5;
+  color: #555;
+  padding: 20px;
 }

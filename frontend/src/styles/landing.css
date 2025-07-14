@@ -1,7 +1,7 @@
-.landing-palette3 {
+.landing-bold {
   font-family: "Josefin Sans", sans-serif;
-  background: #fefdf8;
-  color: #1f1f1f;
+  background: #1d2228;
+  color: #e1e2e2;
   min-height: 100vh;
   padding: 60px 20px;
   display: flex;
@@ -12,14 +12,14 @@
 
 .hero-title {
   font-size: 4rem;
-  color: #de5935; /* warm red-orange */
+  color: #fb8122;
   letter-spacing: 1px;
   margin-bottom: 10px;
 }
 
 .hero-subtitle {
   font-size: 1.4rem;
-  color: #444;
+  color: #e1e2e2;
   font-weight: 400;
   margin-bottom: 8px;
 }
@@ -28,7 +28,7 @@
   font-size: 1.05rem;
   max-width: 640px;
   margin: 0 auto 30px;
-  color: #666;
+  color: #cfcfcf;
 }
 
 .cta-buttons {
@@ -51,23 +51,23 @@
 
 .btn-outline {
   background: transparent;
-  border: 2px solid #de5935;
-  color: #de5935;
+  border: 2px solid #fb8122;
+  color: #fb8122;
 }
 
 .btn-outline:hover {
-  background-color: #de5935;
-  color: white;
+  background-color: #fb8122;
+  color: #1d2228;
   transform: scale(1.04);
 }
 
 .btn-solid {
-  background-color: #5ac3b0; /* mint green */
-  color: white;
+  background-color: #fb8122;
+  color: #1d2228;
 }
 
 .btn-solid:hover {
-  background-color: #44b2a0;
+  background-color: #d86c14;
   transform: scale(1.04);
 }
 
@@ -82,8 +82,8 @@
 }
 
 .feature-card {
-  background-color: white;
-  border: 1px solid #eee;
+  background-color: #2b2f36;
+  border: 1px solid #444;
   border-radius: 10px;
   padding: 24px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
@@ -96,19 +96,19 @@
 
 .feature-card h3 {
   font-size: 1.2rem;
-  color: #f7cd46; /* gold */
+  color: #fb8122;
   margin-bottom: 8px;
 }
 
 .feature-card p {
-  color: #444;
+  color: #ccc;
   font-size: 0.95rem;
 }
 
 .tagline {
   margin-top: 40px;
   font-size: 1rem;
-  color: #777;
+  color: #aaa;
   max-width: 720px;
   line-height: 1.5;
 }

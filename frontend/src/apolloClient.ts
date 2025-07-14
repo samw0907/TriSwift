@@ -3,10 +3,12 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
+const isLocalhost = window.location.hostname === 'localhost';
+
 const httpLink = createHttpLink({
-  uri: process.env.NODE_ENV === 'production'
-  ? 'https://triswift-backend.fly.dev/graphql'
-  : 'http://localhost:3001/graphql',
+  uri: isLocalhost
+    ? 'https://triswift-backend.fly.dev/graphql'
+    : '/graphql',
 });
 
 

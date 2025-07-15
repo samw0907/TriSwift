@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_PERSONAL_RECORDS } from '../graphql/queries';
-import '../index.css'
-import '../styles/personalRecords.css'
+import '../index.css';
+import '../styles/personalRecords.css';
 
 const distances = {
   Run: [0.1, 0.2, 0.4, 1, 5, 10, 21.1, 42.2],
@@ -46,13 +46,13 @@ const PersonalRecords: React.FC = () => {
       refetch({ sportType: sportTypeMapping[selectedSport] });
     }
   }, [selectedSport, refetch]);
-  
+
   useEffect(() => {
     if (data) {
       console.log("📊 PR Query Data:", data.personalRecords);
     }
   }, [data]);
-  
+
   return (
     <div className="personal-records">
       <h1>Personal Records</h1>
@@ -60,7 +60,7 @@ const PersonalRecords: React.FC = () => {
         {["Swim", "Run", "Bike"].map((sport) => (
           <button
             key={sport}
-            data-testid={`sport-button-${sport.toLowerCase()}`} 
+            data-testid={`sport-button-${sport.toLowerCase()}`}
             className={`sport-button ${selectedSport === sport ? 'active' : ''}`}
             onClick={() => handleSportSelection(sport)}
             disabled={loading}
@@ -74,7 +74,7 @@ const PersonalRecords: React.FC = () => {
         <div className="records-container">
           <h2>{sportTypeMapping[selectedSport]} Records</h2>
           {loading && <p>Loading...</p>}
-          {error && <p style={{ color: 'red' }}>Error fetching records. Please try again.</p>}
+          {error && <p className="error-message">Error fetching records. Please try again.</p>}
 
           {data?.personalRecords && data.personalRecords.length > 0 ? (
             <table className="records-table" role="table">
@@ -90,13 +90,17 @@ const PersonalRecords: React.FC = () => {
                 {distances[selectedSport as keyof typeof distances].map((dist) => {
                   let matchingRecords = data.personalRecords
                     .filter((r: any) => {
-                      const storedDistance = selectedSport === "Swim" ? Number(r.distance) * 1000 : Number(r.distance);
-                      const displayDistance = selectedSport === "Swim" ? dist * 1000 : dist;
+                      const storedDistance =
+                        selectedSport === "Swim" ? Number(r.distance) * 1000 : Number(r.distance);
+                      const displayDistance =
+                        selectedSport === "Swim" ? dist * 1000 : dist;
                       return storedDistance === displayDistance;
                     })
                     .sort((a: any, b: any) => Number(a.bestTime) - Number(b.bestTime));
 
-                  let recordTimes = Array.from(new Set(matchingRecords.map((r: { bestTime: number }) => r.bestTime)));
+                  let recordTimes = Array.from(
+                    new Set(matchingRecords.map((r: { bestTime: number }) => r.bestTime))
+                  );
 
                   recordTimes = [...recordTimes, null, null].slice(0, 3);
 

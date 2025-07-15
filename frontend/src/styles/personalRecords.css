@@ -1,74 +1,102 @@
 .personal-records {
   max-width: 900px;
-  margin: auto;
-  padding: 20px;
+  margin: 40px auto;
+  padding: 30px;
   text-align: center;
+  background: #1d2228;
+  color: #e1e2e2;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.personal-records h1 {
+  color: #fb8122;
+  margin-bottom: 20px;
 }
 
 .sport-buttons {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-bottom: 15px;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .sport-button {
-  background: var(--primary-color);
-  color: white;
-  padding: 8px 14px;
+  background: #00bfff;
+  color: #1d2228;
+  padding: 10px 16px;
   border: none;
-  border-radius: var(--border-radius);
+  border-radius: 6px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s ease-in-out;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
 }
 
 .sport-button:hover {
-  background: var(--primary-dark);
+  background: #0095cc;
+  transform: scale(1.05);
 }
 
 .sport-button.active {
-  background: var(--primary-dark);
-  font-weight: bold;
+  background: #fb8122;
+  color: #1d2228;
 }
 
 .records-container {
   max-width: 800px;
   margin: auto;
   overflow-x: auto;
-  background: white;
+  background: #2a2f36;
   padding: 20px;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.records-container h2 {
+  color: #00bfff;
+  margin-bottom: 15px;
 }
 
 .records-table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
+  background: #2a2f36;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 .records-table th,
 .records-table td {
-  border: 1px solid #ddd;
+  border: 1px solid #3a3f47;
   padding: 12px;
   text-align: center;
+  color: #e1e2e2;
 }
 
 .records-table th {
-  background-color: var(--primary-color);
-  color: white;
+  background-color: #fb8122;
+  color: #1d2228;
   font-weight: bold;
 }
 
 .records-table tr:nth-child(even) {
-  background-color: var(--secondary-color);
+  background-color: #3a3f47;
+}
+
+.error-message {
+  color: #ff4e4e;
+  font-weight: bold;
+  margin-top: 10px;
 }
 
 @media (max-width: 768px) {
+  .personal-records {
+    padding: 20px;
+  }
+
   .records-container {
-    padding: 10px;
+    padding: 15px;
   }
 
   .records-table {

@@ -1,123 +1,126 @@
 .session-list-container {
-    max-width: 900px;
-    margin: auto;
-    padding: 20px;
-  }
-  
-  .no-sessions {
-    text-align: center;
-    font-size: 18px;
-    color: var(--secondary-dark);
-  }
-  
-  .session-list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .session-card {
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    padding: 15px;
-    margin-bottom: 15px;
-    transition: transform 0.2s ease-in-out;
-  }
-  
-  .session-card:hover {
-    background: var(--secondary-light);
-  }
-  
-  .session-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  
-  .session-info h3 {
-    color: var(--primary-dark);
-    margin: 0;
-  }
-  
-  .session-info p {
-    font-size: 14px;
-    color: var(--text-light);
-  }
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
 
+.no-sessions {
+  text-align: center;
+  font-size: 18px;
+  color: var(--text-color);
+}
 
-  .session-actions {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .btn-primary {
-    background: var(--primary-color);
-    color: white;
-    padding: 8px 12px;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: background 0.3s ease-in-out;
-  }
-  
-  .btn-primary:hover {
-    background: var(--primary-dark);
-  }
-  
-  .btn-secondary {
-    background: var(--primary-color);
-    color: white;
-    padding: 8px 12px;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: background 0.3s ease-in-out;
+.session-list {
+  list-style: none;
+  padding: 0;
+}
+
+.session-card {
+  background: #2a2f36;
+  border: 1px solid #3a3f47;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 15px;
+  margin-bottom: 15px;
+  transition: transform 0.2s ease-in-out, background 0.2s ease-in-out;
+}
+
+.session-card:hover {
+  background: #1f252c;
+  transform: scale(1.02);
+}
+
+.session-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.session-info h3 {
+  color: var(--primary-color);
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.session-info p {
+  font-size: 14px;
+  color: #cccccc;
+}
+
+.session-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: #1d2228;
+  padding: 8px 12px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: scale(1.03);
+}
+
+.btn-secondary {
+  background: var(--accent-color);
+  color: #1d2228;
+  padding: 8px 12px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
 }
 
 .btn-secondary:hover {
-    background: var(--primary-dark);
+  background: #0094cc; /* slightly darker blue */
+  transform: scale(1.03);
 }
 
-  
-  .btn-danger {
-    background: var(--danger-color);
-    color: white;
-    padding: 8px 12px;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: background 0.3s ease-in-out;
-  }
-  
-  .btn-danger:hover {
-    background: #c82333;
-  }
+.btn-danger {
+  background: var(--danger-color);
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
 
-  .sort-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-  }
-  
-  .sort-btn {
-    background: var(--primary-color);
-    color: white;
-    padding: 8px 12px;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: background 0.3s ease-in-out;
-  }
-  
-  .sort-btn:hover {
-    background: var(--primary-dark);
-  }
-  
-  .sort-btn.active {
-    background: var(--primary-dark);
-    font-weight: bold;
-  }
+.btn-danger:hover {
+  background: #c82333;
+  transform: scale(1.03);
+}
 
-  
-  
+.sort-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.sort-btn {
+  background: var(--primary-color);
+  color: #1d2228;
+  padding: 8px 12px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.sort-btn:hover {
+  background: var(--primary-dark);
+  transform: scale(1.03);
+}
+
+.sort-btn.active {
+  background: var(--accent-color);
+  color: #1d2228;
+  font-weight: bold;
+}

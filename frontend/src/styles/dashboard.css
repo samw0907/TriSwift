@@ -1,23 +1,24 @@
 .dashboard {
   max-width: 900px;
-  margin: auto;
-  padding: 20px;
-  font-family: "Roboto", sans-serif;
-  background: white;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
+  margin: 40px auto;
+  padding: 30px;
+  font-family: "Josefin Sans", sans-serif;
+  background: #1d2228;
+  color: #e1e2e2;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .dashboard h1 {
   text-align: center;
-  color: var(--primary-dark);
+  color: #fb8122;
   margin-bottom: 20px;
 }
 
 .dashboard h2 {
-  color: var(--primary-dark);
+  color: #00bfff;
   margin-top: 30px;
-  border-bottom: 2px solid var(--primary-color);
+  border-bottom: 2px solid #fb8122;
   padding-bottom: 5px;
 }
 
@@ -25,35 +26,39 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
+  background: #2a2f36;
+  color: #e1e2e2;
   padding: 15px;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  transition: transform 0.2s ease-in-out;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease-in-out, background 0.3s ease-in-out;
+  margin-bottom: 10px;
 }
 
 .session-item:hover {
   transform: scale(1.02);
-  background: var(--secondary-color);
+  background: #3a3f47;
 }
 
 .btn-primary {
-  background: var(--primary-color);
-  color: white;
+  background: #fb8122;
+  color: #1d2228;
   padding: 10px 15px;
   font-size: 16px;
   border: none;
-  border-radius: var(--border-radius);
+  border-radius: 6px;
   cursor: pointer;
-  transition: background 0.3s ease-in-out;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
 }
 
 .btn-primary:hover {
-  background: var(--primary-dark);
+  background: #e66f12;
+  transform: scale(1.04);
 }
 
 .error-message {
-  color: red;
+  color: #ff4e4e;
   font-weight: bold;
   text-align: center;
+  margin-top: 10px;
 }

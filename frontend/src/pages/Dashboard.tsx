@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_SESSIONS } from '../graphql/queries';
-import { ADD_SESSION, DELETE_SESSION, ADD_SESSION_ACTIVITY, ADD_SESSION_TRANSITION } from '../graphql/mutations';
+import {
+  ADD_SESSION,
+  DELETE_SESSION,
+  ADD_SESSION_ACTIVITY,
+  ADD_SESSION_TRANSITION,
+} from '../graphql/mutations';
 import SessionList from "../components/sessions/SessionList";
 import SessionForm from "../components/sessions/SessionForm";
 import ActivityForm from "../components/sessions/ActivityForm";
 import TransitionForm from "../components/sessions/TransitionForm";
-import '../index.css'
-import '../styles/dashboard.css'
+import '../index.css';
+import '../styles/dashboard.css';
 
 interface Session {
   id: string;
@@ -23,8 +28,9 @@ interface Session {
   created_at: string;
   updated_at: string;
 }
+
 interface Activity {
-  id: string
+  id: string;
   sportType: string;
   duration: number;
   distance: number;
@@ -43,7 +49,6 @@ interface Transition {
   comments?: string;
 }
 
-
 const Dashboard: React.FC = () => {
   const { loading, error, data, refetch } = useQuery<{ sessions: Session[] }>(GET_SESSIONS);
   const [addSession] = useMutation(ADD_SESSION, { refetchQueries: [{ query: GET_SESSIONS }] });
@@ -54,20 +59,17 @@ const Dashboard: React.FC = () => {
   const [showSessionForm, setShowSessionForm] = useState(false);
   const [showActivityForm, setShowActivityForm] = useState(false);
   const [showTransitionForm, setShowTransitionForm] = useState(false);
-  
+
   const [sessionType, setSessionType] = useState('');
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isMultiSportActive, setIsMultiSportActive] = useState(false);
   const [sessions, setSessions] = useState<Session[]>([]);
 
   useEffect(() => {
-    console.log("Fetching sessions...");
     if (data?.sessions) {
-      console.log("Sessions loaded:", data.sessions);
       setSessions(data.sessions);
     }
   }, [data]);
-  
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this session?')) {
@@ -96,30 +98,19 @@ const Dashboard: React.FC = () => {
           totalDuration: 0,
           totalDistance: 0,
           weatherTemp: formData.weatherTemp ? parseFloat(formData.weatherTemp) : null,
-          weatherHumidity: formData.weatherHumidity
-            ? parseInt(formData.weatherHumidity)
-            : null,
-          weatherWindSpeed: formData.weatherWindSpeed
-            ? parseFloat(formData.weatherWindSpeed)
-            : null,
+          weatherHumidity: formData.weatherHumidity ? parseInt(formData.weatherHumidity) : null,
+          weatherWindSpeed: formData.weatherWindSpeed ? parseFloat(formData.weatherWindSpeed) : null,
         },
       });
 
       if (data?.createSession) {
-        setSessions((prevSessions) => [data.createSession, ...prevSessions]);
+        setSessions((prev) => [data.createSession, ...prev]);
         setSessionId(data.createSession.id);
         setShowSessionForm(false);
         setShowActivityForm(true);
         setIsMultiSportActive(formData.sessionType === "Multi-Sport");
         setSessionType(formData.sessionType);
-
         await refetch();
-        console.log("🔄 Sessions refetched!");
-
-        setTimeout(() => {
-          console.log("🔄 Refetching sessions after creation...");
-          refetch();
-        }, 500);
       }
     } catch (error) {
       console.error("❌ Error Creating Session:", error);
@@ -132,13 +123,12 @@ const Dashboard: React.FC = () => {
       alert("Session ID is missing. Please create a session first.");
       return;
     }
-  
-    let convertedDistance = parseFloat(activityData.distance);
 
+    let convertedDistance = parseFloat(activityData.distance);
     if (activityData.sportType === "Swim") {
       convertedDistance = convertedDistance / 1000;
     }
-  
+
     try {
       await addSessionActivity({
         variables: {
@@ -149,7 +139,6 @@ const Dashboard: React.FC = () => {
       });
 
       refetch();
-  
       if (isMultiSportActive) {
         setShowActivityForm(false);
         setShowTransitionForm(true);
@@ -169,7 +158,7 @@ const Dashboard: React.FC = () => {
     }
 
     try {
-      const { data } = await addSessionTransition({
+      await addSessionTransition({
         variables: {
           sessionId,
           previousSport: transitionData.previousSport,
@@ -204,7 +193,7 @@ const Dashboard: React.FC = () => {
       <h1>Session Dashboard</h1>
 
       {!showSessionForm && !showActivityForm && !showTransitionForm && (
-        <button onClick={() => setShowSessionForm(true)}>Add Session</button>
+        <button className="btn-primary" onClick={() => setShowSessionForm(true)}>Add Session</button>
       )}
 
       {showSessionForm && (
@@ -233,12 +222,12 @@ const Dashboard: React.FC = () => {
 
       <h2>Past Sessions</h2>
       {loading && <p>Loading sessions...</p>}
-      {error && <p style={{ color: "red" }}>Error fetching sessions</p>}
+      {error && <p className="error-message">Error fetching sessions</p>}
       {data?.sessions && data.sessions.length > 0 && (
-        <SessionList 
-          sessions={data.sessions} 
-          onDelete={handleDelete} 
-          onUpdate={handleUpdate} 
+        <SessionList
+          sessions={data.sessions}
+          onDelete={handleDelete}
+          onUpdate={handleUpdate}
         />
       )}
     </div>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import '../styles/paceCalculator.css'
-import '../index.css'
+import '../styles/paceCalculator.css';
+import '../index.css';
 
 const sportDistances = {
   Swim: ["100m", "200m", "400m", "800m", "1000m", "1500m", "2000m"],
@@ -45,11 +45,10 @@ const PaceCalculator: React.FC = () => {
       (parseInt(time.minutes) || 0) * 60 +
       (parseInt(time.seconds) || 0);
 
-
-      let dist = customDistance
+    let dist = customDistance
       ? parseFloat(customDistance)
       : parseFloat(distance.replace("m", "").replace("km", ""));
-  
+
     if (!dist || totalSeconds === 0) {
       setPace("Invalid input");
       return;
@@ -86,26 +85,25 @@ const PaceCalculator: React.FC = () => {
 
         <label htmlFor="distance-select">Distance: </label>
         <div className="pace-distance-wrapper">
-        <select id="distance-select" value={distance} onChange={handleDistanceChange}>
-          <option value="">Select Distance</option>
-          {sportDistances[sport].map((d) => (
-            <option key={d} value={d.replace("m", "").replace("km", "")}>
-              {d}
-            </option>
-          ))}
-        </select>
-        <span> OR </span>
-        <input
-          id="custom-distance"
-          type="number"
-          placeholder="Custom"
-          value={customDistance}
-          onChange={handleCustomDistanceChange}
-          style={{ width: "100px" }}
-        />
-        <span> {sport === "Swim" ? "m" : "km"}</span>
+          <select id="distance-select" value={distance} onChange={handleDistanceChange}>
+            <option value="">Select Distance</option>
+            {sportDistances[sport].map((d) => (
+              <option key={d} value={d.replace("m", "").replace("km", "")}>
+                {d}
+              </option>
+            ))}
+          </select>
+          <span> OR </span>
+          <input
+            id="custom-distance"
+            type="number"
+            placeholder="Custom"
+            value={customDistance}
+            onChange={handleCustomDistanceChange}
+          />
+          <span> {sport === "Swim" ? "m" : "km"}</span>
         </div>
-        
+
         <label htmlFor="hours-input">Target Time: </label>
         <div className="pace-time-inputs">
           <input
@@ -115,7 +113,6 @@ const PaceCalculator: React.FC = () => {
             placeholder="HH"
             value={time.hours}
             onChange={handleTimeChange}
-            style={{ width: "50px", marginRight: "5px" }}
           />
           :
           <input
@@ -125,7 +122,6 @@ const PaceCalculator: React.FC = () => {
             placeholder="MM"
             value={time.minutes}
             onChange={handleTimeChange}
-            style={{ width: "50px", marginRight: "5px" }}
           />
           :
           <input
@@ -135,19 +131,19 @@ const PaceCalculator: React.FC = () => {
             placeholder="SS"
             value={time.seconds}
             onChange={handleTimeChange}
-            style={{ width: "50px", marginRight: "10px" }}
           />
         </div>
 
         <div className="pace-buttons">
-          <button  data-testid="calculate-pace-button" onClick={calculatePace}> Calculate Pace </button>
+          <button data-testid="calculate-pace-button" onClick={calculatePace}>
+            Calculate Pace
+          </button>
         </div>
 
-        {pace && <h3 style={{ marginTop: "20px" }}>Target Pace: {pace}</h3>}
+        {pace && <h3 className="pace-result">Target Pace: {pace}</h3>}
       </div>
     </div>
   );
-
 };
 
 export default PaceCalculator;

@@ -1,105 +1,102 @@
 .pace-calculator-container {
-    max-width: 600px;
-    margin: auto;
-    padding: 20px;
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    text-align: center;
-  }
-  
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #1d2228;
+  color: #e1e2e2;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
 .pace-calculator-container h2 {
-    color: var(--primary-dark);
-    margin-bottom: 15px;
-  }
-  
+  color: #fb8122;
+  margin-bottom: 20px;
+}
+
 .pace-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
 .pace-form label {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 5px;
-  }
+  font-weight: bold;
+  color: #00bfff;
+  display: block;
+  margin-bottom: 5px;
+}
 
 .pace-distance-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }  
-  
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .pace-form select,
 .pace-form input {
-    width: 100%;
-    max-width: 250px;
-    padding: 8px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: var(--border-radius);
-  }
-  
+  width: 100%;
+  max-width: 250px;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #3a3f47;
+  background: #2a2f36;
+  color: #e1e2e2;
+  border-radius: 6px;
+}
+
 .pace-form input[type="number"] {
-    text-align: center;
-  }
+  text-align: center;
+}
 
 .pace-form .pace-time-inputs input[type="number"] {
   width: 80px !important;
-  max-width: none;
-  }
+}
 
 .pace-time-inputs {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-  }
-  
-.pace-time-inputs input {
-    width: 100px;
-    text-align: center;
-  }
-  
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
 .pace-buttons {
-    margin-top: 10px;
-  }
-  
-  
+  margin-top: 15px;
+}
+
 .pace-buttons button {
-    background: var(--primary-color);
-    color: white;
-    padding: 10px 15px;
-    font-size: 16px;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: background 0.3s ease-in-out;
-  }
-  
+  background: #fb8122;
+  color: #1d2228;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
 .pace-buttons button:hover {
-    background: var(--primary-dark);
-  }
-  
+  background: #e66f12;
+  transform: scale(1.05);
+}
+
 .pace-result {
-    margin-top: 20px;
-    font-size: 18px;
-    font-weight: bold;
-    color: var(--secondary-dark);
-  }
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #00bfff;
+}
 
 .pace-form select#sport-select {
   max-width: 120px;
-  }
-  
+}
+
 @media (max-width: 768px) {
-.pace-calculator-container {
-      padding: 15px;
-    }
-  
-.pace-time-inputs input {
-      width: 50px;
-    }
+  .pace-calculator-container {
+    padding: 20px;
   }
-  
+
+  .pace-time-inputs input {
+    width: 60px !important;
+  }
+}

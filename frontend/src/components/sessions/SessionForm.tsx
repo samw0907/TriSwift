@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "../../styles/sessionForm.css";
 
 interface SessionFormProps {
   onSubmit: (formData: any) => void;
@@ -21,9 +22,21 @@ const SessionForm: React.FC<SessionFormProps> = ({ onSubmit, onCancel }) => {
   };
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); onSubmit(formData); }} className="session-form">
-      <label  htmlFor="sessionType">Session Type:</label>
-      <select id="sessionType" name="sessionType" value={formData.sessionType} onChange={handleChange} required>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSubmit(formData);
+      }}
+      className="session-form"
+    >
+      <label htmlFor="sessionType">Session Type:</label>
+      <select
+        id="sessionType"
+        name="sessionType"
+        value={formData.sessionType}
+        onChange={handleChange}
+        required
+      >
         <option value="">Select Type</option>
         <option value="Swim">Swim</option>
         <option value="Bike">Bike</option>
@@ -32,19 +45,51 @@ const SessionForm: React.FC<SessionFormProps> = ({ onSubmit, onCancel }) => {
       </select>
 
       <label htmlFor="date">Date:</label>
-      <input id="date" type="date" name="date" value={formData.date} onChange={handleChange} required max={today}/>
+      <input
+        id="date"
+        type="date"
+        name="date"
+        value={formData.date}
+        onChange={handleChange}
+        required
+        max={today}
+      />
 
       <label htmlFor="weatherTemp">Weather Temp (°C):</label>
-      <input id="weatherTemp" type="number" name="weatherTemp" value={formData.weatherTemp} onChange={handleChange} />
+      <input
+        id="weatherTemp"
+        type="number"
+        name="weatherTemp"
+        value={formData.weatherTemp}
+        onChange={handleChange}
+      />
 
       <label htmlFor="weatherHumidity">Weather Humidity (%):</label>
-      <input id="weatherHumidity" type="number" name="weatherHumidity" value={formData.weatherHumidity} onChange={handleChange} />
+      <input
+        id="weatherHumidity"
+        type="number"
+        name="weatherHumidity"
+        value={formData.weatherHumidity}
+        onChange={handleChange}
+      />
 
       <label htmlFor="weatherWindSpeed">Wind Speed (m/s):</label>
-      <input id="weatherWindSpeed" type="number" name="weatherWindSpeed" value={formData.weatherWindSpeed} onChange={handleChange} />
+      <input
+        id="weatherWindSpeed"
+        type="number"
+        name="weatherWindSpeed"
+        value={formData.weatherWindSpeed}
+        onChange={handleChange}
+      />
 
-      <button type="submit">Next</button>
-      <button type="button" onClick={onCancel}>Cancel</button>
+      <div className="form-buttons">
+        <button type="submit" className="btn-primary">
+          Next
+        </button>
+        <button type="button" className="btn-secondary" onClick={onCancel}>
+          Cancel
+        </button>
+      </div>
     </form>
   );
 };

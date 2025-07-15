@@ -1,0 +1,101 @@
+.activity-form {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: "Josefin Sans", sans-serif;
+}
+
+.activity-form label {
+  font-weight: 600;
+  color: var(--primary-dark);
+  text-align: left;
+}
+
+.activity-form input,
+.activity-form select {
+  padding: 10px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: var(--border-radius);
+  transition: border-color 0.3s ease-in-out;
+}
+
+.activity-form input:focus,
+.activity-form select:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+.duration-inputs {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.duration-inputs input {
+  width: 30%;
+  text-align: center;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-primary {
+  background: #fb8122;
+  color: #1d2228;
+  padding: 10px 15px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.btn-primary:hover {
+  background: #e66f12;
+}
+
+.btn-secondary {
+  background: #00bfff;
+  color: #1d2228;
+  padding: 10px 15px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.btn-secondary:hover {
+  background: #0099cc;
+}
+
+@media (max-width: 600px) {
+  .activity-form {
+    padding: 15px;
+  }
+
+  .duration-inputs {
+    flex-direction: column;
+  }
+
+  .duration-inputs input {
+    width: 100%;
+  }
+
+  .form-buttons {
+    flex-direction: column;
+  }
+
+  .form-buttons button {
+    width: 100%;
+  }
+}

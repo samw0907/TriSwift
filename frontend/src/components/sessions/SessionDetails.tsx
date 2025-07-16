@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { formatDuration } from "../../utils/format";
-import { getNextActivity } from "../../utils/sessionHelpers";
 import EditActivityForm from "./EditActivityForm";
 import EditTransitionForm from "./EditTransitionForm";
-import { DELETE_ACTIVITY_MUTATION, DELETE_TRANSITION_MUTATION  } from "../../graphql/mutations";
+import {
+  DELETE_ACTIVITY_MUTATION,
+  DELETE_TRANSITION_MUTATION,
+} from "../../graphql/mutations";
+import "../../styles/sessionDetails.css";
 
 interface Activity {
   id: string;
@@ -39,13 +42,11 @@ interface Session {
 
 interface SessionDetailsProps {
   session: Session;
-  onUpdate: () => void; 
+  onUpdate: () => void;
 }
 
 const calculatePace = (activity: Activity): string | null => {
-  if (activity.distance <= 0 || activity.duration <= 0) {
-    return null;
-  }
+  if (activity.distance <= 0 || activity.duration <= 0) return null;
 
   if (activity.sportType === "Run") {
     const pacePerKm = activity.duration / activity.distance;
@@ -61,7 +62,7 @@ const calculatePace = (activity: Activity): string | null => {
 
   if (activity.sportType === "Swim") {
     const distanceMeters = activity.distance * 1000;
-    const pacePer100m = (activity.duration / (distanceMeters / 100)) || 0;
+    const pacePer100m = activity.duration / (distanceMeters / 100);
     const minutes = Math.floor(pacePer100m / 60);
     const seconds = Math.round(pacePer100m % 60);
     return `${minutes}:${seconds.toString().padStart(2, "0")} min/100m`;
@@ -101,30 +102,30 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
 
   const orderedItems: (Activity | Transition)[] = [
     ...(session.activities ?? []),
-    ...(session.transitions ?? [])
+    ...(session.transitions ?? []),
   ].sort(
     (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
   );
 
-
   return (
     <div className="session-details">
       {session.weatherTemp !== null && session.weatherTemp !== undefined && (
-        <p>Temp - {session.weatherTemp}°C</p>
+        <p className="weather-info">Temp: {session.weatherTemp}°C</p>
       )}
       {session.weatherHumidity !== null && session.weatherHumidity !== undefined && (
-        <p>Humidity - {session.weatherHumidity}%</p>
+        <p className="weather-info">Humidity: {session.weatherHumidity}%</p>
       )}
       {session.weatherWindSpeed !== null && session.weatherWindSpeed !== undefined && (
-        <p>Wind Speed - {session.weatherWindSpeed}m/s</p>
+        <p className="weather-info">Wind Speed: {session.weatherWindSpeed} m/s</p>
       )}
-      <h3>Activity Details</h3>
-      <ul>
+
+      <h3>Activity & Transition Details</h3>
+      <ul className="details-list">
         {orderedItems.map((item) => {
           if ("sportType" in item) {
             return (
-              <li key={item.id}>
-                <p>
+              <li key={item.id} className="activity-item">
+                <p className="activity-type">
                   <strong>{item.sportType}</strong>
                 </p>
                 <p>
@@ -134,40 +135,29 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
                     : `${item.distance.toFixed(2)} km`}
                 </p>
                 <p>Duration: {formatDuration(item.duration)}</p>
-
                 {calculatePace(item) && <p>Pace: {calculatePace(item)}</p>}
+                {item.heartRateMin !== undefined && <p>HR Min: {item.heartRateMin} bpm</p>}
+                {item.heartRateMax !== undefined && <p>HR Max: {item.heartRateMax} bpm</p>}
+                {item.heartRateAvg !== undefined && <p>Avg HR: {item.heartRateAvg} bpm</p>}
+                {item.cadence !== undefined && <p>Cadence: {item.cadence} rpm</p>}
+                {item.power !== undefined && <p>Power: {item.power} watts</p>}
 
-                {item.heartRateMin !== undefined && item.heartRateMin !== null && (
-                  <p>HR Min: {item.heartRateMin} bpm</p>
-                )}
-                {item.heartRateMax !== undefined && item.heartRateMax !== null && (
-                  <p>HR Max: {item.heartRateMax} bpm</p>
-                )}
-                {item.heartRateAvg !== undefined && item.heartRateAvg !== null && (
-                  <p>Avg HR: {item.heartRateAvg} bpm</p>
-                )}
-                {item.cadence !== undefined && item.cadence !== null && (
-                  <p>Cadence: {item.cadence} rpm</p>
-                )}
-                {item.power !== undefined && item.power !== null && (
-                  <p>Power: {item.power} watts</p>
-                )}
-
-                <button
-                  onClick={() =>
-                    setEditingActivityId(editingActivityId === item.id ? null : item.id)
-                  }
-                >
-                  {editingActivityId === item.id ? "Cancel" : "Edit Activity"}
-                </button>
-
-                <button 
-                  className="btn-danger" 
-                  onClick={() => handleDeleteActivity(item.id)}
-                  style={{ marginLeft: "10px" }}
-                >
-                  Delete Activity
-                </button>
+                <div className="details-actions">
+                  <button
+                    className="btn-primary"
+                    onClick={() =>
+                      setEditingActivityId(editingActivityId === item.id ? null : item.id)
+                    }
+                  >
+                    {editingActivityId === item.id ? "Cancel" : "Edit Activity"}
+                  </button>
+                  <button
+                    className="btn-danger"
+                    onClick={() => handleDeleteActivity(item.id)}
+                  >
+                    Delete Activity
+                  </button>
+                </div>
 
                 {editingActivityId === item.id && (
                   <EditActivityForm
@@ -180,18 +170,36 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
             );
           } else {
             return (
-              <li key={item.id} className="transition">
-                <p><strong>Transition: {item.previousSport} → {item.nextSport}</strong></p>
+              <li key={item.id} className="transition-item">
+                <p>
+                  <strong>Transition: {item.previousSport} → {item.nextSport}</strong>
+                </p>
                 <p>Transition Time: {formatDuration(item.transitionTime)}</p>
                 {item.comments && <p>Notes: {item.comments}</p>}
 
-                <button onClick={() => setEditingTransitionId(editingTransitionId === item.id ? null : item.id)}>
-                  {editingTransitionId === item.id ? "Cancel" : "Edit Transition"}
-                </button>
-                <button className="btn-danger" onClick={() => handleDeleteTransition(item.id)}>Delete Transition</button>
+                <div className="details-actions">
+                  <button
+                    className="btn-primary"
+                    onClick={() =>
+                      setEditingTransitionId(editingTransitionId === item.id ? null : item.id)
+                    }
+                  >
+                    {editingTransitionId === item.id ? "Cancel" : "Edit Transition"}
+                  </button>
+                  <button
+                    className="btn-danger"
+                    onClick={() => handleDeleteTransition(item.id)}
+                  >
+                    Delete Transition
+                  </button>
+                </div>
 
                 {editingTransitionId === item.id && (
-                  <EditTransitionForm transition={item} onClose={() => setEditingTransitionId(null)} onUpdate={onUpdate} />
+                  <EditTransitionForm
+                    transition={item}
+                    onClose={() => setEditingTransitionId(null)}
+                    onUpdate={onUpdate}
+                  />
                 )}
               </li>
             );

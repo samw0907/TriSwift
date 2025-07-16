@@ -1,0 +1,97 @@
+.session-details {
+  background: #2a2f36;
+  border: 1px solid #3a3f47;
+  border-left: 4px solid var(--primary-color);
+  border-radius: var(--border-radius);
+  padding: 15px;
+  margin-top: 15px;
+  box-shadow: var(--box-shadow);
+  color: #ffffff;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.session-details h3 {
+  color: var(--primary-color);
+  border-bottom: 1px solid #3a3f47;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+}
+
+.weather-info {
+  color: #cccccc;
+  font-size: 14px;
+}
+
+.details-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.activity-item,
+.transition-item {
+  background: #1f252c;
+  border: 1px solid #3a3f47;
+  border-radius: var(--border-radius);
+  padding: 10px;
+  margin-bottom: 10px;
+  transition: background 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.activity-item:hover,
+.transition-item:hover {
+  background: #272d35;
+  transform: scale(1.01);
+}
+
+.activity-type {
+  color: var(--accent-color);
+  font-weight: bold;
+}
+
+.details-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: #1d2228;
+  padding: 6px 10px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: scale(1.03);
+}
+
+.btn-danger {
+  background: var(--danger-color);
+  color: white;
+  padding: 6px 10px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.btn-danger:hover {
+  background: #c82333;
+  transform: scale(1.03);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

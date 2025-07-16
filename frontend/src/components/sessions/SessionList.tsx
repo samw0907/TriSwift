@@ -56,74 +56,71 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
   const calculateTotalDistance = (session: any) => {
     if (session.activities && session.activities.length > 0) {
       return session.activities.reduce((acc: number, activity: any) => {
-        const distance = typeof activity.distance === 'number'
+        const distance = typeof activity.distance === "number"
           ? activity.distance
           : parseFloat(activity.distance);
-  
+
         if (isNaN(distance)) return acc;
-  
         return acc + distance;
       }, 0);
     }
-  
-    const fallback = typeof session.totalDistance === 'number'
+
+    const fallback = typeof session.totalDistance === "number"
       ? session.totalDistance
       : parseFloat(session.totalDistance);
-  
+
     return isNaN(fallback) ? 0 : fallback;
   };
 
-  const filteredSessions = sessions.filter((session) => {
-    const sessionDate = new Date(session.date);
-    const sessionDistance = calculateTotalDistance(session);
+  const filteredSessions = sessions
+    .filter((session) => {
+      const sessionDate = new Date(session.date);
+      const sessionDistance = calculateTotalDistance(session);
 
-    const minDistanceKm = minDistance !== ""
-    ? parseFloat(minDistance) / (distanceUnit === "m" ? 1000 : 1)
-    : null;
-  
-    const maxDistanceKm = maxDistance !== ""
-    ? parseFloat(maxDistance) / (distanceUnit === "m" ? 1000 : 1)
-    : null;
-  
-    const minPass = minDistanceKm !== null ? sessionDistance >= minDistanceKm : true;
-    const maxPass = maxDistanceKm !== null ? sessionDistance <= maxDistanceKm : true;
+      const minDistanceKm =
+        minDistance !== "" ? parseFloat(minDistance) / (distanceUnit === "m" ? 1000 : 1) : null;
+      const maxDistanceKm =
+        maxDistance !== "" ? parseFloat(maxDistance) / (distanceUnit === "m" ? 1000 : 1) : null;
 
-    const typeFilterPass =
-      selectedFilters.length === 0 || selectedFilters.includes(session.sessionType);
+      const minPass = minDistanceKm !== null ? sessionDistance >= minDistanceKm : true;
+      const maxPass = maxDistanceKm !== null ? sessionDistance <= maxDistanceKm : true;
 
-    const fromPass = fromDate ? sessionDate >= new Date(fromDate) : true;
-    const toPass = toDate ? sessionDate <= new Date(toDate) : true;
+      const typeFilterPass =
+        selectedFilters.length === 0 || selectedFilters.includes(session.sessionType);
 
-    return typeFilterPass && fromPass && toPass && minPass && maxPass;
-  })
-  .sort((a, b) => {
-    if (sortOrder === "date-desc") {
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
-    }
-    if (sortOrder === "date-asc") {
-      return new Date(a.date).getTime() - new Date(b.date).getTime();
-    }
-    if (sortOrder === "asc") {
-      return calculateTotalDistance(a) - calculateTotalDistance(b);
-    }
-    if (sortOrder === "desc") {
-      return calculateTotalDistance(b) - calculateTotalDistance(a);
-    }
-    return 0;
-  });
+      const fromPass = fromDate ? sessionDate >= new Date(fromDate) : true;
+      const toPass = toDate ? sessionDate <= new Date(toDate) : true;
+
+      return typeFilterPass && fromPass && toPass && minPass && maxPass;
+    })
+    .sort((a, b) => {
+      if (sortOrder === "date-desc") {
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      }
+      if (sortOrder === "date-asc") {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      }
+      if (sortOrder === "asc") {
+        return calculateTotalDistance(a) - calculateTotalDistance(b);
+      }
+      if (sortOrder === "desc") {
+        return calculateTotalDistance(b) - calculateTotalDistance(a);
+      }
+      return 0;
+    });
 
   return (
     <div className="session-list-container">
       {sessions.length === 0 ? <p className="no-sessions">No sessions available.</p> : null}
 
       <div className="filter-controls">
-      <button className="btn-filter-toggle" onClick={() => setShowFilters((prev) => !prev)}>
-        {showFilters ? "Hide Filters" : "Show Filters"}
-      </button>
+        <button className="btn-filter-toggle" onClick={() => setShowFilters((prev) => !prev)}>
+          {showFilters ? "Hide Filters" : "Show Filters"}
+        </button>
         {showFilters && (
-          <button className="btn-clear-filters" onClick={clearFilters} style={{ marginLeft: "10px" }}>
+          <button className="btn-clear-filters" onClick={clearFilters}>
             Clear Filters
-      </button>
+          </button>
         )}
       </div>
 
@@ -131,63 +128,60 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
         <div className="filter-options">
           <h4>Filter by Session Type</h4>
           <div className="filter-group">
-          {["Multi-Sport", "Run", "Bike", "Swim"].map((type) => (
-            <label key={type} className="filter-checkbox">
-              <input
-                type="checkbox"
-                checked={selectedFilters.includes(type)}
-                onChange={() => toggleFilter(type)}
-              />
-              {type}
-            </label>
-          ))}
+            {["Multi-Sport", "Run", "Bike", "Swim"].map((type) => (
+              <label key={type} className="filter-checkbox">
+                <input
+                  type="checkbox"
+                  checked={selectedFilters.includes(type)}
+                  onChange={() => toggleFilter(type)}
+                />
+                {type}
+              </label>
+            ))}
           </div>
 
           <h4>Filter by Date</h4>
-          <div  className="filter-group">
+          <div className="filter-group">
             <label>
-              From:{" "}
+              From:
               <input
                 type="date"
+                className="filter-input"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                style={{ marginRight: "10px" }}
               />
             </label>
-
             <label>
-              To:{" "}
+              To:
               <input
                 type="date"
+                className="filter-input"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
               />
             </label>
-            </div>
+          </div>
 
           <h4>Filter by Distance</h4>
           <div className="filter-group">
-          <label>
-            Min:{" "}
-            <input
-              type="number"
-              name="minDistance"
-              value={minDistance}
-              onChange={(e) => setMinDistance(e.target.value)}
-              placeholder="Enter min distance"
-            />
-          </label>
-
-          <label>
-            Max:{" "}
-            <input
-              type="number"
-               name="maxDistance"
-              value={maxDistance}
-              onChange={(e) => setMaxDistance(e.target.value)}
-              placeholder="Enter max distance"
-            />
-          </label>
+            <label>
+              Min:
+              <input
+                type="number"
+                className="filter-input"
+                value={minDistance}
+                onChange={(e) => setMinDistance(e.target.value)}
+              />
+            </label>
+            <label>
+              Max:
+              <input
+                type="number"
+                className="filter-input"
+                value={maxDistance}
+                onChange={(e) => setMaxDistance(e.target.value)}
+              />
+            </label>
           </div>
 
           <h4>Distance Unit</h4>
@@ -202,7 +196,6 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
               />
               meters
             </label>
-
             <label>
               <input
                 type="radio"
@@ -217,30 +210,30 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
 
           <h4>Sort by</h4>
           <div className="sort-buttons">
-          <button 
-            className={`sort-btn ${sortOrder === "date-desc" ? "active" : ""}`} 
-            onClick={() => setSortOrder("date-desc")}
-          >
-            Most Recent
-          </button>
-          <button 
-            className={`sort-btn ${sortOrder === "date-asc" ? "active" : ""}`} 
-            onClick={() => setSortOrder("date-asc")}
-          >
-            Oldest First
-          </button>
-          <button 
-            className={`sort-btn ${sortOrder === "asc" ? "active" : ""}`} 
-            onClick={() => setSortOrder("asc")}
-          >
-            Distance (Lowest First)
-          </button>
-          <button 
-            className={`sort-btn ${sortOrder === "desc" ? "active" : ""}`} 
-            onClick={() => setSortOrder("desc")}
-          >
-            Distance (Highest First)
-          </button>
+            <button
+              className={`sort-btn ${sortOrder === "date-desc" ? "active" : ""}`}
+              onClick={() => setSortOrder("date-desc")}
+            >
+              Most Recent
+            </button>
+            <button
+              className={`sort-btn ${sortOrder === "date-asc" ? "active" : ""}`}
+              onClick={() => setSortOrder("date-asc")}
+            >
+              Oldest First
+            </button>
+            <button
+              className={`sort-btn ${sortOrder === "asc" ? "active" : ""}`}
+              onClick={() => setSortOrder("asc")}
+            >
+              Distance (Lowest First)
+            </button>
+            <button
+              className={`sort-btn ${sortOrder === "desc" ? "active" : ""}`}
+              onClick={() => setSortOrder("desc")}
+            >
+              Distance (Highest First)
+            </button>
           </div>
         </div>
       )}
@@ -263,18 +256,15 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
             <div className="session-actions">
               <button
                 className={`btn-primary ${expandedSessionId === session.id ? "active" : ""}`}
-                onClick={() => setExpandedSessionId(expandedSessionId === session.id ? null : session.id)}
+                onClick={() =>
+                  setExpandedSessionId(expandedSessionId === session.id ? null : session.id)
+                }
               >
                 {expandedSessionId === session.id ? "Hide Details" : "Show Details"}
               </button>
-
-              <button
-                className="btn-secondary"
-                onClick={() => setEditingSessionId(session.id)}
-              >
+              <button className="btn-secondary" onClick={() => setEditingSessionId(session.id)}>
                 Edit
               </button>
-
               <button className="btn-danger" onClick={() => onDelete(session.id)}>
                 Delete
               </button>
@@ -293,10 +283,10 @@ const SessionList: React.FC<SessionListProps> = ({ sessions, onDelete, onUpdate 
                 <SessionDetails session={session} onUpdate={onUpdate} />
               </div>
             )}
-        </li>
-      ))}
-    </ul>
-  </div>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 

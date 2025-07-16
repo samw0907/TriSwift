@@ -1,79 +1,83 @@
 .session-form {
-  max-width: 500px;
-  margin: 20px auto;
-  padding: 20px;
-  background: white;
+  background: #2a2f36;
+  border: 1px solid #3a3f47;
   border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  padding: 15px;
+  margin-top: 10px;
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
+.session-form h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: var(--primary-color);
 }
 
 .session-form label {
-  font-weight: bold;
-  color: var(--primary-dark);
-  font-size: 14px;
+  display: block;
   margin-bottom: 4px;
+  color: #cccccc;
+  font-weight: 500;
 }
 
-.session-form select,
-.session-form input {
+.session-form input,
+.session-form select {
   width: 100%;
-  padding: 10px;
-  font-size: 15px;
-  border: 1px solid #ccc;
+  padding: 6px 8px;
+  margin-bottom: 10px;
   border-radius: var(--border-radius);
-  transition: border-color 0.3s ease-in-out;
+  border: 1px solid #3a3f47;
+  background: #1f252c;
+  color: #ffffff;
+  transition: border-color 0.2s ease-in-out;
 }
 
-.session-form select:focus,
-.session-form input:focus {
+.session-form input:focus,
+.session-form select:focus {
   border-color: var(--primary-color);
   outline: none;
 }
 
 .form-buttons {
   display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
+  gap: 10px;
+  margin-top: 8px;
 }
 
 .btn-primary {
   background: var(--primary-color);
-  color: white;
-  padding: 10px 16px;
+  color: #1d2228;
+  padding: 6px 12px;
   border: none;
   border-radius: var(--border-radius);
   cursor: pointer;
-  transition: background 0.3s ease-in-out;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
 }
 
 .btn-primary:hover {
   background: var(--primary-dark);
+  transform: scale(1.03);
 }
 
 .btn-secondary {
   background: var(--accent-color);
-  color: white;
-  padding: 10px 16px;
+  color: #1d2228;
+  padding: 6px 12px;
   border: none;
   border-radius: var(--border-radius);
   cursor: pointer;
-  transition: background 0.3s ease-in-out;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
 }
 
 .btn-secondary:hover {
-  opacity: 0.9;
+  background: #0094cc;
+  transform: scale(1.03);
 }
 
-@media (max-width: 600px) {
-  .session-form {
-    padding: 15px;
-  }
-
-  .form-buttons {
-    flex-direction: column;
-    gap: 10px;
-  }
+/* ✅ Specific adjustments for edit form to blend with cards */
+.session-edit-form {
+  margin-top: 12px;
+  background: #1f252c;
+  border: 1px solid #3a3f47;
 }

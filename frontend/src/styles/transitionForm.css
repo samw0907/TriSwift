@@ -2,17 +2,25 @@
   max-width: 500px;
   margin: 20px auto;
   padding: 20px;
-  background: white;
+  background: #2a2f36;
+  border: 1px solid #3a3f47;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   display: flex;
   flex-direction: column;
   gap: 12px;
+  color: #ffffff;
+  font-family: "Josefin Sans", sans-serif;
+}
+
+.transition-form h3 {
+  margin: 0 0 10px 0;
+  color: var(--primary-color);
 }
 
 .transition-form label {
   font-weight: bold;
-  color: var(--primary-dark);
+  color: #cccccc;
   font-size: 14px;
 }
 
@@ -22,8 +30,10 @@
   width: 100%;
   padding: 10px;
   font-size: 15px;
-  border: 1px solid #ccc;
+  border: 1px solid #3a3f47;
   border-radius: var(--border-radius);
+  background: #1f252c;
+  color: #ffffff;
   transition: border-color 0.3s ease-in-out;
 }
 
@@ -52,7 +62,7 @@
 
 .btn-primary {
   background: var(--primary-color);
-  color: white;
+  color: #1d2228;
   padding: 10px 16px;
   border: none;
   border-radius: var(--border-radius);
@@ -66,7 +76,7 @@
 
 .btn-secondary {
   background: var(--accent-color);
-  color: white;
+  color: #1d2228;
   padding: 10px 16px;
   border: none;
   border-radius: var(--border-radius);
@@ -78,6 +88,12 @@
   opacity: 0.9;
 }
 
+/* ✅ Darker background for edit version */
+.edit-transition-form {
+  background: #1f252c;
+  border: 1px solid #3a3f47;
+}
+
 @media (max-width: 600px) {
   .transition-form {
     padding: 15px;
@@ -86,5 +102,9 @@
   .form-buttons {
     flex-direction: column;
     gap: 10px;
+  }
+
+  .form-buttons button {
+    width: 100%;
   }
 }

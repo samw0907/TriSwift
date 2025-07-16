@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { UPDATE_TRANSITION_MUTATION } from "../../graphql/mutations";
+import "../../styles/transitionForm.css"; // ✅ reuse & extend same CSS
 
 interface Transition {
   id: string;
@@ -16,8 +17,11 @@ interface EditTransitionFormProps {
   onUpdate: () => void;
 }
 
-const EditTransitionForm: React.FC<EditTransitionFormProps> = ({ transition, onClose, onUpdate }) => {
-
+const EditTransitionForm: React.FC<EditTransitionFormProps> = ({
+  transition,
+  onClose,
+  onUpdate,
+}) => {
   const initialMinutes = Math.floor(transition.transitionTime / 60);
   const initialSeconds = transition.transitionTime % 60;
 
@@ -36,7 +40,11 @@ const EditTransitionForm: React.FC<EditTransitionFormProps> = ({ transition, onC
     },
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -61,32 +69,72 @@ const EditTransitionForm: React.FC<EditTransitionFormProps> = ({ transition, onC
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label  htmlFor="previousSport">Previous Sport:</label>
-      <select id="previousSport" name="previousSport" value={formData.previousSport} onChange={handleChange}>
+    <form
+      onSubmit={handleSubmit}
+      className="transition-form edit-transition-form"
+    >
+      <h3>Edit Transition</h3>
+
+      <label htmlFor="previousSport">Previous Sport:</label>
+      <select
+        id="previousSport"
+        name="previousSport"
+        value={formData.previousSport}
+        onChange={handleChange}
+      >
         <option value="Swim">Swim</option>
         <option value="Bike">Bike</option>
         <option value="Run">Run</option>
       </select>
 
       <label htmlFor="nextSport">Next Sport:</label>
-      <select id="nextSport" name="nextSport" value={formData.nextSport} onChange={handleChange}>
+      <select
+        id="nextSport"
+        name="nextSport"
+        value={formData.nextSport}
+        onChange={handleChange}
+      >
         <option value="Swim">Swim</option>
         <option value="Bike">Bike</option>
         <option value="Run">Run</option>
       </select>
 
       <label htmlFor="transitionMinutes">Transition Time:</label>
-      <div style={{ display: "flex", gap: "10px" }}>
-        <input type="number" id="transitionMinutes" name="minutes" value={formData.minutes} onChange={handleChange} placeholder="Minutes" />
-        <input type="number" id="transitionSeconds" name="seconds" value={formData.seconds} onChange={handleChange} placeholder="Seconds" />
+      <div className="transition-time-inputs">
+        <input
+          type="number"
+          id="transitionMinutes"
+          name="minutes"
+          value={formData.minutes}
+          onChange={handleChange}
+          placeholder="Minutes"
+        />
+        <input
+          type="number"
+          id="transitionSeconds"
+          name="seconds"
+          value={formData.seconds}
+          onChange={handleChange}
+          placeholder="Seconds"
+        />
       </div>
 
       <label htmlFor="comments">Comments:</label>
-      <textarea id="comments" name="comments" value={formData.comments} onChange={handleChange} />
+      <textarea
+        id="comments"
+        name="comments"
+        value={formData.comments}
+        onChange={handleChange}
+      />
 
-      <button type="submit">Save</button>
-      <button type="button" onClick={onClose}>Cancel</button>
+      <div className="form-buttons">
+        <button type="submit" className="btn-primary">
+          Save
+        </button>
+        <button type="button" className="btn-secondary" onClick={onClose}>
+          Cancel
+        </button>
+      </div>
     </form>
   );
 };

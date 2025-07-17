@@ -47,19 +47,16 @@ interface SessionDetailsProps {
 
 const calculatePace = (activity: Activity): string | null => {
   if (activity.distance <= 0 || activity.duration <= 0) return null;
-
   if (activity.sportType === "Run") {
     const pacePerKm = activity.duration / activity.distance;
     const minutes = Math.floor(pacePerKm / 60);
     const seconds = Math.round(pacePerKm % 60);
     return `${minutes}:${seconds.toString().padStart(2, "0")} min/km`;
   }
-
   if (activity.sportType === "Bike") {
     const speedKmH = (activity.distance / activity.duration) * 3600;
     return `${speedKmH.toFixed(1)} km/h`;
   }
-
   if (activity.sportType === "Swim") {
     const distanceMeters = activity.distance * 1000;
     const pacePer100m = activity.duration / (distanceMeters / 100);
@@ -67,7 +64,6 @@ const calculatePace = (activity: Activity): string | null => {
     const seconds = Math.round(pacePer100m % 60);
     return `${minutes}:${seconds.toString().padStart(2, "0")} min/100m`;
   }
-
   return null;
 };
 
@@ -82,10 +78,9 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
     if (!window.confirm("Are you sure you want to delete this activity?")) return;
     try {
       await deleteActivity({ variables: { id: activityId } });
-      console.log("✅ Activity deleted successfully!");
       onUpdate();
     } catch (error) {
-      console.error("❌ Error deleting activity:", error);
+      console.error("Error deleting activity:", error);
     }
   };
 
@@ -93,10 +88,9 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
     if (!window.confirm("Are you sure you want to delete this transition?")) return;
     try {
       await deleteTransition({ variables: { id: transitionId } });
-      console.log("✅ Transition deleted successfully!");
       onUpdate();
     } catch (error) {
-      console.error("❌ Error deleting transition:", error);
+      console.error("Error deleting transition:", error);
     }
   };
 
@@ -109,14 +103,19 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
 
   return (
     <div className="session-details">
-      {session.weatherTemp !== null && session.weatherTemp !== undefined && (
-        <p className="weather-info">Temp: {session.weatherTemp}°C</p>
-      )}
-      {session.weatherHumidity !== null && session.weatherHumidity !== undefined && (
-        <p className="weather-info">Humidity: {session.weatherHumidity}%</p>
-      )}
-      {session.weatherWindSpeed !== null && session.weatherWindSpeed !== undefined && (
-        <p className="weather-info">Wind Speed: {session.weatherWindSpeed} m/s</p>
+      {(session.weatherTemp || session.weatherHumidity || session.weatherWindSpeed) && (
+        <div className="weather-section">
+          <div className="weather-heading">Weather</div>
+          {session.weatherTemp !== null && session.weatherTemp !== undefined && (
+            <p>Temp: {session.weatherTemp}°C</p>
+          )}
+          {session.weatherHumidity !== null && session.weatherHumidity !== undefined && (
+            <p>Humidity: {session.weatherHumidity}%</p>
+          )}
+          {session.weatherWindSpeed !== null && session.weatherWindSpeed !== undefined && (
+            <p>Wind: {session.weatherWindSpeed} m/s</p>
+          )}
+        </div>
       )}
 
       <h3>Activity & Transition Details</h3>
@@ -125,16 +124,6 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
           if ("sportType" in item) {
             return (
               <li key={item.id} className="activity-item">
-                <p className="activity-type">
-                  <strong>{item.sportType}</strong>
-                </p>
-                <p>
-                  Distance:{" "}
-                  {item.sportType === "Swim"
-                    ? `${(item.distance * 1000).toFixed(0)} m`
-                    : `${item.distance.toFixed(2)} km`}
-                </p>
-                <p>Duration: {formatDuration(item.duration)}</p>
                 {calculatePace(item) && <p>Pace: {calculatePace(item)}</p>}
                 {item.heartRateMin !== undefined && <p>HR Min: {item.heartRateMin} bpm</p>}
                 {item.heartRateMax !== undefined && <p>HR Max: {item.heartRateMax} bpm</p>}
@@ -174,7 +163,7 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
                 <p>
                   <strong>Transition: {item.previousSport} → {item.nextSport}</strong>
                 </p>
-                <p>Transition Time: {formatDuration(item.transitionTime)}</p>
+                <p>Time: {formatDuration(item.transitionTime)}</p>
                 {item.comments && <p>Notes: {item.comments}</p>}
 
                 <div className="details-actions">

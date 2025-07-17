@@ -220,7 +220,7 @@ const Dashboard: React.FC = () => {
         />
       )}
 
-      <h2>Past Sessions</h2>
+      <h2>Sessions</h2>
       {loading && <p>Loading sessions...</p>}
       {error && <p className="error-message">Error fetching sessions</p>}
       {data?.sessions && data.sessions.length > 0 && (

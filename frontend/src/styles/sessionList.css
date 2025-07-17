@@ -10,58 +10,6 @@
   color: var(--text-color);
 }
 
-.filter-controls {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 15px;
-}
-
-.btn-filter-toggle,
-.btn-clear-filters {
-  background: var(--primary-color);
-  color: white;
-  padding: 8px 12px;
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
-}
-
-.btn-filter-toggle:hover,
-.btn-clear-filters:hover {
-  background: var(--primary-dark);
-  transform: scale(1.03);
-}
-
-.filter-options {
-  background: #2a2f36;
-  border: 1px solid #3a3f47;
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-}
-
-.filter-options h4 {
-  color: var(--primary-color);
-  margin-bottom: 8px;
-}
-
-.filter-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.filter-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 14px;
-  color: var(--text-color);
-}
-
 .session-list {
   list-style: none;
   padding: 0;
@@ -75,6 +23,7 @@
   padding: 15px;
   margin-bottom: 15px;
   transition: transform 0.2s ease-in-out, background 0.2s ease-in-out;
+  cursor: pointer;
 }
 
 .session-card:hover {
@@ -82,113 +31,74 @@
   transform: scale(1.02);
 }
 
-.session-info {
+.session-top-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
-.session-info h3 {
-  color: var(--primary-color);
+.session-top-row h3 {
+  color: #00bfff;
   margin: 0;
-  font-size: 1.2rem;
+  font-size: 1.3rem; /* ✅ Increased from 1.1rem */
+  flex: 1;
+  text-align: left;
 }
 
-.session-info p {
-  font-size: 14px;
-  color: #cccccc;
+.session-date,
+.session-stats {
+  color: #e0e0e0; /* ✅ Brighter gray */
+  font-size: 1rem; /* ✅ Increased from 0.9rem */
+  flex: 1;
+  text-align: center;
 }
 
-.session-actions {
+.session-stats:last-child {
+  text-align: right;
+}
+
+.icon-actions {
   display: flex;
-  gap: 10px;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 5px;
 }
 
-.btn-primary {
-  background: var(--primary-color);
-  color: #1d2228;
-  padding: 8px 12px;
+.icon-btn {
+  background: #fb8122;
   border: none;
+  color: #ffffff;
+  font-size: 0.9rem;
+  padding: 6px 10px;
   border-radius: var(--border-radius);
   cursor: pointer;
-  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+  transition: background 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
 
-.btn-primary:hover {
-  background: var(--primary-dark);
-  transform: scale(1.03);
+.icon-btn:hover {
+  background: #e66f12;
+  transform: scale(1.05);
 }
 
-.btn-secondary {
-  background: var(--accent-color);
-  color: #1d2228;
-  padding: 8px 12px;
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+.edit-btn,
+.delete-btn {
+  background: #1f252c;
+  color: #ffffff;
 }
 
-.btn-secondary:hover {
-  opacity: 0.9;
-  transform: scale(1.03);
+.edit-btn:hover {
+  background: #3a3f47;
 }
 
-.btn-danger {
+.delete-btn:hover {
   background: var(--danger-color);
-  color: white;
-  padding: 8px 12px;
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
 }
 
-.btn-danger:hover {
-  background: #c82333;
-  transform: scale(1.03);
-}
-
-.sort-buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.sort-btn {
-  background: var(--primary-color);
-  color: #1d2228;
-  padding: 8px 12px;
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
-}
-
-.sort-btn:hover {
-  background: var(--primary-dark);
-  transform: scale(1.03);
-}
-
-.sort-btn.active {
+.icon-btn.active {
   background: var(--accent-color);
-  color: #1d2228;
-  font-weight: bold;
 }
 
-@media (max-width: 768px) {
-  .filter-options {
-    padding: 10px;
-  }
-
-  .session-info {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-  }
-
-  .session-actions {
-    flex-wrap: wrap;
-  }
+.placeholder {
+  visibility: hidden;
 }

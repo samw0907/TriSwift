@@ -41,7 +41,7 @@
   font-size: 1.2rem;
   font-weight: bold;
   margin-bottom: 6px;
-  text-align: left; 
+  text-align: left;
 }
 
 .details-columns p {
@@ -75,7 +75,16 @@
   flex: 1;
 }
 
+/* ✅ Button group stays fixed right */
+.details-actions-wrapper {
+  position: relative;
+  width: 100%;
+}
+
 .details-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
   display: flex;
   gap: 8px;
   justify-content: flex-end;
@@ -114,9 +123,18 @@
   background: var(--danger-color);
 }
 
-.stats-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
+/* ✅ Thin blue separators for multi-sport rows */
+.multi-row {
+  position: relative;
+  padding: 10px 0 40px; /* extra bottom padding so buttons don't overlap content */
+  border-bottom: 1px solid #4fa3e3;
+}
+
+.multi-row:last-child {
+  border-bottom: none;
+}
+
+/* ✅ Forms appear naturally below content */
+.edit-form-container {
   margin-top: 10px;
 }

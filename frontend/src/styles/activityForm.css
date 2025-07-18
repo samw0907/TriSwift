@@ -73,9 +73,10 @@
   background: var(--primary-dark);
 }
 
-.btn-secondary {
-  background: var(--accent-color);
-  color: #1d2228;
+/* ✅ Blue Cancel Button for strong visibility */
+.activity-form .btn-secondary {
+  background: #4fa3e3 !important; /* Bright blue */
+  color: #ffffff !important;      /* White text */
   padding: 10px 15px;
   border: none;
   border-radius: var(--border-radius);
@@ -83,11 +84,10 @@
   transition: background 0.3s ease-in-out;
 }
 
-.btn-secondary:hover {
-  background: #0099cc;
+.activity-form .btn-secondary:hover {
+  background: #2c82c9 !important; /* Darker blue on hover */
 }
 
-/* ✅ Specific styles for editing */
 .edit-activity-form {
   background: #1f252c;
   border: 1px solid #3a3f47;

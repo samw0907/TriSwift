@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { UPDATE_SESSION_ACTIVITY } from "../../graphql/mutations";
 import { GET_PERSONAL_RECORDS } from "../../graphql/queries";
-import "../../styles/activityForm.css"; // ✅ Reuse same CSS as ActivityForm
+import "../../styles/activityForm.css";
 
 interface EditActivityFormProps {
   activity: any;

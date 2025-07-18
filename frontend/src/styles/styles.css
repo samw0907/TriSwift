@@ -47,12 +47,26 @@ button:hover {
   transform: scale(1.03);
 }
 
-button.danger {
+button.secondary,
+.btn-secondary {
+  background: var(--secondary-color);
+  color: #ffffff;
+}
+
+button.secondary:hover,
+.btn-secondary:hover {
+  background: var(--secondary-dark);
+  color: #ffffff;
+}
+
+button.danger,
+.btn-danger {
   background: var(--danger-color);
   color: #fff;
 }
 
-button.danger:hover {
+button.danger:hover,
+.btn-danger:hover {
   background: #c82333;
 }
 
@@ -158,6 +172,7 @@ input:focus, select:focus, textarea:focus {
 .auth-form button:hover {
   background: var(--primary-dark);
 }
+
 
 .notification-error {
   background: var(--danger-color);

@@ -115,7 +115,7 @@ const SessionList: React.FC<SessionListProps> = ({
       const pacePerKm = activity.duration / activity.distance;
       const minutes = Math.floor(pacePerKm / 60);
       const seconds = Math.round(pacePerKm % 60);
-      return `${minutes}:${seconds.toString().padStart(2, "0")} min/km`;
+      return `${minutes}:${seconds.toString().padStart(2, "0")} / km`;
     }
     if (activity.sportType === "Bike") {
       const speedKmH = (activity.distance / activity.duration) * 3600;
@@ -126,7 +126,7 @@ const SessionList: React.FC<SessionListProps> = ({
       const pacePer100m = activity.duration / (distanceMeters / 100);
       const minutes = Math.floor(pacePer100m / 60);
       const seconds = Math.round(pacePer100m % 60);
-      return `${minutes}:${seconds.toString().padStart(2, "0")} min/100m`;
+      return `${minutes}:${seconds.toString().padStart(2, "0")} / 100m`;
     }
     return null;
   };

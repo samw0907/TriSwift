@@ -75,7 +75,6 @@
   flex: 1;
 }
 
-/* ✅ Button group stays fixed right */
 .details-actions-wrapper {
   position: relative;
   width: 100%;
@@ -123,10 +122,9 @@
   background: var(--danger-color);
 }
 
-/* ✅ Thin blue separators for multi-sport rows */
 .multi-row {
   position: relative;
-  padding: 10px 0 40px; /* extra bottom padding so buttons don't overlap content */
+  padding: 10px 0 40px;
   border-bottom: 1px solid #4fa3e3;
 }
 
@@ -134,7 +132,6 @@
   border-bottom: none;
 }
 
-/* ✅ Forms appear naturally below content */
 .edit-form-container {
   margin-top: 10px;
 }

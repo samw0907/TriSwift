@@ -10,39 +10,58 @@
   box-shadow: none;
 }
 
-.session-details h3 {
-  color: var(--primary-color);
-  margin-top: 10px;
+.details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 10px;
 }
 
-.session-details p {
-  margin: 6px 0;
-  color: #cccccc;
-}
-
-.weather-section {
-  margin-bottom: 12px;
-}
-
-.weather-heading {
+.session-details h3 {
   color: var(--primary-color);
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.details-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 40px;
+  margin-bottom: 15px;
+}
+
+.details-columns .left-column,
+.details-columns .right-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.details-columns .column-heading {
+  color: var(--primary-color);
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 6px;
+  text-align: left; 
+}
+
+.details-columns p {
+  margin: 10px 0;
+  color: #dddddd;
   font-size: 1rem;
-  margin-bottom: 4px;
 }
 
 .details-list {
   list-style: none;
   padding: 0;
   margin: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 10px 20px;
 }
 
 .activity-item,
 .transition-item {
-  padding: 6px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 10px 0;
   border-bottom: 1px solid #3a3f47;
 }
 
@@ -51,30 +70,53 @@
   border-bottom: none;
 }
 
-.activity-type {
-  color: var(--primary-color);
-  font-size: 1.05rem;
-  margin-bottom: 4px;
+.activity-info,
+.transition-info {
+  flex: 1;
 }
 
 .details-actions {
   display: flex;
   gap: 8px;
-  margin-top: 6px;
+  justify-content: flex-end;
+  align-items: center;
 }
 
-.session-details button {
-  background: var(--primary-color);
-  color: #1d2228;
+.icon-btn {
+  background: #fb8122;
   border: none;
+  color: #ffffff;
+  font-size: 0.9rem;
+  padding: 6px 10px;
   border-radius: var(--border-radius);
-  padding: 5px 10px;
-  margin-top: 6px;
   cursor: pointer;
-  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+  transition: background 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
 
-.session-details button:hover {
-  background: var(--primary-dark);
-  transform: scale(1.03);
+.icon-btn:hover {
+  background: #e66f12;
+  transform: scale(1.05);
+}
+
+.edit-btn {
+  background: #1f252c;
+}
+
+.edit-btn:hover {
+  background: #3a3f47;
+}
+
+.delete-btn {
+  background: #1f252c;
+}
+
+.delete-btn:hover {
+  background: var(--danger-color);
+}
+
+.stats-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
 }

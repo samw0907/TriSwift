@@ -33,6 +33,7 @@ interface Transition {
 
 interface Session {
   id: string;
+  sessionType: string;
   weatherTemp?: number | null;
   weatherHumidity?: number | null;
   weatherWindSpeed?: number | null;
@@ -97,103 +98,201 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
   const orderedItems: (Activity | Transition)[] = [
     ...(session.activities ?? []),
     ...(session.transitions ?? []),
-  ].sort(
-    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-  );
+  ].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+
+  const isSingleActivitySession =
+    (session.sessionType === "Run" ||
+      session.sessionType === "Bike" ||
+      session.sessionType === "Swim") &&
+    session.activities.length === 1;
+
+  const firstActivity = session.activities[0];
 
   return (
     <div className="session-details">
-      {(session.weatherTemp || session.weatherHumidity || session.weatherWindSpeed) && (
-        <div className="weather-section">
-          <div className="weather-heading">Weather</div>
-          {session.weatherTemp !== null && session.weatherTemp !== undefined && (
-            <p>Temp: {session.weatherTemp}°C</p>
+      {/* ✅ Table-style Stats & Weather Columns */}
+      <div className="details-columns">
+        <div className="left-column">
+          <h3 className="column-heading">Stats</h3>
+          {firstActivity && (
+            <>
+              {!isSingleActivitySession && calculatePace(firstActivity) && (
+                <p>Pace: {calculatePace(firstActivity)}</p>
+              )}
+              {firstActivity.heartRateMin !== undefined && (
+                <p>HR Min: {firstActivity.heartRateMin} bpm</p>
+              )}
+              {firstActivity.heartRateMax !== undefined && (
+                <p>HR Max: {firstActivity.heartRateMax} bpm</p>
+              )}
+              {firstActivity.heartRateAvg !== undefined && (
+                <p>Avg HR: {firstActivity.heartRateAvg} bpm</p>
+              )}
+              {firstActivity.cadence !== undefined && (
+                <p>Cadence: {firstActivity.cadence} rpm</p>
+              )}
+              {firstActivity.power !== undefined && (
+                <p>Power: {firstActivity.power} watts</p>
+              )}
+            </>
           )}
-          {session.weatherHumidity !== null && session.weatherHumidity !== undefined && (
-            <p>Humidity: {session.weatherHumidity}%</p>
+        </div>
+
+        <div className="right-column">
+          {(session.weatherTemp ||
+            session.weatherHumidity ||
+            session.weatherWindSpeed) && (
+            <>
+              <h3 className="column-heading">Weather</h3>
+              {session.weatherTemp !== null && session.weatherTemp !== undefined && (
+                <p>Temp: {session.weatherTemp}°C</p>
+              )}
+              {session.weatherHumidity !== null &&
+                session.weatherHumidity !== undefined && (
+                  <p>Humidity: {session.weatherHumidity}%</p>
+                )}
+              {session.weatherWindSpeed !== null &&
+                session.weatherWindSpeed !== undefined && (
+                  <p>Wind: {session.weatherWindSpeed} m/s</p>
+                )}
+            </>
           )}
-          {session.weatherWindSpeed !== null && session.weatherWindSpeed !== undefined && (
-            <p>Wind: {session.weatherWindSpeed} m/s</p>
-          )}
+        </div>
+      </div>
+
+      {/* ✅ Buttons placed OUTSIDE table, right-aligned like sessions list */}
+      {firstActivity && (
+        <div className="details-actions card-actions">
+          <button
+            className="icon-btn edit-btn"
+            title="Edit Activity"
+            onClick={() =>
+              setEditingActivityId(
+                editingActivityId === firstActivity.id ? null : firstActivity.id
+              )
+            }
+          >
+            ✏️
+          </button>
+          <button
+            className="icon-btn delete-btn"
+            title="Delete Activity"
+            onClick={() => handleDeleteActivity(firstActivity.id)}
+          >
+            🗑
+          </button>
         </div>
       )}
 
-      <h3>Activity & Transition Details</h3>
+      {editingActivityId === firstActivity?.id && (
+        <EditActivityForm
+          activity={firstActivity}
+          onClose={() => setEditingActivityId(null)}
+          onUpdate={onUpdate}
+        />
+      )}
+
       <ul className="details-list">
-        {orderedItems.map((item) => {
-          if ("sportType" in item) {
-            return (
-              <li key={item.id} className="activity-item">
-                {calculatePace(item) && <p>Pace: {calculatePace(item)}</p>}
-                {item.heartRateMin !== undefined && <p>HR Min: {item.heartRateMin} bpm</p>}
-                {item.heartRateMax !== undefined && <p>HR Max: {item.heartRateMax} bpm</p>}
-                {item.heartRateAvg !== undefined && <p>Avg HR: {item.heartRateAvg} bpm</p>}
-                {item.cadence !== undefined && <p>Cadence: {item.cadence} rpm</p>}
-                {item.power !== undefined && <p>Power: {item.power} watts</p>}
+        {orderedItems
+          .filter((item) => !("sportType" in item && isSingleActivitySession))
+          .map((item) => {
+            if ("sportType" in item) {
+              return (
+                <li key={item.id} className="activity-item">
+                  <div className="activity-info">
+                    {!isSingleActivitySession && calculatePace(item) && (
+                      <p>Pace: {calculatePace(item)}</p>
+                    )}
+                    {item.heartRateMin !== undefined && (
+                      <p>HR Min: {item.heartRateMin} bpm</p>
+                    )}
+                    {item.heartRateMax !== undefined && (
+                      <p>HR Max: {item.heartRateMax} bpm</p>
+                    )}
+                    {item.heartRateAvg !== undefined && (
+                      <p>Avg HR: {item.heartRateAvg} bpm</p>
+                    )}
+                    {item.cadence !== undefined && (
+                      <p>Cadence: {item.cadence} rpm</p>
+                    )}
+                    {item.power !== undefined && (
+                      <p>Power: {item.power} watts</p>
+                    )}
+                  </div>
 
-                <div className="details-actions">
-                  <button
-                    className="btn-primary"
-                    onClick={() =>
-                      setEditingActivityId(editingActivityId === item.id ? null : item.id)
-                    }
-                  >
-                    {editingActivityId === item.id ? "Cancel" : "Edit Activity"}
-                  </button>
-                  <button
-                    className="btn-danger"
-                    onClick={() => handleDeleteActivity(item.id)}
-                  >
-                    Delete Activity
-                  </button>
-                </div>
+                  <div className="details-actions">
+                    <button
+                      className="icon-btn edit-btn"
+                      title="Edit Activity"
+                      onClick={() =>
+                        setEditingActivityId(editingActivityId === item.id ? null : item.id)
+                      }
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      className="icon-btn delete-btn"
+                      title="Delete Activity"
+                      onClick={() => handleDeleteActivity(item.id)}
+                    >
+                      🗑
+                    </button>
+                  </div>
 
-                {editingActivityId === item.id && (
-                  <EditActivityForm
-                    activity={item}
-                    onClose={() => setEditingActivityId(null)}
-                    onUpdate={onUpdate}
-                  />
-                )}
-              </li>
-            );
-          } else {
-            return (
-              <li key={item.id} className="transition-item">
-                <p>
-                  <strong>Transition: {item.previousSport} → {item.nextSport}</strong>
-                </p>
-                <p>Time: {formatDuration(item.transitionTime)}</p>
-                {item.comments && <p>Notes: {item.comments}</p>}
+                  {editingActivityId === item.id && (
+                    <EditActivityForm
+                      activity={item}
+                      onClose={() => setEditingActivityId(null)}
+                      onUpdate={onUpdate}
+                    />
+                  )}
+                </li>
+              );
+            } else {
+              return (
+                <li key={item.id} className="transition-item">
+                  <div className="transition-info">
+                    <p>
+                      <strong>
+                        Transition: {item.previousSport} → {item.nextSport}
+                      </strong>
+                    </p>
+                    <p>Time: {formatDuration(item.transitionTime)}</p>
+                    {item.comments && <p>Notes: {item.comments}</p>}
+                  </div>
 
-                <div className="details-actions">
-                  <button
-                    className="btn-primary"
-                    onClick={() =>
-                      setEditingTransitionId(editingTransitionId === item.id ? null : item.id)
-                    }
-                  >
-                    {editingTransitionId === item.id ? "Cancel" : "Edit Transition"}
-                  </button>
-                  <button
-                    className="btn-danger"
-                    onClick={() => handleDeleteTransition(item.id)}
-                  >
-                    Delete Transition
-                  </button>
-                </div>
+                  <div className="details-actions">
+                    <button
+                      className="icon-btn edit-btn"
+                      title="Edit Transition"
+                      onClick={() =>
+                        setEditingTransitionId(
+                          editingTransitionId === item.id ? null : item.id
+                        )
+                      }
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      className="icon-btn delete-btn"
+                      title="Delete Transition"
+                      onClick={() => handleDeleteTransition(item.id)}
+                    >
+                      🗑
+                    </button>
+                  </div>
 
-                {editingTransitionId === item.id && (
-                  <EditTransitionForm
-                    transition={item}
-                    onClose={() => setEditingTransitionId(null)}
-                    onUpdate={onUpdate}
-                  />
-                )}
-              </li>
-            );
-          }
-        })}
+                  {editingTransitionId === item.id && (
+                    <EditTransitionForm
+                      transition={item}
+                      onClose={() => setEditingTransitionId(null)}
+                      onUpdate={onUpdate}
+                    />
+                  )}
+                </li>
+              );
+            }
+          })}
       </ul>
     </div>
   );

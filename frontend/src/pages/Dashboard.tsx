@@ -182,17 +182,6 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="dashboard-actions">
-        {!showSessionForm && !showActivityForm && !showTransitionForm && (
-          <button
-            className="btn-primary"
-            onClick={() => setShowSessionForm(true)}
-          >
-            Add Session
-          </button>
-        )}
-      </div>
-
       {showSessionForm && (
         <SessionForm
           onSubmit={handleSessionSubmit}
@@ -223,6 +212,7 @@ const Dashboard: React.FC = () => {
           sessions={sessions}
           onDelete={handleDelete}
           onUpdate={refetch}
+          onAddSession={() => setShowSessionForm(true)}
         />
       )}
     </div>

@@ -21,12 +21,14 @@ interface SessionListProps {
   sessions: any[];
   onDelete: (id: string) => void;
   onUpdate: () => void;
+  onAddSession: () => void;
 }
 
 const SessionList: React.FC<SessionListProps> = ({
   sessions,
   onDelete,
   onUpdate,
+  onAddSession,
 }) => {
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
@@ -129,12 +131,13 @@ const SessionList: React.FC<SessionListProps> = ({
     return null;
   };
 
-  const getSportColor = (type: string) => {
-    if (type === "Run") return "#fb8122";
-    if (type === "Bike") return "#00bfff";
-    if (type === "Swim") return "#5ce0d8";
-    return "#e1e2e2";
-  };
+const getSportColor = (type: string) => {
+  if (type === "Run") return "#ff4e4e";
+  if (type === "Bike") return "#28a745";
+  if (type === "Swim") return "#5ce0d8";
+  return "#e1e2e2";
+};
+
 
   const filteredSessions = sessions
     .filter((session) => {
@@ -186,24 +189,33 @@ const SessionList: React.FC<SessionListProps> = ({
         <p className="no-sessions">No sessions available.</p>
       ) : null}
 
-      <div className="filter-controls">
-        <button
-          className="btn-filter-toggle"
-          onClick={() => setShowFilters((prev) => !prev)}
-        >
-          {showFilters ? "Hide Filters" : "Show Filters"}
-        </button>
-        {showFilters && (
-          <button className="btn-clear-filters" onClick={clearFilters}>
-            Clear Filters
+      {/* ✅ Updated controls layout */}
+      <div className="filter-controls-wrapper">
+        <div className="left-controls">
+          <button className="btn-primary add-session-btn" onClick={onAddSession}>
+           Add Session
           </button>
-        )}
-        <button
-          className={`toggle-btn ${gridView ? "active" : ""}`}
-          onClick={() => setGridView((prev) => !prev)}
-        >
-          {gridView ? "List View" : "Grid View"}
-        </button>
+        </div>
+
+        <div className="right-controls">
+          <button
+            className="btn-filter-toggle"
+            onClick={() => setShowFilters((prev) => !prev)}
+          >
+            {showFilters ? "Hide Filters" : "Show Filters"}
+          </button>
+          {showFilters && (
+            <button className="btn-clear-filters" onClick={clearFilters}>
+              Clear Filters
+            </button>
+          )}
+          <button
+            className={`toggle-btn ${gridView ? "active" : ""}`}
+            onClick={() => setGridView((prev) => !prev)}
+          >
+            {gridView ? "List View" : "Grid View"}
+          </button>
+        </div>
       </div>
 
       {showFilters && (
@@ -277,10 +289,6 @@ const SessionList: React.FC<SessionListProps> = ({
           </div>
         </div>
       )}
-
-      {filteredSessions.length === 0 ? (
-        <p className="no-sessions">No sessions available.</p>
-      ) : null}
 
       <ul className="session-list">
         {filteredSessions.map((session) => {

@@ -58,6 +58,7 @@
   text-align: right;
 }
 
+/* ✅ Edit/Delete Buttons */
 .icon-actions {
   display: flex;
   justify-content: flex-end;
@@ -100,11 +101,37 @@
   visibility: hidden;
 }
 
-.filter-controls {
+/* ✅ Controls & Buttons */
+.filter-controls-wrapper {
   display: flex;
-  justify-content: flex-start;
-  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 15px;
+}
+
+.left-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.right-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-primary.add-session-btn {
+  color: #ffffff;
+  padding: 8px 12px;
+  font-size: 15px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.btn-primary.add-session-btn:hover {
+  background: var(--secondary-dark);
+  transform: scale(1.03);
 }
 
 .btn-filter-toggle,
@@ -133,6 +160,7 @@
   font-weight: bold;
 }
 
+/* ✅ Filter Options */
 .filter-options {
   background: #2a2f36;
   border: 1px solid #3a3f47;
@@ -178,6 +206,7 @@
   cursor: pointer;
 }
 
+/* ✅ Grid View */
 .grid-view .session-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));

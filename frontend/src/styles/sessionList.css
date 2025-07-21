@@ -66,7 +66,7 @@
 }
 
 .icon-btn {
-  background: #fb8122;
+  background: #1f252c;
   border: none;
   color: #ffffff;
   font-size: 0.9rem;
@@ -77,33 +77,29 @@
 }
 
 .icon-btn:hover {
-  background: #e66f12;
   transform: scale(1.05);
 }
 
-.edit-btn,
-.delete-btn {
-  background: #1f252c;
-  color: #ffffff;
+.edit-btn {
+  background: #3a3f47;
 }
 
 .edit-btn:hover {
-  background: #3a3f47;
+  background: #555a63;
+}
+
+.delete-btn {
+  background: #ff4e4e;
 }
 
 .delete-btn:hover {
   background: var(--danger-color);
 }
 
-.icon-btn.active {
-  background: var(--accent-color);
-}
-
 .placeholder {
   visibility: hidden;
 }
 
-/* ✅ FILTER CONTROLS */
 .filter-controls {
   display: flex;
   justify-content: flex-start;
@@ -112,7 +108,8 @@
 }
 
 .btn-filter-toggle,
-.btn-clear-filters {
+.btn-clear-filters,
+.toggle-btn {
   background: var(--secondary-color);
   color: #ffffff;
   padding: 8px 12px;
@@ -124,12 +121,18 @@
 }
 
 .btn-filter-toggle:hover,
-.btn-clear-filters:hover {
+.btn-clear-filters:hover,
+.toggle-btn:hover {
   background: var(--secondary-dark);
   transform: scale(1.03);
 }
 
-/* ✅ FILTER OPTIONS STYLING */
+.toggle-btn.active {
+  background: #00bfff;
+  color: #1d2228;
+  font-weight: bold;
+}
+
 .filter-options {
   background: #2a2f36;
   border: 1px solid #3a3f47;
@@ -173,4 +176,23 @@
 .filter-group input[type="checkbox"] {
   accent-color: var(--secondary-color);
   cursor: pointer;
+}
+
+.grid-view .session-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 15px;
+}
+
+.grid-view .session-card {
+  margin-bottom: 0;
+}
+
+.session-top-row h3.small-heading {
+  font-size: 1.1rem;
+}
+
+.session-date.small-text,
+.session-stats.small-text {
+  font-size: 0.85rem;
 }

@@ -40,6 +40,7 @@ const SessionList: React.FC<SessionListProps> = ({
   const [sortOrder, setSortOrder] = useState<
     "asc" | "desc" | "date-desc" | "date-asc"
   >("date-desc");
+  const [gridView, setGridView] = useState(true);
 
   const toggleFilter = (filter: string) => {
     setSelectedFilters((prev) =>
@@ -66,17 +67,14 @@ const SessionList: React.FC<SessionListProps> = ({
           typeof activity.distance === "number"
             ? activity.distance
             : parseFloat(activity.distance);
-
         if (isNaN(distance)) return acc;
         return acc + distance;
       }, 0);
     }
-
     const fallback =
       typeof session.totalDistance === "number"
         ? session.totalDistance
         : parseFloat(session.totalDistance);
-
     return isNaN(fallback) ? 0 : fallback;
   };
 
@@ -131,6 +129,13 @@ const SessionList: React.FC<SessionListProps> = ({
     return null;
   };
 
+  const getSportColor = (type: string) => {
+    if (type === "Run") return "#fb8122";
+    if (type === "Bike") return "#00bfff";
+    if (type === "Swim") return "#5ce0d8";
+    return "#e1e2e2";
+  };
+
   const filteredSessions = sessions
     .filter((session) => {
       const sessionDate = new Date(session.date);
@@ -176,7 +181,7 @@ const SessionList: React.FC<SessionListProps> = ({
     });
 
   return (
-    <div className="session-list-container">
+    <div className={`session-list-container ${gridView ? "grid-view" : ""}`}>
       {sessions.length === 0 ? (
         <p className="no-sessions">No sessions available.</p>
       ) : null}
@@ -193,6 +198,12 @@ const SessionList: React.FC<SessionListProps> = ({
             Clear Filters
           </button>
         )}
+        <button
+          className={`toggle-btn ${gridView ? "active" : ""}`}
+          onClick={() => setGridView((prev) => !prev)}
+        >
+          {gridView ? "List View" : "Grid View"}
+        </button>
       </div>
 
       {showFilters && (
@@ -253,11 +264,9 @@ const SessionList: React.FC<SessionListProps> = ({
             <select
               value={sortOrder}
               onChange={(e) =>
-                setSortOrder(e.target.value as
-                  | "asc"
-                  | "desc"
-                  | "date-desc"
-                  | "date-asc")
+                setSortOrder(
+                  e.target.value as "asc" | "desc" | "date-desc" | "date-asc"
+                )
               }
             >
               <option value="date-desc">Date (Newest)</option>
@@ -301,20 +310,27 @@ const SessionList: React.FC<SessionListProps> = ({
                   expandedSessionId === session.id ? null : session.id
                 );
               }}
+              style={{ borderLeft: `5px solid ${getSportColor(session.sessionType)}` }}
             >
               <div className="session-top-row">
-                <h3>{session.sessionType}</h3>
-                <p className="session-date">{formatDate(session.date)}</p>
-                <p className="session-stats">{formatTotalTime(totalTime)}</p>
-                <p className="session-stats">
+                <h3 className={gridView ? "small-heading" : ""}>
+                  {session.sessionType}
+                </h3>
+                <p className={`session-date ${gridView ? "small-text" : ""}`}>
+                  {formatDate(session.date)}
+                </p>
+                <p className={`session-stats ${gridView ? "small-text" : ""}`}>
+                  {formatTotalTime(totalTime)}
+                </p>
+                <p className={`session-stats ${gridView ? "small-text" : ""}`}>
                   {session.sessionType === "Swim"
                     ? `${(totalDistance * 1000).toFixed(0)} m`
                     : `${totalDistance.toFixed(2)} km`}
                 </p>
-                {pace ? (
+                {!gridView && pace ? (
                   <p className="session-stats">{pace}</p>
                 ) : (
-                  <p className="session-stats placeholder"></p>
+                  !gridView && <p className="session-stats placeholder"></p>
                 )}
               </div>
 

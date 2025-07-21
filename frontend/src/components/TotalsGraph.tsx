@@ -103,11 +103,11 @@ const TotalsGraph: React.FC = () => {
       {
         label: `Total Distance (${selectedSport})`,
         data: graphData.map((d) => d.distance),
-        borderColor: "#fb8122", // ✅ Orange primary
-        backgroundColor: "rgba(251, 129, 34, 0.15)", // ✅ Subtle orange fill
+        borderColor: "#fb8122",
+        backgroundColor: "rgba(251, 129, 34, 0.15)",
         borderWidth: 3,
-        pointBackgroundColor: "#00bfff", // ✅ Sky blue accent for points
-        pointBorderColor: "#1d2228", // ✅ Dark border for better contrast
+        pointBackgroundColor: "#00bfff",
+        pointBorderColor: "#1d2228",
         pointRadius: 5,
         fill: true,
       },
@@ -171,19 +171,38 @@ const TotalsGraph: React.FC = () => {
           options={{
             responsive: true,
             maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                labels: {
+                  color: "#ffffff"
+                }
+              }
+            },
             scales: {
+              x: {
+                ticks: {
+                  color: "#ffffff"
+                },
+                grid: {
+                  color: "rgba(255,255,255,0.1)"
+                }
+              },
               y: {
                 beginAtZero: true,
                 suggestedMax: maxDistance + 5,
+                ticks: {
+                  color: "#ffffff"
+                },
                 title: {
                   display: true,
-                  text:
-                    selectedSport === "Swim"
-                      ? "Distance (m)"
-                      : "Distance (km)",
+                  text: selectedSport === "Swim" ? "Distance (m)" : "Distance (km)",
+                  color: "#ffffff"
                 },
-              },
-            },
+                grid: {
+                  color: "rgba(255,255,255,0.1)"
+                }
+              }
+            }
           }}
         />
       </div>

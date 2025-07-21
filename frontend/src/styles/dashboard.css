@@ -1,5 +1,5 @@
 .dashboard {
-  max-width: 900px;
+  max-width: 1100px;
   margin: 40px auto;
   padding: 30px;
   font-family: "Josefin Sans", sans-serif;
@@ -13,31 +13,49 @@
   text-align: center;
   color: #fb8122;
   margin-bottom: 20px;
+  font-size: 2rem;
 }
 
-.dashboard h2 {
-  color: #00bfff;
-  margin-top: 30px;
-  border-bottom: 2px solid #fb8122;
-  padding-bottom: 5px;
-}
-
-.session-item {
+.dashboard-summary {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #2a2f36;
-  color: #e1e2e2;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s ease-in-out, background 0.3s ease-in-out;
-  margin-bottom: 10px;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
-.session-item:hover {
-  transform: scale(1.02);
+.summary-card {
+  background: #2a2f36;
+  padding: 15px 20px;
+  border-radius: 8px;
+  text-align: center;
+  min-width: 150px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease-in-out;
+}
+
+.summary-card h3 {
+  font-size: 16px;
+  color: #00bfff;
+  margin-bottom: 5px;
+}
+
+.summary-card p {
+  font-size: 18px;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.summary-card:hover {
+  transform: scale(1.05);
   background: #3a3f47;
+}
+
+.dashboard-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
 }
 
 .btn-primary {
@@ -54,6 +72,34 @@
 .btn-primary:hover {
   background: #e66f12;
   transform: scale(1.04);
+}
+
+.btn-toggle-view {
+  background: #2a2f36;
+  color: #e1e2e2;
+  padding: 10px 15px;
+  border: 1px solid #3a3f47;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.btn-toggle-view:hover {
+  background: #3a3f47;
+  transform: scale(1.04);
+}
+
+.btn-toggle-view.active {
+  background: #00bfff;
+  color: #1d2228;
+  font-weight: bold;
+}
+
+.dashboard h2 {
+  color: #00bfff;
+  margin-top: 30px;
+  border-bottom: 2px solid #fb8122;
+  padding-bottom: 5px;
 }
 
 .error-message {

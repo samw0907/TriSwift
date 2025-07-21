@@ -195,7 +195,79 @@ const SessionList: React.FC<SessionListProps> = ({
         )}
       </div>
 
-      {showFilters && <div className="filter-options"></div>}
+      {showFilters && (
+        <div className="filter-options">
+          <div className="filter-group">
+            <label>Session Types:</label>
+            {["Swim", "Bike", "Run", "Multi-Sport"].map((type) => (
+              <label key={type}>
+                <input
+                  type="checkbox"
+                  checked={selectedFilters.includes(type)}
+                  onChange={() => toggleFilter(type)}
+                />
+                {type}
+              </label>
+            ))}
+          </div>
+
+          <div className="filter-group">
+            <label>From Date:</label>
+            <input
+              type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+            />
+            <label>To Date:</label>
+            <input
+              type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+            />
+          </div>
+
+          <div className="filter-group">
+            <label>Min Distance:</label>
+            <input
+              type="number"
+              value={minDistance}
+              onChange={(e) => setMinDistance(e.target.value)}
+            />
+            <label>Max Distance:</label>
+            <input
+              type="number"
+              value={maxDistance}
+              onChange={(e) => setMaxDistance(e.target.value)}
+            />
+            <select
+              value={distanceUnit}
+              onChange={(e) => setDistanceUnit(e.target.value as "m" | "km")}
+            >
+              <option value="km">km</option>
+              <option value="m">m</option>
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label>Sort By:</label>
+            <select
+              value={sortOrder}
+              onChange={(e) =>
+                setSortOrder(e.target.value as
+                  | "asc"
+                  | "desc"
+                  | "date-desc"
+                  | "date-asc")
+              }
+            >
+              <option value="date-desc">Date (Newest)</option>
+              <option value="date-asc">Date (Oldest)</option>
+              <option value="desc">Distance (Longest)</option>
+              <option value="asc">Distance (Shortest)</option>
+            </select>
+          </div>
+        </div>
+      )}
 
       {filteredSessions.length === 0 ? (
         <p className="no-sessions">No sessions available.</p>

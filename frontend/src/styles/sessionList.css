@@ -41,15 +41,15 @@
 .session-top-row h3 {
   color: #00bfff;
   margin: 0;
-  font-size: 1.3rem; /* ✅ Increased from 1.1rem */
+  font-size: 1.3rem;
   flex: 1;
   text-align: left;
 }
 
 .session-date,
 .session-stats {
-  color: #e0e0e0; /* ✅ Brighter gray */
-  font-size: 1rem; /* ✅ Increased from 0.9rem */
+  color: #e0e0e0;
+  font-size: 1rem;
   flex: 1;
   text-align: center;
 }
@@ -101,4 +101,76 @@
 
 .placeholder {
   visibility: hidden;
+}
+
+/* ✅ FILTER CONTROLS */
+.filter-controls {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.btn-filter-toggle,
+.btn-clear-filters {
+  background: var(--secondary-color);
+  color: #ffffff;
+  padding: 8px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.btn-filter-toggle:hover,
+.btn-clear-filters:hover {
+  background: var(--secondary-dark);
+  transform: scale(1.03);
+}
+
+/* ✅ FILTER OPTIONS STYLING */
+.filter-options {
+  background: #2a2f36;
+  border: 1px solid #3a3f47;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.filter-group label {
+  color: var(--text-color);
+  font-size: 14px;
+}
+
+.filter-group input[type="date"],
+.filter-group input[type="number"],
+.filter-group select {
+  background: #1f252c;
+  color: #ffffff;
+  border: 1px solid #3a3f47;
+  border-radius: var(--border-radius);
+  padding: 6px 8px;
+  font-size: 14px;
+  transition: border-color 0.3s ease-in-out;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+  border-color: var(--secondary-color);
+  outline: none;
+}
+
+.filter-group input[type="checkbox"] {
+  accent-color: var(--secondary-color);
+  cursor: pointer;
 }

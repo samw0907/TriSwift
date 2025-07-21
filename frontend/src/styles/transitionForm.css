@@ -1,5 +1,5 @@
 .transition-form {
-  max-width: 500px;
+  max-width: 600px;
   margin: 20px auto;
   padding: 20px;
   background: #2a2f36;
@@ -9,8 +9,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  color: #ffffff;
   font-family: "Josefin Sans", sans-serif;
+  color: #ffffff;
 }
 
 .transition-form h3 {
@@ -19,15 +19,14 @@
 }
 
 .transition-form label {
-  font-weight: bold;
+  font-weight: 600;
   color: #cccccc;
-  font-size: 14px;
+  text-align: left;
 }
 
-.transition-form select,
 .transition-form input,
+.transition-form select,
 .transition-form textarea {
-  width: 100%;
   padding: 10px;
   font-size: 15px;
   border: 1px solid #3a3f47;
@@ -37,8 +36,8 @@
   transition: border-color 0.3s ease-in-out;
 }
 
-.transition-form select:focus,
 .transition-form input:focus,
+.transition-form select:focus,
 .transition-form textarea:focus {
   border-color: var(--primary-color);
   outline: none;
@@ -47,23 +46,25 @@
 .transition-time-inputs {
   display: flex;
   gap: 10px;
+  justify-content: space-between;
 }
 
-.transition-form textarea {
-  min-height: 60px;
-  resize: vertical;
+.transition-time-inputs input {
+  width: 48%;
+  text-align: center;
 }
 
 .form-buttons {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 10px;
   margin-top: 10px;
 }
 
 .btn-primary {
   background: var(--primary-color);
   color: #1d2228;
-  padding: 10px 16px;
+  padding: 10px 15px;
   border: none;
   border-radius: var(--border-radius);
   cursor: pointer;
@@ -74,21 +75,21 @@
   background: var(--primary-dark);
 }
 
-.btn-secondary {
-  background: var(--accent-color);
-  color: #1d2228;
-  padding: 10px 16px;
+/* ✅ Blue Cancel Button for strong visibility */
+.transition-form .btn-secondary {
+  background: #4fa3e3 !important; /* Bright blue */
+  color: #ffffff !important;      /* White text */
+  padding: 10px 15px;
   border: none;
   border-radius: var(--border-radius);
   cursor: pointer;
   transition: background 0.3s ease-in-out;
 }
 
-.btn-secondary:hover {
-  opacity: 0.9;
+.transition-form .btn-secondary:hover {
+  background: #2c82c9 !important; /* Darker blue on hover */
 }
 
-/* ✅ Darker background for edit version */
 .edit-transition-form {
   background: #1f252c;
   border: 1px solid #3a3f47;
@@ -99,9 +100,16 @@
     padding: 15px;
   }
 
+  .transition-time-inputs {
+    flex-direction: column;
+  }
+
+  .transition-time-inputs input {
+    width: 100%;
+  }
+
   .form-buttons {
     flex-direction: column;
-    gap: 10px;
   }
 
   .form-buttons button {

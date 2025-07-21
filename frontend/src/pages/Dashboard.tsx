@@ -190,7 +190,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="dashboard">
-      <h1>Session Dashboard</h1>
+      <h1>Sessions</h1>
 
       {!showSessionForm && !showActivityForm && !showTransitionForm && (
         <button className="btn-primary" onClick={() => setShowSessionForm(true)}>Add Session</button>

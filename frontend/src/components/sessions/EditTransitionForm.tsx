@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { UPDATE_TRANSITION_MUTATION } from "../../graphql/mutations";
-import "../../styles/transitionForm.css"; // ✅ reuse & extend same CSS
+import "../../styles/transitionForm.css";
 
 interface Transition {
   id: string;

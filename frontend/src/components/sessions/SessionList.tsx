@@ -131,13 +131,12 @@ const SessionList: React.FC<SessionListProps> = ({
     return null;
   };
 
-const getSportColor = (type: string) => {
-  if (type === "Run") return "#ff4e4e";
-  if (type === "Bike") return "#28a745";
-  if (type === "Swim") return "#5ce0d8";
-  return "#e1e2e2";
-};
-
+  const getSportColor = (type: string) => {
+    if (type === "Run") return "#ff4e4e";
+    if (type === "Bike") return "#28a745";
+    if (type === "Swim") return "#5ce0d8";
+    return "#e1e2e2";
+  };
 
   const filteredSessions = sessions
     .filter((session) => {
@@ -183,17 +182,128 @@ const getSportColor = (type: string) => {
       return 0;
     });
 
+  const cardsPerRow = 3;
+  const rows: React.ReactNode[] = [];
+
+  for (let i = 0; i < filteredSessions.length; i += cardsPerRow) {
+    const rowSessions = filteredSessions.slice(i, i + cardsPerRow);
+
+    rowSessions.forEach((session) => {
+      if (expandedSessionId === session.id) {
+        rows.push(
+          <div className="expanded-row" key={`expanded-${session.id}`}>
+            <div
+              className="session-card expanded-card"
+              style={{
+                borderLeft: `5px solid ${getSportColor(session.sessionType)}`,
+              }}
+              onClick={() =>
+                setExpandedSessionId(
+                  expandedSessionId === session.id ? null : session.id
+                )
+              }
+            >
+              <div className="session-top-row">
+                <h3>{session.sessionType}</h3>
+                <p className="session-date">{formatDate(session.date)}</p>
+                <p className="session-stats">
+                  {formatTotalTime(calculateTotalTime(session))}
+                </p>
+                <p className="session-stats">
+                  {session.sessionType === "Swim"
+                    ? `${(calculateTotalDistance(session) * 1000).toFixed(0)} m`
+                    : `${calculateTotalDistance(session).toFixed(2)} km`}
+                </p>
+              </div>
+              <SessionDetails session={session} onUpdate={onUpdate} />
+            </div>
+          </div>
+        );
+      } else {
+        rows.push(
+          <div className="session-card-wrapper" key={session.id}>
+            <div
+              className="session-card"
+              style={{
+                borderLeft: `5px solid ${getSportColor(session.sessionType)}`,
+              }}
+              onClick={(e) => {
+                const target = e.target as HTMLElement;
+                if (
+                  target.closest(".edit-btn") ||
+                  target.closest(".delete-btn")
+                ) {
+                  return;
+                }
+                setExpandedSessionId(
+                  expandedSessionId === session.id ? null : session.id
+                );
+              }}
+            >
+              <div className="session-top-row">
+                <h3 className={gridView ? "small-heading" : ""}>
+                  {session.sessionType}
+                </h3>
+                <p className={`session-date ${gridView ? "small-text" : ""}`}>
+                  {formatDate(session.date)}
+                </p>
+                <p className={`session-stats ${gridView ? "small-text" : ""}`}>
+                  {formatTotalTime(calculateTotalTime(session))}
+                </p>
+                <p className={`session-stats ${gridView ? "small-text" : ""}`}>
+                  {session.sessionType === "Swim"
+                    ? `${(calculateTotalDistance(session) * 1000).toFixed(0)} m`
+                    : `${calculateTotalDistance(session).toFixed(2)} km`}
+                </p>
+              </div>
+
+              <div className="session-actions icon-actions">
+                <button
+                  className="icon-btn edit-btn"
+                  title="Edit Session"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingSessionId(session.id);
+                  }}
+                >
+                  ✏️
+                </button>
+                <button
+                  className="icon-btn delete-btn"
+                  title="Delete Session"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(session.id);
+                  }}
+                >
+                  🗑
+                </button>
+              </div>
+
+              {editingSessionId === session.id && (
+                <EditSessionForm
+                  session={session}
+                  onClose={() => setEditingSessionId(null)}
+                  onUpdate={onUpdate}
+                />
+              )}
+            </div>
+          </div>
+        );
+      }
+    });
+  }
+
   return (
     <div className={`session-list-container ${gridView ? "grid-view" : ""}`}>
       {sessions.length === 0 ? (
         <p className="no-sessions">No sessions available.</p>
       ) : null}
 
-      {/* ✅ Updated controls layout */}
       <div className="filter-controls-wrapper">
         <div className="left-controls">
           <button className="btn-primary add-session-btn" onClick={onAddSession}>
-           Add Session
+            Add Session
           </button>
         </div>
 
@@ -290,98 +400,93 @@ const getSportColor = (type: string) => {
         </div>
       )}
 
-      <ul className="session-list">
-        {filteredSessions.map((session) => {
-          const totalDistance = calculateTotalDistance(session);
-          const totalTime = calculateTotalTime(session);
-          const pace =
-            session.sessionType === "Run" ||
-            session.sessionType === "Bike" ||
-            session.sessionType === "Swim"
-              ? calculatePace(session)
-              : null;
+      {!gridView && (
+        <ul className="session-list">
+          {filteredSessions.map((session) => {
+            const totalDistance = calculateTotalDistance(session);
+            const totalTime = calculateTotalTime(session);
+            const pace =
+              session.sessionType === "Run" ||
+              session.sessionType === "Bike" ||
+              session.sessionType === "Swim"
+                ? calculatePace(session)
+                : null;
 
-          return (
-            <li
-              key={session.id}
-              className="session-card"
-              data-session-id={session.id}
-              onClick={(e) => {
-                const target = e.target as HTMLElement;
-                if (
-                  target.closest(".edit-btn") ||
-                  target.closest(".delete-btn")
-                ) {
-                  return;
-                }
-                setExpandedSessionId(
-                  expandedSessionId === session.id ? null : session.id
-                );
-              }}
-              style={{ borderLeft: `5px solid ${getSportColor(session.sessionType)}` }}
-            >
-              <div className="session-top-row">
-                <h3 className={gridView ? "small-heading" : ""}>
-                  {session.sessionType}
-                </h3>
-                <p className={`session-date ${gridView ? "small-text" : ""}`}>
-                  {formatDate(session.date)}
-                </p>
-                <p className={`session-stats ${gridView ? "small-text" : ""}`}>
-                  {formatTotalTime(totalTime)}
-                </p>
-                <p className={`session-stats ${gridView ? "small-text" : ""}`}>
-                  {session.sessionType === "Swim"
-                    ? `${(totalDistance * 1000).toFixed(0)} m`
-                    : `${totalDistance.toFixed(2)} km`}
-                </p>
-                {!gridView && pace ? (
-                  <p className="session-stats">{pace}</p>
-                ) : (
-                  !gridView && <p className="session-stats placeholder"></p>
-                )}
-              </div>
-
-              <div className="session-actions icon-actions">
-                <button
-                  className="icon-btn edit-btn"
-                  title="Edit Session"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setEditingSessionId(session.id);
-                  }}
-                >
-                  ✏️
-                </button>
-                <button
-                  className="icon-btn delete-btn"
-                  title="Delete Session"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(session.id);
-                  }}
-                >
-                  🗑
-                </button>
-              </div>
-
-              {editingSessionId === session.id && (
-                <EditSessionForm
-                  session={session}
-                  onClose={() => setEditingSessionId(null)}
-                  onUpdate={onUpdate}
-                />
-              )}
-
-              {expandedSessionId === session.id && (
-                <div className="session-details">
-                  <SessionDetails session={session} onUpdate={onUpdate} />
+            return (
+              <li
+                key={session.id}
+                className="session-card"
+                style={{
+                  borderLeft: `5px solid ${getSportColor(session.sessionType)}`,
+                }}
+                onClick={(e) => {
+                  const target = e.target as HTMLElement;
+                  if (
+                    target.closest(".edit-btn") ||
+                    target.closest(".delete-btn")
+                  ) {
+                    return;
+                  }
+                  setExpandedSessionId(
+                    expandedSessionId === session.id ? null : session.id
+                  );
+                }}
+              >
+                <div className="session-top-row">
+                  <h3>{session.sessionType}</h3>
+                  <p className="session-date">{formatDate(session.date)}</p>
+                  <p className="session-stats">{formatTotalTime(totalTime)}</p>
+                  <p className="session-stats">
+                    {session.sessionType === "Swim"
+                      ? `${(totalDistance * 1000).toFixed(0)} m`
+                      : `${totalDistance.toFixed(2)} km`}
+                  </p>
+                  {pace && <p className="session-stats">{pace}</p>}
                 </div>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+
+                <div className="session-actions icon-actions">
+                  <button
+                    className="icon-btn edit-btn"
+                    title="Edit Session"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingSessionId(session.id);
+                    }}
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    className="icon-btn delete-btn"
+                    title="Delete Session"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(session.id);
+                    }}
+                  >
+                    🗑
+                  </button>
+                </div>
+
+                {editingSessionId === session.id && (
+                  <EditSessionForm
+                    session={session}
+                    onClose={() => setEditingSessionId(null)}
+                    onUpdate={onUpdate}
+                  />
+                )}
+
+                {expandedSessionId === session.id && (
+                  <div className="session-details">
+                    <SessionDetails session={session} onUpdate={onUpdate} />
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {gridView && <div className="grid-container">{rows}</div>}
     </div>
   );
 };

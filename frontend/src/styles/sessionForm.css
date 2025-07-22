@@ -1,20 +1,20 @@
 .session-form {
-  max-width: 600px;
+  max-width: 450px;
   margin: 20px auto;
-  padding: 20px;
+  padding: 15px;
   background: #2a2f36;
   border: 1px solid #3a3f47;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   font-family: "Josefin Sans", sans-serif;
   color: #ffffff;
 }
 
 .session-form h3 {
-  margin: 0 0 10px 0;
+  margin: 0 0 8px 0;
   color: var(--primary-color);
 }
 
@@ -22,12 +22,13 @@
   font-weight: 600;
   color: #cccccc;
   text-align: left;
+  font-size: 14px;
 }
 
 .session-form input,
 .session-form select {
-  padding: 10px;
-  font-size: 15px;
+  padding: 8px;
+  font-size: 14px;
   border: 1px solid #3a3f47;
   border-radius: var(--border-radius);
   background: #1f252c;
@@ -41,17 +42,28 @@
   outline: none;
 }
 
+.session-form input[type="number"]::-webkit-inner-spin-button,
+.session-form input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.session-form input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 .form-buttons {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 .btn-primary {
   background: var(--primary-color);
   color: #1d2228;
-  padding: 10px 15px;
+  padding: 8px 12px;
+  font-size: 14px;
   border: none;
   border-radius: var(--border-radius);
   cursor: pointer;
@@ -65,7 +77,8 @@
 .session-form .btn-secondary {
   background: #4fa3e3 !important;
   color: #ffffff !important;
-  padding: 10px 15px;
+  padding: 8px 12px;
+  font-size: 14px;
   border: none;
   border-radius: var(--border-radius);
   cursor: pointer;
@@ -83,7 +96,7 @@
 
 @media (max-width: 600px) {
   .session-form {
-    padding: 15px;
+    padding: 12px;
   }
 
   .form-buttons {

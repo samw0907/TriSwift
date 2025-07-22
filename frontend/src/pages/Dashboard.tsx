@@ -165,7 +165,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="dashboard">
-      <h1>Sessions</h1>
+      <h1>Session Summary</h1>
 
       <div className="dashboard-summary">
         <div className="summary-card">

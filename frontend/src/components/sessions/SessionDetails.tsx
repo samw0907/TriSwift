@@ -54,19 +54,16 @@ const formatMMSS = (seconds: number): string => {
 
 const calculatePace = (activity: Activity): string | null => {
   if (activity.distance <= 0 || activity.duration <= 0) return null;
-
   if (activity.sportType === "Run") {
     const pacePerKm = activity.duration / activity.distance;
     const minutes = Math.floor(pacePerKm / 60);
     const seconds = Math.round(pacePerKm % 60);
     return `${minutes}:${seconds.toString().padStart(2, "0")} / km`;
   }
-
   if (activity.sportType === "Bike") {
     const speedKmH = (activity.distance / activity.duration) * 3600;
     return `${speedKmH.toFixed(1)} km/h`;
   }
-
   if (activity.sportType === "Swim") {
     const distanceMeters = activity.distance * 1000;
     const pacePer100m = activity.duration / (distanceMeters / 100);
@@ -74,7 +71,6 @@ const calculatePace = (activity: Activity): string | null => {
     const seconds = Math.round(pacePer100m % 60);
     return `${minutes}:${seconds.toString().padStart(2, "0")} / 100m`;
   }
-
   return null;
 };
 
@@ -170,32 +166,32 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
                     )}
                 </>
               )}
+              {editingActivityId !== firstActivity.id && (
+                <div className="details-actions">
+                  <button
+                    className="icon-btn edit-btn"
+                    title="Edit Activity"
+                    onClick={() =>
+                      setEditingActivityId(
+                        editingActivityId === firstActivity.id
+                          ? null
+                          : firstActivity.id
+                      )
+                    }
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    className="icon-btn delete-btn"
+                    title="Delete Activity"
+                    onClick={() => handleDeleteActivity(firstActivity.id)}
+                  >
+                    🗑
+                  </button>
+                </div>
+              )}
             </div>
           </div>
-          {editingActivityId !== firstActivity.id && (
-            <div className="details-actions-wrapper">
-              <div className="details-actions">
-                <button
-                  className="icon-btn edit-btn"
-                  title="Edit Activity"
-                  onClick={() =>
-                    setEditingActivityId(
-                      editingActivityId === firstActivity.id ? null : firstActivity.id
-                    )
-                  }
-                >
-                  ✏️
-                </button>
-                <button
-                  className="icon-btn delete-btn"
-                  title="Delete Activity"
-                  onClick={() => handleDeleteActivity(firstActivity.id)}
-                >
-                  🗑
-                </button>
-              </div>
-            </div>
-          )}
           {editingActivityId === firstActivity?.id && (
             <div className="edit-form-container">
               <EditActivityForm
@@ -207,6 +203,7 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
           )}
         </>
       )}
+
       {!isSingleActivitySession &&
         orderedItems.map((item, index) => {
           const isFirstActivity = "sportType" in item && index === 0;
@@ -271,57 +268,55 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
                           )}
                       </>
                     )}
+                  {!isEditingThisActivity && !isEditingThisTransition && (
+                    <div className="details-actions">
+                      {"sportType" in item ? (
+                        <>
+                          <button
+                            className="icon-btn edit-btn"
+                            title="Edit Activity"
+                            onClick={() =>
+                              setEditingActivityId(
+                                editingActivityId === item.id ? null : item.id
+                              )
+                            }
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            className="icon-btn delete-btn"
+                            title="Delete Activity"
+                            onClick={() => handleDeleteActivity(item.id)}
+                          >
+                            🗑
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            className="icon-btn edit-btn"
+                            title="Edit Transition"
+                            onClick={() =>
+                              setEditingTransitionId(
+                                editingTransitionId === item.id ? null : item.id
+                              )
+                            }
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            className="icon-btn delete-btn"
+                            title="Delete Transition"
+                            onClick={() => handleDeleteTransition(item.id)}
+                          >
+                            🗑
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
-              {!isEditingThisActivity && !isEditingThisTransition && (
-                <div className="details-actions-wrapper">
-                  <div className="details-actions">
-                    {"sportType" in item ? (
-                      <>
-                        <button
-                          className="icon-btn edit-btn"
-                          title="Edit Activity"
-                          onClick={() =>
-                            setEditingActivityId(
-                              editingActivityId === item.id ? null : item.id
-                            )
-                          }
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          className="icon-btn delete-btn"
-                          title="Delete Activity"
-                          onClick={() => handleDeleteActivity(item.id)}
-                        >
-                          🗑
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          className="icon-btn edit-btn"
-                          title="Edit Transition"
-                          onClick={() =>
-                            setEditingTransitionId(
-                              editingTransitionId === item.id ? null : item.id
-                            )
-                          }
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          className="icon-btn delete-btn"
-                          title="Delete Transition"
-                          onClick={() => handleDeleteTransition(item.id)}
-                        >
-                          🗑
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              )}
               {isEditingThisActivity && (
                 <div className="edit-form-container">
                   <EditActivityForm

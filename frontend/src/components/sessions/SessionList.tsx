@@ -30,7 +30,9 @@ const SessionList: React.FC<SessionListProps> = ({
   onUpdate,
   onAddSession,
 }) => {
-  const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
+  const [expandedSessionId, setExpandedSessionId] = useState<string | null>(
+    null
+  );
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
@@ -215,49 +217,10 @@ const SessionList: React.FC<SessionListProps> = ({
                     : `${calculateTotalDistance(session).toFixed(2)} km`}
                 </p>
               </div>
-              <SessionDetails session={session} onUpdate={onUpdate} />
-            </div>
-          </div>
-        );
-      } else {
-        rows.push(
-          <div className="session-card-wrapper" key={session.id}>
-            <div
-              className="session-card"
-              style={{
-                borderLeft: `5px solid ${getSportColor(session.sessionType)}`,
-              }}
-              onClick={(e) => {
-                const target = e.target as HTMLElement;
-                if (
-                  target.closest(".edit-btn") ||
-                  target.closest(".delete-btn")
-                ) {
-                  return;
-                }
-                setExpandedSessionId(
-                  expandedSessionId === session.id ? null : session.id
-                );
-              }}
-            >
-              <div className="session-top-row">
-                <h3 className={gridView ? "small-heading" : ""}>
-                  {session.sessionType}
-                </h3>
-                <p className={`session-date ${gridView ? "small-text" : ""}`}>
-                  {formatDate(session.date)}
-                </p>
-                <p className={`session-stats ${gridView ? "small-text" : ""}`}>
-                  {formatTotalTime(calculateTotalTime(session))}
-                </p>
-                <p className={`session-stats ${gridView ? "small-text" : ""}`}>
-                  {session.sessionType === "Swim"
-                    ? `${(calculateTotalDistance(session) * 1000).toFixed(0)} m`
-                    : `${calculateTotalDistance(session).toFixed(2)} km`}
-                </p>
-              </div>
-
-              <div className="session-actions icon-actions">
+              <div
+                className="session-actions icon-actions"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <button
                   className="icon-btn edit-btn"
                   title="Edit Session"
@@ -279,14 +242,51 @@ const SessionList: React.FC<SessionListProps> = ({
                   🗑
                 </button>
               </div>
-
               {editingSessionId === session.id && (
-                <EditSessionForm
-                  session={session}
-                  onClose={() => setEditingSessionId(null)}
-                  onUpdate={onUpdate}
-                />
+                <div onClick={(e) => e.stopPropagation()}>
+                  <EditSessionForm
+                    session={session}
+                    onClose={() => setEditingSessionId(null)}
+                    onUpdate={onUpdate}
+                  />
+                </div>
               )}
+              <div onClick={(e) => e.stopPropagation()}>
+                <SessionDetails session={session} onUpdate={onUpdate} />
+              </div>
+            </div>
+          </div>
+        );
+      } else {
+        rows.push(
+          <div className="session-card-wrapper" key={session.id}>
+            <div
+              className="session-card"
+              style={{
+                borderLeft: `5px solid ${getSportColor(session.sessionType)}`,
+              }}
+              onClick={() =>
+                setExpandedSessionId(
+                  expandedSessionId === session.id ? null : session.id
+                )
+              }
+            >
+              <div className="session-top-row">
+                <h3 className={gridView ? "small-heading" : ""}>
+                  {session.sessionType}
+                </h3>
+                <p className={`session-date ${gridView ? "small-text" : ""}`}>
+                  {formatDate(session.date)}
+                </p>
+                <p className={`session-stats ${gridView ? "small-text" : ""}`}>
+                  {formatTotalTime(calculateTotalTime(session))}
+                </p>
+                <p className={`session-stats ${gridView ? "small-text" : ""}`}>
+                  {session.sessionType === "Swim"
+                    ? `${(calculateTotalDistance(session) * 1000).toFixed(0)} m`
+                    : `${calculateTotalDistance(session).toFixed(2)} km`}
+                </p>
+              </div>
             </div>
           </div>
         );
@@ -415,22 +415,17 @@ const SessionList: React.FC<SessionListProps> = ({
             return (
               <li
                 key={session.id}
-                className="session-card"
+                className={`session-card ${
+                  expandedSessionId === session.id ? "expanded" : ""
+                }`}
                 style={{
                   borderLeft: `5px solid ${getSportColor(session.sessionType)}`,
                 }}
-                onClick={(e) => {
-                  const target = e.target as HTMLElement;
-                  if (
-                    target.closest(".edit-btn") ||
-                    target.closest(".delete-btn")
-                  ) {
-                    return;
-                  }
+                onClick={() =>
                   setExpandedSessionId(
                     expandedSessionId === session.id ? null : session.id
-                  );
-                }}
+                  )
+                }
               >
                 <div className="session-top-row">
                   <h3>{session.sessionType}</h3>
@@ -444,41 +439,46 @@ const SessionList: React.FC<SessionListProps> = ({
                   {pace && <p className="session-stats">{pace}</p>}
                 </div>
 
-                <div className="session-actions icon-actions">
-                  <button
-                    className="icon-btn edit-btn"
-                    title="Edit Session"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setEditingSessionId(session.id);
-                    }}
-                  >
-                    ✏️
-                  </button>
-                  <button
-                    className="icon-btn delete-btn"
-                    title="Delete Session"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDelete(session.id);
-                    }}
-                  >
-                    🗑
-                  </button>
-                </div>
-
-                {editingSessionId === session.id && (
-                  <EditSessionForm
-                    session={session}
-                    onClose={() => setEditingSessionId(null)}
-                    onUpdate={onUpdate}
-                  />
-                )}
-
                 {expandedSessionId === session.id && (
-                  <div className="session-details">
-                    <SessionDetails session={session} onUpdate={onUpdate} />
-                  </div>
+                  <>
+                    <div
+                      className="session-actions icon-actions"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <button
+                        className="icon-btn edit-btn"
+                        title="Edit Session"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingSessionId(session.id);
+                        }}
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        className="icon-btn delete-btn"
+                        title="Delete Session"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDelete(session.id);
+                        }}
+                      >
+                        🗑
+                      </button>
+                    </div>
+                    {editingSessionId === session.id && (
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <EditSessionForm
+                          session={session}
+                          onClose={() => setEditingSessionId(null)}
+                          onUpdate={onUpdate}
+                        />
+                      </div>
+                    )}
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <SessionDetails session={session} onUpdate={onUpdate} />
+                    </div>
+                  </>
                 )}
               </li>
             );

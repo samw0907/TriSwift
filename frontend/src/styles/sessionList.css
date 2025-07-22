@@ -31,6 +31,11 @@
   transform: scale(1.02);
 }
 
+/* ✅ New rule to reduce zoom for expanded session cards (list view only) */
+.session-card.expanded:hover {
+  transform: scale(1.005);
+}
+
 .session-top-row {
   display: flex;
   justify-content: space-between;
@@ -223,6 +228,12 @@
   border: 1px solid #4fa3e3;
   box-shadow: var(--box-shadow);
   width: 100%;
+  transition: transform 0.2s ease-in-out, background 0.2s ease-in-out;
+}
+
+.expanded-card:hover {
+  background: #1f252c;
+  transform: scale(1.02);
 }
 
 .grid-view .session-card {

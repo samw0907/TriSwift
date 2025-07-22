@@ -20,10 +20,10 @@ const LandingPage: React.FC = () => {
         </Link>
       </div>
 
-      <section className="feature-grid">
+      <section className="feature-flex">
         <div className="feature-card">
           <h3>Workout Logging</h3>
-          <p>Capture detailed sessions across swim, bike, and run — all in one place.</p>
+          <p>One place for all your swim, bike, and run training sessions.</p>
         </div>
         <div className="feature-card">
           <h3>Progress Graphs</h3>
@@ -40,7 +40,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       <p className="tagline">
-        Whether you're chasing your first finish or next podium — TriSwift has your back.
+        Train smarter, track your progress, and chase your next big finish with TriSwift.
       </p>
     </div>
   );

@@ -30,9 +30,7 @@ const SessionList: React.FC<SessionListProps> = ({
   onUpdate,
   onAddSession,
 }) => {
-  const [expandedSessionId, setExpandedSessionId] = useState<string | null>(
-    null
-  );
+  const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
@@ -415,9 +413,7 @@ const SessionList: React.FC<SessionListProps> = ({
             return (
               <li
                 key={session.id}
-                className={`session-card ${
-                  expandedSessionId === session.id ? "expanded" : ""
-                }`}
+                className="session-card"
                 style={{
                   borderLeft: `5px solid ${getSportColor(session.sessionType)}`,
                 }}
@@ -436,7 +432,11 @@ const SessionList: React.FC<SessionListProps> = ({
                       ? `${(totalDistance * 1000).toFixed(0)} m`
                       : `${totalDistance.toFixed(2)} km`}
                   </p>
-                  {pace && <p className="session-stats">{pace}</p>}
+                  {pace ? (
+                    <p className="session-stats">{pace}</p>
+                  ) : (
+                    <p className="session-stats placeholder">&nbsp;</p>
+                  )}
                 </div>
 
                 {expandedSessionId === session.id && (

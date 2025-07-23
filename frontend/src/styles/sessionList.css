@@ -254,3 +254,7 @@
 .session-stats.small-text {
   font-size: 0.85rem;
 }
+
+.placeholder {
+  visibility: hidden;
+}

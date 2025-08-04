@@ -1,6 +1,6 @@
 export interface CityDistance {
-  distance: number
-  cities: [string, string]
+  distance: number;
+  cities: [string, string];
 }
 
 const cityDistances: CityDistance[] = [
@@ -32,22 +32,28 @@ const cityDistances: CityDistance[] = [
   { distance: 1596, cities: ["Paris", "Warsaw"] },
   { distance: 1713, cities: ["Lisbon", "Paris"] },
   { distance: 2391, cities: ["London", "Athens"] }
-]
+];
 
-export function getCityComparison(totalKm: number): string | null {
-  if (totalKm < 75) return null
-  let closest: CityDistance | null = null
+export function getCityComparison(totalKm: number): React.ReactNode | null {
+  if (totalKm < 75) return null;
+  let closest: CityDistance | null = null;
   for (const pair of cityDistances) {
     if (totalKm >= pair.distance) {
-      closest = pair
+      closest = pair;
     } else {
-      break
+      break;
     }
   }
-  if (!closest) return null
-  return `That's more than the distance between ` +
-    `<span class="city-highlight">${closest.cities[0]}</span> & ` +
-    `<span class="city-highlight">${closest.cities[1]}</span>.`
+  if (!closest) return null;
+
+  const [from, to] = closest.cities;
+  return (
+    <>
+      That’s more than the distance between{" "}
+      <span className="city-highlight">{from}</span> &{" "}
+      <span className="city-highlight">{to}</span>.
+    </>
+  );
 }
 
-export default cityDistances
+export default cityDistances;

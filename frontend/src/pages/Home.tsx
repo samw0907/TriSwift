@@ -55,10 +55,7 @@ const Home = () => {
           sports.
         </p>
         {citySentence && (
-          <p
-            className="home-summary city-sentence"
-            dangerouslySetInnerHTML={{ __html: citySentence }}
-          ></p>
+          <p className="home-summary city-sentence">{citySentence}</p>
         )}
       </div>
       <div className="counters">

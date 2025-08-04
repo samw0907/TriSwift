@@ -59,6 +59,7 @@
 
 .records-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   background: #2a2f36;
   border-radius: 8px;
@@ -72,6 +73,8 @@
   padding: 12px;
   text-align: center;
   color: #e1e2e2;
+  width: 25%;
+  word-wrap: break-word;
 }
 
 .records-table th {

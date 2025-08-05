@@ -1,0 +1,64 @@
+.map-preview-wrapper {
+  max-width: 66%;
+  margin: 2rem auto;
+  position: relative;
+}
+
+.map-container {
+  height: 500px;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--box-shadow);
+}
+
+/* Button Panel (default: desktop layout = bottom left) */
+.map-style-toggle {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  z-index: 1;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-family: "Josefin Sans", sans-serif;
+  font-size: 0.8rem;
+  display: flex;
+  gap: 10px;
+}
+
+.map-style-toggle label {
+  cursor: pointer;
+}
+
+.map-style-toggle input {
+  margin-right: 4px;
+}
+
+/* Theme Styles */
+.map-style-toggle.light {
+  background: #000;
+  color: #fff;
+}
+
+.map-style-toggle.dark {
+  background: #fff;
+  color: #000;
+}
+
+/* Mobile overrides */
+@media (max-width: 768px) {
+  .map-preview-wrapper {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+
+  .map-style-toggle {
+    top: 10px;
+    left: auto;
+    right: 10px;
+    bottom: auto;
+    font-size: 0.7rem;
+    gap: 6px;
+    padding: 4px 8px;
+  }
+}

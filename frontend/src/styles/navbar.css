@@ -1,35 +1,72 @@
 .navbar {
+  background: #1d2228;
+  color: #e1e2e2;
+  padding: 15px 30px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.navbar-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #1d2228;
-  padding: 15px 30px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+/* ✅ TriSwift brand always stays inline */
+.navbar-brand {
+  font-size: 26px;
+  font-weight: bold;
   color: #e1e2e2;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+  user-select: none;
 }
 
-.nav-links {
+.tri-text {
+  color: #fb8122;
+}
+
+.swift-text {
+  color: #00bfff;
+}
+
+.hamburger {
+  display: none;
+  font-size: 26px;
+  border: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  background: none !important;
+  color: #e1e2e2 !important;
+  border-radius: 4px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.hamburger.active {
+  background-color: #fb8122 !important;
+}
+
+.nav-menu {
   display: flex;
+  justify-content: flex-end;
+  align-items: center;
   gap: 20px;
+  flex-wrap: wrap;
 }
 
-.nav-links a {
+.nav-menu a {
   color: #e1e2e2;
   text-decoration: none;
   font-size: 16px;
   padding: 8px 14px;
   border-radius: 4px;
-  transition: background 0.3s ease-in-out;
+  transition: color 0.3s ease-in-out, background 0.3s ease-in-out;
 }
 
-.nav-links a:hover {
-  background-color: #00bfff;
-  color: #1d2228;
-}
-
-.nav-auth {
-  display: flex;
-  gap: 10px;
+.nav-menu a:hover {
+  color: #00bfff !important;
+  background: none !important;
 }
 
 .nav-btn {
@@ -38,11 +75,12 @@
   padding: 8px 14px;
   text-decoration: none;
   border-radius: 4px;
-  transition: background 0.3s ease-in-out;
+  transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 .nav-btn:hover {
   background: #e66f12;
+  color: #1d2228;
 }
 
 .logout-btn {
@@ -52,28 +90,56 @@
   border: none;
   cursor: pointer;
   border-radius: 4px;
-  transition: background 0.3s ease-in-out;
+  transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 .logout-btn:hover {
   background: #c82333;
+  color: white;
 }
 
+/* ✅ Mobile styles (keep horizontal row layout) */
 @media (max-width: 768px) {
-  .navbar {
+  .hamburger {
+    display: block;
+  }
+
+  .nav-menu {
+    display: none;
     flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    background: #1d2228;
+    padding: 10px 0;
+    margin-top: 10px;
+    border-top: 1px solid #3a3f47;
+    width: 100%;
+  }
+
+  .nav-menu.open {
+    display: flex;
+  }
+
+  .nav-menu a,
+  .nav-btn,
+  .logout-btn {
+    font-size: 15px;
+    padding: 10px 20px;
+    width: 100%;
+    max-width: 260px;
+    margin: 0 auto;
     text-align: center;
-    padding: 15px;
+    transition: background 0.3s ease, color 0.3s ease;
   }
 
-  .nav-links {
-    flex-direction: row;
-    margin-top: 10px;
+  .nav-menu a:hover {
+    color: #00bfff !important;
+    background: none !important;
   }
 
-  .nav-auth {
-    flex-direction: row;
-    gap: 10px;
-    margin-top: 10px;
+  .nav-btn:hover,
+  .logout-btn:hover {
+    color: #00bfff !important;
+    background: none !important;
   }
 }

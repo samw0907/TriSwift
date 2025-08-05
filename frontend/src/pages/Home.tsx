@@ -3,6 +3,7 @@ import { useQuery } from "@apollo/client";
 import { GET_SESSIONS } from "../graphql/queries";
 import TotalsGraph from "../components/TotalsGraph";
 import { getCityComparison } from "../utils/cityDistanceLookup";
+import MapPreview from "../components/MapPreview";
 import "../styles/home.css";
 
 const Home = () => {
@@ -94,6 +95,7 @@ const Home = () => {
       </div>
       <div className="graph-section">
         <TotalsGraph />
+        <MapPreview />
       </div>
     </div>
   );

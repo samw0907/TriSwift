@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import { GET_SESSIONS } from "../graphql/queries";
 import TotalsGraph from "../components/TotalsGraph";
-import { getCityComparison } from "../utils/cityDistanceLookup";
+import { getCityComparisonWithCoords } from "../utils/cityDistanceLookup";
 import MapPreview from "../components/MapPreview";
 import "../styles/home.css";
 
@@ -45,7 +45,7 @@ const Home = () => {
   if (error) return <p>Error loading data</p>;
 
   const totalYTDkm = yearToDate.Swim / 1000 + yearToDate.Bike + yearToDate.Run;
-  const citySentence = getCityComparison(totalYTDkm);
+  const cityComparison = getCityComparisonWithCoords(totalYTDkm);
 
   return (
     <div className="home">
@@ -53,12 +53,20 @@ const Home = () => {
       <div className="home-summary-block">
         <p className="home-summary">
           So far this year you’ve covered <strong>{totalYTDkm.toFixed(1)} km</strong> across all
-          sports.
+          sports this year.
         </p>
-        {citySentence && (
-          <p className="home-summary city-sentence">{citySentence}</p>
+        {cityComparison && (
+          <>
+            <p className="home-summary city-sentence">
+              That’s more than the distance between{" "}
+              <span className="city-highlight">{cityComparison.from}</span> &{" "}
+              <span className="city-highlight">{cityComparison.to}</span>.
+            </p>
+            <MapPreview fromCoord={cityComparison.fromCoord} toCoord={cityComparison.toCoord} />
+          </>
         )}
       </div>
+
       <div className="counters">
         <div className="counter-wrapper">
           <h2>Week</h2>
@@ -93,9 +101,9 @@ const Home = () => {
           </div>
         </div>
       </div>
+
       <div className="graph-section">
         <TotalsGraph />
-        <MapPreview />
       </div>
     </div>
   );

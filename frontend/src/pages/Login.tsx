@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useContext } from 'react';
 import { useMutation } from '@apollo/client';
 import { LOGIN_USER } from '../graphql/mutations';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext'; 
 import '../index.css';
 
@@ -18,7 +18,7 @@ const Login: React.FC = () => {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [notification, setNotification] = useState<string | null>(null);
 
-  const [login, { loading, error }] = useMutation(LOGIN_USER, {
+  const [login, { loading }] = useMutation(LOGIN_USER, {
     onCompleted: (data) => {
       if (data?.login?.token) {
         loginUser(data.login.token);
@@ -67,9 +67,12 @@ const Login: React.FC = () => {
           onChange={handleChange} 
           required 
         />
-        <button type="submit" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
-        </button>
+        <div className="button-row">
+          <button type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
+          <Link to="/" className="btn-secondary button-link">Back</Link>
+        </div>
       </form>
     </div>
   );

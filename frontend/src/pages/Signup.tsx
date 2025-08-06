@@ -1,15 +1,15 @@
 import React, { useState, useCallback } from 'react';
 import { useMutation } from '@apollo/client';
 import { SIGNUP_USER } from '../graphql/mutations';
-import { useNavigate } from 'react-router-dom';
-import '../index.css'
+import { useNavigate, Link } from 'react-router-dom';
+import '../index.css';
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({ name: '', email: '', password: '' });
   const [notification, setNotification] = useState<string | null>(null);
 
-  const [signup, { loading, error }] = useMutation(SIGNUP_USER, {
+  const [signup, { loading }] = useMutation(SIGNUP_USER, {
     onCompleted: () => navigate('/login'),
     onError: (error) => {
       console.error("Signup Error:", error);
@@ -43,13 +43,18 @@ const Signup: React.FC = () => {
 
   return (
     <div className="auth-container">
-      <h2>Signup</h2>
+      <h2>Sign Up</h2>
       {notification && <div className="notification">{notification}</div>}
       <form className="auth-form" onSubmit={handleSubmit}>
         <input type="text" name="name" placeholder="Name" value={credentials.name} onChange={handleChange} required />
         <input type="email" name="email" placeholder="Email" value={credentials.email} onChange={handleChange} required />
         <input type="password" name="password" placeholder="Password" value={credentials.password} onChange={handleChange} required />
-        <button type="submit" disabled={loading}>{loading ? "Signing up..." : "Signup"}</button>
+        <div className="button-row">
+          <button type="submit" disabled={loading}>
+            {loading ? "Signing up..." : "Signup"}
+          </button>
+          <Link to="/" className="btn-secondary button-link">Back</Link>
+        </div>
       </form>
     </div>
   );

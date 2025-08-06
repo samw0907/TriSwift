@@ -189,3 +189,38 @@ input:focus, select:focus, textarea:focus {
   border-radius: var(--border-radius);
   margin-bottom: 10px;
 }
+
+.button-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.button-row button,
+.button-row .button-link {
+  flex: 1;
+  font-family: "Josefin Sans", sans-serif;
+  font-size: 16px;
+  text-align: center;
+  padding: 12px 0;
+  border: none;
+  border-radius: var(--border-radius);
+  line-height: 1.2;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.button-row .button-link {
+  background: var(--secondary-color);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.button-row .button-link:hover {
+  background: var(--secondary-dark);
+  color: #1d2228;
+}

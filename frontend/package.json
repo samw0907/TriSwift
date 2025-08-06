@@ -4,9 +4,11 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.13.4",
+    "@lottiefiles/react-lottie-player": "^3.6.0",
     "@testing-library/dom": "^10.4.0",
     "chart.js": "^4.4.8",
     "graphql": "^16.10.0",
+    "lottie-react": "^2.4.1",
     "mapbox-gl": "^2.15.0",
     "react": "^19.0.0",
     "react-chartjs-2": "^5.3.0",

@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import RunnerBanner from './components/RunnerBanner';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
@@ -12,12 +13,16 @@ import { AuthContext } from "./context/AuthContext";
 
 const App = () => {
   const auth = useContext(AuthContext);
+  const location = useLocation();
 
   if (!auth) return null;
 
+  const hideNavbarRoutes = ["/", "/login", "/signup"];
+  const shouldHideNavbar = hideNavbarRoutes.includes(location.pathname);
+
   return (
     <>
-      <Navbar />
+      {shouldHideNavbar ? <RunnerBanner /> : <Navbar />}
       <Routes>
         <Route path="/" element={auth.isAuthenticated ? <Navigate to="/home" replace /> : <LandingPage />} />
         <Route path="/home" element={auth.isAuthenticated ? <Home /> : <Navigate to="/" />} />

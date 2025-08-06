@@ -12,14 +12,24 @@
 
 .hero-title {
   font-size: 5.5rem;
-  color: #fb8122;
   letter-spacing: 1px;
   margin-bottom: 10px;
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.tri-text {
+  color: #fb8122;
+}
+
+.swift-text {
+  color: #00bfff;
 }
 
 .hero-subtitle {
   font-size: 1.6rem;
-  color: #00bfff;
+  color: #ffffff;
   font-weight: 500;
   margin-bottom: 8px;
 }
@@ -79,7 +89,9 @@
   width: 100%;
   max-width: 1500px;
   margin: 0 auto 50px;
-  padding: 0 20px;
+  padding: 0 16px;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .feature-card {
@@ -92,6 +104,7 @@
   flex: 0 0 calc(25% - 26px);
   max-width: calc(25% - 26px);
   min-width: 260px;
+  box-sizing: border-box;
 }
 
 .feature-card:hover {
@@ -136,5 +149,6 @@
   .feature-card {
     flex: 0 0 100%;
     max-width: 100%;
+    min-width: 0;
   }
 }

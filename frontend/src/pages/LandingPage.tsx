@@ -5,8 +5,13 @@ import "../styles/landing.css";
 const LandingPage: React.FC = () => {
   return (
     <div className="landing-dark">
-      <h1 className="hero-title">TriSwift</h1>
+      <h1 className="hero-title">
+        <span className="tri-text">Tri</span>
+        <span className="swift-text">Swift</span>
+      </h1>
+
       <p className="hero-subtitle">Train. Track. Triumph.</p>
+
       <p className="hero-description">
         Your all-in-one performance companion for triathlon training.
       </p>
@@ -22,11 +27,11 @@ const LandingPage: React.FC = () => {
 
       <section className="feature-flex">
         <div className="feature-card">
-          <h3>Workout Logging</h3>
+          <h3>Activity Logging</h3>
           <p>One place for all your swim, bike, and run training sessions.</p>
         </div>
         <div className="feature-card">
-          <h3>Progress Graphs</h3>
+          <h3>Visualizations</h3>
           <p>Visualize weekly, monthly, and yearly distance trends across disciplines.</p>
         </div>
         <div className="feature-card">

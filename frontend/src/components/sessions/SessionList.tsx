@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SessionDetails from "./SessionDetails";
 import EditSessionForm from "./EditSessionForm";
 import "../../styles/sessionList.css";
@@ -39,10 +39,20 @@ const SessionList: React.FC<SessionListProps> = ({
   const [minDistance, setMinDistance] = useState<string>("");
   const [maxDistance, setMaxDistance] = useState<string>("");
   const [distanceUnit, setDistanceUnit] = useState<"m" | "km">("km");
-  const [sortOrder, setSortOrder] = useState<
-    "asc" | "desc" | "date-desc" | "date-asc"
-  >("date-desc");
-  const [gridView, setGridView] = useState(true);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | "date-desc" | "date-asc">("date-desc");
+  const [gridView, setGridView] = useState(() => window.innerWidth >= 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const isNowMobile = window.innerWidth < 768;
+      setIsMobile(isNowMobile);
+      setGridView(!isNowMobile);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const toggleFilter = (filter: string) => {
     setSelectedFilters((prev) =>
@@ -317,12 +327,14 @@ const SessionList: React.FC<SessionListProps> = ({
               Clear Filters
             </button>
           )}
-          <button
-            className={`toggle-btn ${gridView ? "active" : ""}`}
-            onClick={() => setGridView((prev) => !prev)}
-          >
-            {gridView ? "List View" : "Grid View"}
-          </button>
+          {!isMobile && (
+            <button
+              className={`toggle-btn ${gridView ? "active" : ""}`}
+              onClick={() => setGridView((prev) => !prev)}
+            >
+              {gridView ? "List View" : "Grid View"}
+            </button>
+          )}
         </div>
       </div>
 

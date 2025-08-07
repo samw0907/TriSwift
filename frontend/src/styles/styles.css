@@ -201,15 +201,14 @@ input:focus, select:focus, textarea:focus {
   flex: 1;
   font-family: "Josefin Sans", sans-serif;
   font-size: 16px;
-  text-align: center;
   padding: 12px 0;
-  border: none;
-  border-radius: var(--border-radius);
-  line-height: 1.2;
-  height: 100%;
+  height: 44px; /* Explicit fixed height ensures text can center vertically */
+  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: none;
+  border-radius: var(--border-radius);
   box-sizing: border-box;
   transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
 }
@@ -223,4 +222,10 @@ input:focus, select:focus, textarea:focus {
 .button-row .button-link:hover {
   background: var(--secondary-dark);
   color: #1d2228;
+}
+
+@media (max-width: 480px) {
+  .auth-container {
+    margin: 30px 15px;
+  }
 }

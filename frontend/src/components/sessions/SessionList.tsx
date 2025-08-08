@@ -304,11 +304,9 @@ const SessionList: React.FC<SessionListProps> = ({
 
   return (
     <div className={`session-list-container ${gridView ? "grid-view" : ""}`}>
-      {sessions.length === 0 ? (
-        <p className="no-sessions">No sessions available.</p>
-      ) : null}
 
       <div className="filter-controls-wrapper">
+        
         <div className="left-controls">
           <button className="btn-primary add-session-btn" onClick={onAddSession}>
             Add Session

@@ -2,7 +2,8 @@ import React, { useState, useCallback, useContext } from 'react';
 import { useMutation } from '@apollo/client';
 import { LOGIN_USER } from '../graphql/mutations';
 import { useNavigate, Link } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext'; 
+import { AuthContext } from '../context/AuthContext';
+import VisitorNoticeLogin from "../components/VisitorNoticeLogin"; 
 import '../index.css';
 
 const Login: React.FC = () => {
@@ -47,6 +48,7 @@ const Login: React.FC = () => {
   };
 
   return (
+    <div>
     <div className="auth-container">
       <h2>Login</h2>
       {notification && <div className="notification">{notification}</div>}
@@ -74,6 +76,9 @@ const Login: React.FC = () => {
           <Link to="/" className="btn-secondary button-link">Back</Link>
         </div>
       </form>
+      
+    </div>
+    <VisitorNoticeLogin />
     </div>
   );
 };

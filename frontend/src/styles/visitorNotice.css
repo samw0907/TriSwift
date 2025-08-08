@@ -1,0 +1,54 @@
+.visitor-notice {
+  background: var(--card-background);
+  color: var(--text-color);
+  border: 1px solid var(--card-border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  padding: 1rem 1.25rem;
+  max-width: 500px;
+  margin: 1.5rem auto;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.visitor-notice strong {
+  color: var(--secondary-color);
+  font-weight: bold;
+}
+
+.visitor-notice .highlight {
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.auth-extras .button-row {
+  display: flex;
+  justify-content: center;
+}
+
+.auth-extras .button-row .btn-secondary.button-link {
+  max-width: 50%;
+  text-align: center;
+}
+/* Make "Go to Login" orange + 50% width, centered */
+.auth-extras .button-row {
+  display: flex;
+  justify-content: center;
+}
+
+.auth-extras .button-row .btn-primary.button-link {
+  background: var(--primary-color);
+  color: #1d2228;        /* black text */
+  width: 50%;
+  display: flex;         /* keep perfect vertical centering */
+  align-items: center;
+  justify-content: center;
+  padding: 12px 0;       /* match your other buttons' height without forcing it */
+  text-decoration: none; /* since it’s a Link */
+  border-radius: var(--border-radius);
+}
+
+.auth-extras .button-row .btn-primary.button-link:hover {
+  background: var(--primary-dark);
+}

@@ -56,8 +56,8 @@ const Dashboard: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
 
   useEffect(() => {
-    if (data?.sessions) {
-      setSessions(data.sessions);
+    if (data) {
+      setSessions(data.sessions ?? []);
     }
   }, [data]);
 
@@ -207,14 +207,13 @@ const Dashboard: React.FC = () => {
       <h2>All Sessions</h2>
       {loading && <p>Loading sessions...</p>}
       {error && <p className="error-message">Error fetching sessions</p>}
-      {sessions.length > 0 && (
-        <SessionList
-          sessions={sessions}
-          onDelete={handleDelete}
-          onUpdate={refetch}
-          onAddSession={() => setShowSessionForm(true)}
-        />
-      )}
+
+      <SessionList
+        sessions={sessions}
+        onDelete={handleDelete}
+        onUpdate={refetch}
+        onAddSession={() => setShowSessionForm(true)}
+      />
     </div>
   );
 };

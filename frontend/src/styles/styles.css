@@ -59,6 +59,22 @@ button.secondary:hover,
   color: #ffffff;
 }
 
+/* Orange primary button */
+.btn-primary {
+  background: var(--primary-color);
+  color: #1d2228; /* black text */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: normal; /* reset to normal for flex centering */
+  height: auto; /* remove fixed height */
+  padding: 12px 0;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+}
+
 button.danger,
 .btn-danger {
   background: var(--danger-color);
@@ -173,7 +189,6 @@ input:focus, select:focus, textarea:focus {
   background: var(--primary-dark);
 }
 
-
 .notification-error {
   background: var(--danger-color);
   color: white;
@@ -202,7 +217,7 @@ input:focus, select:focus, textarea:focus {
   font-family: "Josefin Sans", sans-serif;
   font-size: 16px;
   padding: 22px 0;
-  height: 44px; /* Explicit fixed height ensures text can center vertically */
+  height: 44px;
   line-height: 1;
   display: flex;
   align-items: center;

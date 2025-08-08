@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useMutation } from '@apollo/client';
 import { SIGNUP_USER } from '../graphql/mutations';
 import { useNavigate, Link } from 'react-router-dom';
+import VisitorNoticeLogin from "../components/VisitorNoticeLogin"; 
 import '../index.css';
 
 const Signup: React.FC = () => {
@@ -42,20 +43,52 @@ const Signup: React.FC = () => {
   };
 
   return (
-    <div className="auth-container">
-      <h2>Sign Up</h2>
-      {notification && <div className="notification">{notification}</div>}
-      <form className="auth-form" onSubmit={handleSubmit}>
-        <input type="text" name="name" placeholder="Name" value={credentials.name} onChange={handleChange} required />
-        <input type="email" name="email" placeholder="Email" value={credentials.email} onChange={handleChange} required />
-        <input type="password" name="password" placeholder="Password" value={credentials.password} onChange={handleChange} required />
-        <div className="button-row">
-          <button type="submit" disabled={loading}>
-            {loading ? "Signing up..." : "Signup"}
-          </button>
-          <Link to="/" className="btn-secondary button-link">Back</Link>
+    <div>
+      <div className="auth-container">
+        <h2>Sign Up</h2>
+        {notification && <div className="notification">{notification}</div>}
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <input 
+            type="text" 
+            name="name" 
+            placeholder="Name" 
+            value={credentials.name} 
+            onChange={handleChange} 
+            required 
+          />
+          <input 
+            type="email" 
+            name="email" 
+            placeholder="Email" 
+            value={credentials.email} 
+            onChange={handleChange} 
+            required 
+          />
+          <input 
+            type="password" 
+            name="password" 
+            placeholder="Password" 
+            value={credentials.password} 
+            onChange={handleChange} 
+            required 
+          />
+          <div className="button-row">
+            <button type="submit" disabled={loading}>
+              {loading ? "Signing up..." : "Signup"}
+            </button>
+            <Link to="/" className="btn-secondary button-link">Back</Link>
+          </div>
+        </form>
+      </div>
+
+      <div className="auth-extras">
+        <div className="button-row" style={{ margin: '0 auto 10px', width: '25%' }}>
+          <Link to="/login" className="btn-primary button-link" style={{ width: '100%' }}>
+            Go to Login
+          </Link>
         </div>
-      </form>
+      <VisitorNoticeLogin />
+      </div>
     </div>
   );
 };

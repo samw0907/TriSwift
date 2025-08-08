@@ -7,6 +7,8 @@ app = 'triswift-frontend'
 primary_region = 'arn'
 
 [build]
+  [build.args]
+    REACT_APP_MAPBOX_TOKEN = "pk.eyJ1Ijoic2FtdzA5MDciLCJhIjoiY21keDRzOHN1MjJzMTJpczg5ZndnM3ZvdCJ9.k9KgFQnwBlzk2GAyw6LNCA"
 
 [env]
   NODE_ENV = "production"

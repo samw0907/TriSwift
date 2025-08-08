@@ -4,6 +4,10 @@
 FROM node:20.14.0-slim AS build
 WORKDIR /app
 
+# Accept Mapbox token at build time and expose it so CRA can read it
+ARG REACT_APP_MAPBOX_TOKEN
+ENV REACT_APP_MAPBOX_TOKEN=$REACT_APP_MAPBOX_TOKEN
+
 COPY package*.json ./
 RUN npm ci
 

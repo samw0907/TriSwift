@@ -31,7 +31,6 @@
   transform: scale(1.02);
 }
 
-/* ✅ New rule to reduce zoom for expanded session cards (list view only) */
 .session-card.expanded:hover {
   transform: scale(1.005);
 }
@@ -257,4 +256,80 @@
 
 .placeholder {
   visibility: hidden;
+}
+
+@media (max-width: 768px) {
+  .session-list-container {
+    max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .session-card {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    box-sizing: border-box;
+  }
+
+  .session-top-row {
+    display: grid;
+    /* widened col 1, reduced col 2 & 3 */
+    grid-template-columns: 1.3fr 0.9fr minmax(70px, 0.8fr);
+    grid-template-areas:
+      "type date spacer"
+      "time dist pace";
+    column-gap: 12px;
+    row-gap: 4px;
+    align-items: center;
+    justify-items: start;
+    margin-bottom: 6px;
+  }
+
+  .session-top-row::before {
+    content: "";
+    grid-area: spacer;
+    display: block;
+  }
+
+  .session-top-row > :nth-child(1) {
+    grid-area: type;
+    margin: 0;
+    font-size: 0.95rem; /* still fits 'Multi-Sport' */
+    text-align: left;
+    justify-self: start;
+  }
+
+  .session-top-row > :nth-child(2) {
+    grid-area: date;
+    font-size: 0.9rem;
+    color: #cccccc;
+    text-align: left;
+    justify-self: start;
+    margin: 0;
+  }
+
+  .session-top-row > :nth-child(3) {
+    grid-area: time;
+    font-size: 0.9rem;
+    text-align: left;
+    justify-self: start;
+    margin: 0;
+  }
+
+  .session-top-row > :nth-child(4) {
+    grid-area: dist;
+    font-size: 0.9rem;
+    text-align: left;
+    justify-self: start;
+    margin: 0;
+  }
+
+  .session-top-row > :nth-child(5) {
+    grid-area: pace;
+    font-size: 0.9rem;
+    text-align: left;
+    justify-self: start;
+    margin: 0;
+  }
 }

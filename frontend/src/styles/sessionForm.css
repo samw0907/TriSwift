@@ -1,5 +1,5 @@
 .session-form {
-  max-width: 450px;
+  max-width: 520px;
   margin: 20px auto;
   padding: 15px;
   background: #2a2f36;
@@ -8,21 +8,25 @@
   box-shadow: var(--box-shadow);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   font-family: "Josefin Sans", sans-serif;
   color: #ffffff;
 }
 
-.session-form h3 {
-  margin: 0 0 8px 0;
+.session-form h3,
+.session-form .section-heading {
+  margin: 8px 0 0 0;
   color: var(--primary-color);
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .session-form label {
   font-weight: 600;
   color: #cccccc;
   text-align: left;
-  font-size: 14px;
+  font-size: 13px;
+  margin-bottom: 4px;
 }
 
 .session-form input,
@@ -33,23 +37,54 @@
   border-radius: var(--border-radius);
   background: #1f252c;
   color: #ffffff;
-  transition: border-color 0.3s ease-in-out;
+  transition: border-color 0.3s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .session-form input:focus,
 .session-form select:focus {
   border-color: var(--primary-color);
   outline: none;
+  box-shadow: 0 0 0 2px rgba(79, 163, 227, 0.25);
+}
+
+.form-row {
+  display: grid;
+  gap: 12px;
+}
+
+.form-row.two-col {
+  grid-template-columns: 1fr 1fr;
+}
+
+.form-row.three-col {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-input {
+  color-scheme: dark;
+}
+
+.date-input::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.6) contrast(1.2);
+  opacity: 1;
+}
+
+.date-field {
+  cursor: pointer;
+}
+.date-field input {
+  cursor: pointer;
 }
 
 .session-form input[type="number"]::-webkit-inner-spin-button,
 .session-form input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
-}
-
-.session-form input[type="number"] {
-  -moz-appearance: textfield;
 }
 
 .form-buttons {
@@ -97,6 +132,11 @@
 @media (max-width: 600px) {
   .session-form {
     padding: 12px;
+  }
+
+  .form-row.two-col,
+  .form-row.three-col {
+    grid-template-columns: 1fr;
   }
 
   .form-buttons {

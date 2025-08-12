@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "../../styles/sessionForm.css";
 
 interface SessionFormProps {
@@ -16,9 +16,21 @@ const SessionForm: React.FC<SessionFormProps> = ({ onSubmit, onCancel }) => {
   });
 
   const today = new Date().toISOString().split("T")[0];
+  const dateRef = useRef<HTMLInputElement>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const openDatePicker = () => {
+    const el = dateRef.current;
+    if (!el) return;
+    el.focus();
+    // Progressive enhancement: opens the native picker in Chrome/Edge
+    // @ts-ignore
+    if (el.showPicker) el.showPicker();
   };
 
   return (
@@ -29,58 +41,87 @@ const SessionForm: React.FC<SessionFormProps> = ({ onSubmit, onCancel }) => {
       }}
       className="session-form"
     >
-      <label htmlFor="sessionType">Session Type:</label>
-      <select
-        id="sessionType"
-        name="sessionType"
-        value={formData.sessionType}
-        onChange={handleChange}
-        required
-      >
-        <option value="">Select Type</option>
-        <option value="Swim">Swim</option>
-        <option value="Bike">Bike</option>
-        <option value="Run">Run</option>
-        <option value="Multi-Sport">Multi-Sport</option>
-      </select>
+      {/* Row: Session Type + Date */}
+      <h3 className="section-heading">Session</h3>
+      <div className="form-row two-col">
+        <div className="form-field">
+          <label htmlFor="sessionType">Session Type</label>
+          <select
+            id="sessionType"
+            name="sessionType"
+            value={formData.sessionType}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select Type</option>
+            <option value="Swim">Swim</option>
+            <option value="Bike">Bike</option>
+            <option value="Run">Run</option>
+            <option value="Multi-Sport">Multi-Sport</option>
+          </select>
+        </div>
 
-      <label htmlFor="date">Date:</label>
-      <input
-        id="date"
-        type="date"
-        name="date"
-        value={formData.date}
-        onChange={handleChange}
-        required
-        max={today}
-      />
+        <div
+          className="form-field date-field"
+          onClick={openDatePicker}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") openDatePicker();
+          }}
+          tabIndex={0}
+        >
+          <label htmlFor="date">Date</label>
+          <input
+            id="date"
+            type="date"
+            name="date"
+            value={formData.date}
+            onChange={handleChange}
+            required
+            max={today}
+            className="date-input"
+            ref={dateRef}
+          />
+        </div>
+      </div>
 
-      <label htmlFor="weatherTemp">Weather Temp (°C):</label>
-      <input
-        id="weatherTemp"
-        type="number"
-        name="weatherTemp"
-        value={formData.weatherTemp}
-        onChange={handleChange}
-      />
+      {/* Weather section */}
+      <h3 className="section-heading">Weather</h3>
 
-      <label htmlFor="weatherHumidity">Weather Humidity (%):</label>
-      <input
-        id="weatherHumidity"
-        type="number"
-        name="weatherHumidity"
-        value={formData.weatherHumidity}
-        onChange={handleChange}
-      />
+      {/* Row: Temp + Humidity + Wind */}
+      <div className="form-row three-col">
+        <div className="form-field">
+          <label htmlFor="weatherTemp">Temp (°C)</label>
+          <input
+            id="weatherTemp"
+            type="number"
+            name="weatherTemp"
+            value={formData.weatherTemp}
+            onChange={handleChange}
+          />
+        </div>
 
-      <label htmlFor="weatherWindSpeed">Wind Speed (m/s):</label>
-      <input
-        id="weatherWindSpeed"
-        type="number"
-        name="weatherWindSpeed"
-        value={formData.weatherWindSpeed}
-        onChange={handleChange}
-      />
+        <div className="form-field">
+          <label htmlFor="weatherHumidity">Humidity (%)</label>
+          <input
+            id="weatherHumidity"
+            type="number"
+            name="weatherHumidity"
+            value={formData.weatherHumidity}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="form-field">
+          <label htmlFor="weatherWindSpeed">Wind (m/s)</label>
+          <input
+            id="weatherWindSpeed"
+            type="number"
+            name="weatherWindSpeed"
+            value={formData.weatherWindSpeed}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
 
       <div className="form-buttons">
         <button type="submit" className="btn-primary">

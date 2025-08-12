@@ -274,7 +274,6 @@
 
   .session-top-row {
     display: grid;
-    /* widened col 1, reduced col 2 & 3 */
     grid-template-columns: 1.3fr 0.9fr minmax(70px, 0.8fr);
     grid-template-areas:
       "type date spacer"
@@ -295,7 +294,7 @@
   .session-top-row > :nth-child(1) {
     grid-area: type;
     margin: 0;
-    font-size: 0.95rem; /* still fits 'Multi-Sport' */
+    font-size: 0.95rem;
     text-align: left;
     justify-self: start;
   }

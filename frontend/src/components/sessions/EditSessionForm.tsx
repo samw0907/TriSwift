@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { UPDATE_SESSION } from "../../graphql/mutations";
 import { GET_SESSIONS } from "../../graphql/queries";
-import "../../styles/sessionForm.css"; // ✅ Reuse same CSS as SessionForm
+import "../../styles/sessionForm.css";
 
 interface EditSessionFormProps {
   session: any;

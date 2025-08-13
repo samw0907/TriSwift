@@ -163,6 +163,18 @@ const Dashboard: React.FC = () => {
     setIsMultiSportActive(false);
   };
 
+  const handleCancelActivityAndDeleteSession = async (id: string) => {
+    try {
+      await deleteSession({ variables: { id } });
+    } finally {
+      setShowActivityForm(false);
+      setShowTransitionForm(false);
+      setSessionId(null);
+      setIsMultiSportActive(false);
+      await refetch();
+    }
+  };
+
   return (
     <div className="dashboard">
       <h1>Session Summary</h1>
@@ -194,6 +206,7 @@ const Dashboard: React.FC = () => {
           sessionType={sessionType}
           onSubmit={handleActivitySubmit}
           onClose={handleCloseForms}
+           onCancelAndDeleteSession={handleCancelActivityAndDeleteSession}
         />
       )}
       {showTransitionForm && sessionId && (

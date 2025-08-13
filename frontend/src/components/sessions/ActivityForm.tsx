@@ -6,9 +6,10 @@ interface ActivityFormProps {
   sessionType: string;
   onSubmit: (activityData: any) => void;
   onClose: () => void;
+  onCancelAndDeleteSession: (sessionId: string) => void;
 }
 
-const ActivityForm: React.FC<ActivityFormProps> = ({ sessionId, sessionType, onSubmit, onClose }) => {
+const ActivityForm: React.FC<ActivityFormProps> = ({ sessionId, sessionType, onSubmit, onClose, onCancelAndDeleteSession }) => {
   const [activity, setActivity] = useState({
     sportType: sessionType !== "Multi-Sport" ? sessionType : "",
     hours: "",
@@ -180,8 +181,12 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ sessionId, sessionType, onS
         <button type="submit" className="btn-primary">
           Submit Activity
         </button>
-        <button type="button" className="btn-secondary" onClick={onClose}>
-          Save & Close
+        <button
+          type="button"
+          className="btn-secondary"
+          onClick={() => onCancelAndDeleteSession(sessionId)}
+        >
+          Cancel
         </button>
       </div>
     </form>

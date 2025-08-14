@@ -75,10 +75,9 @@
   background: var(--primary-dark);
 }
 
-/* ✅ Blue Cancel Button for strong visibility */
 .transition-form .btn-secondary {
-  background: #4fa3e3 !important; /* Bright blue */
-  color: #ffffff !important;      /* White text */
+  background: #4fa3e3 !important;
+  color: #ffffff !important;
   padding: 10px 15px;
   border: none;
   border-radius: var(--border-radius);
@@ -87,7 +86,7 @@
 }
 
 .transition-form .btn-secondary:hover {
-  background: #2c82c9 !important; /* Darker blue on hover */
+  background: #2c82c9 !important;
 }
 
 .edit-transition-form {

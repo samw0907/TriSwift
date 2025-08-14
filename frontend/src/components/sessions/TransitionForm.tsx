@@ -1,16 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../../styles/transitionForm.css";
 
 interface TransitionFormProps {
   sessionId: string;
   onSubmit: (transitionData: any) => void;
   onClose: () => void;
+  previousSportDefault?: "Swim" | "Bike" | "Run" | "";
 }
 
 const TransitionForm: React.FC<TransitionFormProps> = ({
   sessionId,
   onSubmit,
   onClose,
+  previousSportDefault = "",
 }) => {
   const [transition, setTransition] = useState({
     previousSport: "",
@@ -20,10 +22,14 @@ const TransitionForm: React.FC<TransitionFormProps> = ({
     comments: "",
   });
 
+  useEffect(() => {
+    if (previousSportDefault) {
+      setTransition((t) => ({ ...t, previousSport: previousSportDefault }));
+    }
+  }, [previousSportDefault]);
+
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     setTransition({ ...transition, [e.target.name]: e.target.value });
   };

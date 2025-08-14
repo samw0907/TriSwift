@@ -25,7 +25,7 @@ interface Session {
 
 interface Activity {
   id: string;
-  sportType: string;
+  sportType: "Swim" | "Bike" | "Run";
   distance: number;
   duration: number;
 }
@@ -34,6 +34,7 @@ const Dashboard: React.FC = () => {
   const { loading, error, data, refetch } = useQuery<{ sessions: Session[] }>(
     GET_SESSIONS
   );
+
   const [addSession] = useMutation(ADD_SESSION, {
     refetchQueries: [{ query: GET_SESSIONS }],
   });
@@ -54,6 +55,7 @@ const Dashboard: React.FC = () => {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isMultiSportActive, setIsMultiSportActive] = useState(false);
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [lastSubmittedSport, setLastSubmittedSport] = useState<"" | "Swim" | "Bike" | "Run">("");
 
   useEffect(() => {
     if (data) {
@@ -95,15 +97,9 @@ const Dashboard: React.FC = () => {
         isMultiSport: formData.sessionType === "Multi-Sport",
         totalDuration: 0,
         totalDistance: 0,
-        weatherTemp: formData.weatherTemp
-          ? parseFloat(formData.weatherTemp)
-          : null,
-        weatherHumidity: formData.weatherHumidity
-          ? parseInt(formData.weatherHumidity)
-          : null,
-        weatherWindSpeed: formData.weatherWindSpeed
-          ? parseFloat(formData.weatherWindSpeed)
-          : null,
+        weatherTemp: formData.weatherTemp ? parseFloat(formData.weatherTemp) : null,
+        weatherHumidity: formData.weatherHumidity ? parseInt(formData.weatherHumidity) : null,
+        weatherWindSpeed: formData.weatherWindSpeed ? parseFloat(formData.weatherWindSpeed) : null,
       },
     });
 
@@ -114,6 +110,7 @@ const Dashboard: React.FC = () => {
       setShowActivityForm(true);
       setIsMultiSportActive(formData.sessionType === "Multi-Sport");
       setSessionType(formData.sessionType);
+      setLastSubmittedSport("");
       await refetch();
     }
   };
@@ -124,6 +121,7 @@ const Dashboard: React.FC = () => {
     if (activityData.sportType === "Swim") {
       convertedDistance = convertedDistance / 1000;
     }
+
     await addSessionActivity({
       variables: {
         sessionId,
@@ -131,7 +129,14 @@ const Dashboard: React.FC = () => {
         distance: convertedDistance,
       },
     });
+
+
+    if (isMultiSportActive && activityData?.sportType) {
+      setLastSubmittedSport(activityData.sportType as "Swim" | "Bike" | "Run");
+    }
+
     refetch();
+
     if (isMultiSportActive) {
       setShowActivityForm(false);
       setShowTransitionForm(true);
@@ -142,6 +147,7 @@ const Dashboard: React.FC = () => {
 
   const handleTransitionSubmit = async (transitionData: any) => {
     if (!sessionId) return;
+
     await addSessionTransition({
       variables: {
         sessionId,
@@ -151,6 +157,7 @@ const Dashboard: React.FC = () => {
         comments: transitionData.comments,
       },
     });
+
     refetch();
     setShowTransitionForm(false);
     setShowActivityForm(true);
@@ -161,6 +168,7 @@ const Dashboard: React.FC = () => {
     setShowTransitionForm(false);
     setSessionId(null);
     setIsMultiSportActive(false);
+    setLastSubmittedSport("");
   };
 
   const handleCancelActivityAndDeleteSession = async (id: string) => {
@@ -171,6 +179,7 @@ const Dashboard: React.FC = () => {
       setShowTransitionForm(false);
       setSessionId(null);
       setIsMultiSportActive(false);
+      setLastSubmittedSport("");
       await refetch();
     }
   };
@@ -200,18 +209,21 @@ const Dashboard: React.FC = () => {
           onCancel={() => setShowSessionForm(false)}
         />
       )}
+
       {showActivityForm && sessionId && (
         <ActivityForm
           sessionId={sessionId}
           sessionType={sessionType}
           onSubmit={handleActivitySubmit}
           onClose={handleCloseForms}
-           onCancelAndDeleteSession={handleCancelActivityAndDeleteSession}
+          onCancelAndDeleteSession={handleCancelActivityAndDeleteSession}
         />
       )}
+
       {showTransitionForm && sessionId && (
         <TransitionForm
           sessionId={sessionId}
+          previousSportDefault={lastSubmittedSport}
           onSubmit={handleTransitionSubmit}
           onClose={handleCloseForms}
         />

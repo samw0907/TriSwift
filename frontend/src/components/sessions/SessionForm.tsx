@@ -28,8 +28,6 @@ const SessionForm: React.FC<SessionFormProps> = ({ onSubmit, onCancel }) => {
     const el = dateRef.current;
     if (!el) return;
     el.focus();
-    // Progressive enhancement: opens the native picker in Chrome/Edge
-    // @ts-ignore
     if (el.showPicker) el.showPicker();
   };
 
@@ -41,17 +39,17 @@ const SessionForm: React.FC<SessionFormProps> = ({ onSubmit, onCancel }) => {
       }}
       className="session-form"
     >
-      {/* Row: Session Type + Date */}
       <h3 className="section-heading">Session</h3>
       <div className="form-row two-col">
         <div className="form-field">
-          <label htmlFor="sessionType">Session Type</label>
+          <label htmlFor="sessionType" className="field-label">Session Type</label>
           <select
             id="sessionType"
             name="sessionType"
             value={formData.sessionType}
             onChange={handleChange}
             required
+            className="select-input"
           >
             <option value="">Select Type</option>
             <option value="Swim">Swim</option>
@@ -60,16 +58,8 @@ const SessionForm: React.FC<SessionFormProps> = ({ onSubmit, onCancel }) => {
             <option value="Multi-Sport">Multi-Sport</option>
           </select>
         </div>
-
-        <div
-          className="form-field date-field"
-          onClick={openDatePicker}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") openDatePicker();
-          }}
-          tabIndex={0}
-        >
-          <label htmlFor="date">Date</label>
+        <div className="form-field">
+          <label htmlFor="date" className="field-label">Date</label>
           <input
             id="date"
             type="date"
@@ -80,17 +70,16 @@ const SessionForm: React.FC<SessionFormProps> = ({ onSubmit, onCancel }) => {
             max={today}
             className="date-input"
             ref={dateRef}
+            onClick={openDatePicker}
           />
         </div>
       </div>
 
-      {/* Weather section */}
       <h3 className="section-heading">Weather</h3>
 
-      {/* Row: Temp + Humidity + Wind */}
       <div className="form-row three-col">
         <div className="form-field">
-          <label htmlFor="weatherTemp">Temp (°C)</label>
+          <label htmlFor="weatherTemp" className="field-label">Temp (°C)</label>
           <input
             id="weatherTemp"
             type="number"
@@ -101,7 +90,7 @@ const SessionForm: React.FC<SessionFormProps> = ({ onSubmit, onCancel }) => {
         </div>
 
         <div className="form-field">
-          <label htmlFor="weatherHumidity">Humidity (%)</label>
+          <label htmlFor="weatherHumidity" className="field-label">Humidity (%)</label>
           <input
             id="weatherHumidity"
             type="number"
@@ -112,7 +101,7 @@ const SessionForm: React.FC<SessionFormProps> = ({ onSubmit, onCancel }) => {
         </div>
 
         <div className="form-field">
-          <label htmlFor="weatherWindSpeed">Wind (m/s)</label>
+          <label htmlFor="weatherWindSpeed" className="field-label">Wind (m/s)</label>
           <input
             id="weatherWindSpeed"
             type="number"

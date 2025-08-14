@@ -9,7 +9,13 @@ interface ActivityFormProps {
   onCancelAndDeleteSession: (sessionId: string) => void;
 }
 
-const ActivityForm: React.FC<ActivityFormProps> = ({ sessionId, sessionType, onSubmit, onClose, onCancelAndDeleteSession }) => {
+const ActivityForm: React.FC<ActivityFormProps> = ({
+  sessionId,
+  sessionType,
+  onSubmit,
+  onClose,
+  onCancelAndDeleteSession,
+}) => {
   const [activity, setActivity] = useState({
     sportType: sessionType !== "Multi-Sport" ? sessionType : "",
     hours: "",
@@ -64,7 +70,6 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ sessionId, sessionType, onS
         cadence: "",
         power: "",
       });
-
       onClose();
     }
   };
@@ -72,115 +77,130 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ sessionId, sessionType, onS
   return (
     <form className="activity-form" onSubmit={handleSubmit}>
       {sessionType === "Multi-Sport" && (
-        <>
-          <label htmlFor="sportType">Activity Type:</label>
+        <div className="field activity-type">
+          <label htmlFor="sportType" className="activity-type-label">Activity Type</label>
           <select
             id="sportType"
             name="sportType"
             value={activity.sportType}
             onChange={handleChange}
             required
+            className="activity-type-select"
           >
             <option value="">Select Activity</option>
             <option value="Swim">Swim</option>
             <option value="Bike">Bike</option>
             <option value="Run">Run</option>
           </select>
-        </>
+        </div>
       )}
 
-      <label>Duration:</label>
-      <div className="duration-inputs">
-        <input
-          id="hours"
-          type="number"
-          name="hours"
-          value={activity.hours}
-          onChange={handleChange}
-          placeholder="Hrs"
-          min="0"
-        />
-        <input
-          id="minutes"
-          type="number"
-          name="minutes"
-          value={activity.minutes}
-          onChange={handleChange}
-          placeholder="Mins"
-          min="0"
-        />
-        <input
-          id="seconds"
-          type="number"
-          name="seconds"
-          value={activity.seconds}
-          onChange={handleChange}
-          placeholder="Secs"
-          min="0"
-        />
+      <div className="row duration-distance">
+        <div className="duration-section">
+          <label>Duration</label>
+          <div className="duration-inputs">
+            <input
+              id="hours"
+              type="number"
+              name="hours"
+              value={activity.hours}
+              onChange={handleChange}
+              placeholder="Hrs"
+              min="0"
+            />
+            <input
+              id="minutes"
+              type="number"
+              name="minutes"
+              value={activity.minutes}
+              onChange={handleChange}
+              placeholder="Mins"
+              min="0"
+            />
+            <input
+              id="seconds"
+              type="number"
+              name="seconds"
+              value={activity.seconds}
+              onChange={handleChange}
+              placeholder="Secs"
+              min="0"
+            />
+          </div>
+        </div>
+        <div className="distance-input">
+          <label htmlFor="distance">
+            Distance {activity.sportType === "Swim" ? "(m)" : "(km)"}
+          </label>
+          <input
+            id="distance"
+            type="number"
+            name="distance"
+            value={activity.distance}
+            onChange={handleChange}
+            required
+          />
+        </div>
       </div>
 
-      <label htmlFor="distance">
-        Distance {activity.sportType === "Swim" ? "(m):" : "(km):"}
-      </label>
-      <input
-        id="distance"
-        type="number"
-        name="distance"
-        value={activity.distance}
-        onChange={handleChange}
-        required
-      />
+      <div className="row">
+        <div className="group">
+          <label htmlFor="heartRateMax">HR Max</label>
+          <input
+            id="heartRateMax"
+            type="number"
+            name="heartRateMax"
+            value={activity.heartRateMax}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="group">
+          <label htmlFor="heartRateMin">HR Min</label>
+          <input
+            id="heartRateMin"
+            type="number"
+            name="heartRateMin"
+            value={activity.heartRateMin}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="group">
+          <label htmlFor="heartRateAvg">HR Avg</label>
+          <input
+            id="heartRateAvg"
+            type="number"
+            name="heartRateAvg"
+            value={activity.heartRateAvg}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
 
-      <label htmlFor="heartRateMin">Heart Rate Min:</label>
-      <input
-        id="heartRateMin"
-        type="number"
-        name="heartRateMin"
-        value={activity.heartRateMin}
-        onChange={handleChange}
-      />
-
-      <label htmlFor="heartRateMax">Heart Rate Max:</label>
-      <input
-        id="heartRateMax"
-        type="number"
-        name="heartRateMax"
-        value={activity.heartRateMax}
-        onChange={handleChange}
-      />
-
-      <label htmlFor="heartRateAvg">Heart Rate Avg:</label>
-      <input
-        id="heartRateAvg"
-        type="number"
-        name="heartRateAvg"
-        value={activity.heartRateAvg}
-        onChange={handleChange}
-      />
-
-      <label htmlFor="cadence">Cadence:</label>
-      <input
-        id="cadence"
-        type="number"
-        name="cadence"
-        value={activity.cadence}
-        onChange={handleChange}
-      />
-
-      <label htmlFor="power">Power:</label>
-      <input
-        id="power"
-        type="number"
-        name="power"
-        value={activity.power}
-        onChange={handleChange}
-      />
+      <div className="row cadence-power">
+        <div className="group">
+          <label htmlFor="cadence">Cadence</label>
+          <input
+            id="cadence"
+            type="number"
+            name="cadence"
+            value={activity.cadence}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="group">
+          <label htmlFor="power">Power</label>
+          <input
+            id="power"
+            type="number"
+            name="power"
+            value={activity.power}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
 
       <div className="form-buttons">
-        <button type="submit" className="btn-primary">
-          Submit Activity
-        </button>
+        <button type="submit" className="btn-primary">Submit Activity</button>
         <button
           type="button"
           className="btn-secondary"

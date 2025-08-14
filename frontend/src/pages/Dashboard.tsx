@@ -55,7 +55,14 @@ const Dashboard: React.FC = () => {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isMultiSportActive, setIsMultiSportActive] = useState(false);
   const [sessions, setSessions] = useState<Session[]>([]);
-  const [lastSubmittedSport, setLastSubmittedSport] = useState<"" | "Swim" | "Bike" | "Run">("");
+
+  const [lastSubmittedSport, setLastSubmittedSport] = useState<
+    "" | "Swim" | "Bike" | "Run"
+  >("");
+
+  const [nextActivityDefaultSport, setNextActivityDefaultSport] = useState<
+    "" | "Swim" | "Bike" | "Run"
+  >("");
 
   useEffect(() => {
     if (data) {
@@ -111,12 +118,14 @@ const Dashboard: React.FC = () => {
       setIsMultiSportActive(formData.sessionType === "Multi-Sport");
       setSessionType(formData.sessionType);
       setLastSubmittedSport("");
+      setNextActivityDefaultSport("");
       await refetch();
     }
   };
 
   const handleActivitySubmit = async (activityData: any) => {
     if (!sessionId) return;
+
     let convertedDistance = parseFloat(activityData.distance);
     if (activityData.sportType === "Swim") {
       convertedDistance = convertedDistance / 1000;
@@ -129,7 +138,6 @@ const Dashboard: React.FC = () => {
         distance: convertedDistance,
       },
     });
-
 
     if (isMultiSportActive && activityData?.sportType) {
       setLastSubmittedSport(activityData.sportType as "Swim" | "Bike" | "Run");
@@ -158,6 +166,8 @@ const Dashboard: React.FC = () => {
       },
     });
 
+    setNextActivityDefaultSport(transitionData.nextSport as "Swim" | "Bike" | "Run");
+
     refetch();
     setShowTransitionForm(false);
     setShowActivityForm(true);
@@ -169,6 +179,7 @@ const Dashboard: React.FC = () => {
     setSessionId(null);
     setIsMultiSportActive(false);
     setLastSubmittedSport("");
+    setNextActivityDefaultSport("");
   };
 
   const handleCancelActivityAndDeleteSession = async (id: string) => {
@@ -180,6 +191,7 @@ const Dashboard: React.FC = () => {
       setSessionId(null);
       setIsMultiSportActive(false);
       setLastSubmittedSport("");
+      setNextActivityDefaultSport("");
       await refetch();
     }
   };
@@ -217,6 +229,9 @@ const Dashboard: React.FC = () => {
           onSubmit={handleActivitySubmit}
           onClose={handleCloseForms}
           onCancelAndDeleteSession={handleCancelActivityAndDeleteSession}
+          defaultSportType={
+            sessionType === "Multi-Sport" ? nextActivityDefaultSport : undefined
+          }
         />
       )}
 
@@ -226,6 +241,10 @@ const Dashboard: React.FC = () => {
           previousSportDefault={lastSubmittedSport}
           onSubmit={handleTransitionSubmit}
           onClose={handleCloseForms}
+          onSkipToNextActivity={() => {
+            setShowTransitionForm(false);
+            setShowActivityForm(true);
+          }}
         />
       )}
 

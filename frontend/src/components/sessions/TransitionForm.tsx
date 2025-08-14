@@ -3,8 +3,14 @@ import "../../styles/transitionForm.css";
 
 interface TransitionFormProps {
   sessionId: string;
-  onSubmit: (transitionData: any) => void;
+  onSubmit: (transitionData: {
+    previousSport: "Swim" | "Bike" | "Run" | "";
+    nextSport: "Swim" | "Bike" | "Run" | "";
+    transitionTime: number;
+    comments: string;
+  }) => void;
   onClose: () => void;
+  onSkipToNextActivity: () => void;
   previousSportDefault?: "Swim" | "Bike" | "Run" | "";
 }
 
@@ -12,11 +18,12 @@ const TransitionForm: React.FC<TransitionFormProps> = ({
   sessionId,
   onSubmit,
   onClose,
+  onSkipToNextActivity,
   previousSportDefault = "",
 }) => {
   const [transition, setTransition] = useState({
-    previousSport: "",
-    nextSport: "",
+    previousSport: "" as "" | "Swim" | "Bike" | "Run",
+    nextSport: "" as "" | "Swim" | "Bike" | "Run",
     minutes: "",
     seconds: "",
     comments: "",
@@ -34,20 +41,7 @@ const TransitionForm: React.FC<TransitionFormProps> = ({
     setTransition({ ...transition, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const totalSeconds =
-      (parseInt(transition.minutes, 10) || 0) * 60 +
-      (parseInt(transition.seconds, 10) || 0);
-
-    onSubmit({
-      previousSport: transition.previousSport,
-      nextSport: transition.nextSport,
-      transitionTime: totalSeconds,
-      comments: transition.comments.trim(),
-    });
-
+  const resetForm = () => {
     setTransition({
       previousSport: "",
       nextSport: "",
@@ -55,6 +49,36 @@ const TransitionForm: React.FC<TransitionFormProps> = ({
       seconds: "",
       comments: "",
     });
+  };
+
+  const buildPayload = () => {
+    const totalSeconds =
+      (parseInt(transition.minutes, 10) || 0) * 60 +
+      (parseInt(transition.seconds, 10) || 0);
+
+    return {
+      previousSport: transition.previousSport,
+      nextSport: transition.nextSport,
+      transitionTime: totalSeconds,
+      comments: transition.comments.trim(),
+    };
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(buildPayload());
+    resetForm();
+  };
+
+  const handleSaveAndClose = () => {
+    onSubmit(buildPayload());
+    resetForm();
+    onClose();
+  };
+
+  const handleSkipTransition = () => {
+    resetForm();
+    onSkipToNextActivity();
   };
 
   return (
@@ -120,9 +144,23 @@ const TransitionForm: React.FC<TransitionFormProps> = ({
 
       <div className="form-buttons">
         <button type="submit" className="btn-primary">
-          Submit Transition
+          Add & Next
         </button>
-        <button type="button" className="btn-secondary" onClick={onClose}>
+
+        <button
+          type="button"
+          className="btn-secondary"
+          onClick={handleSkipTransition}
+          title="Skip adding a transition and continue to the next activity"
+        >
+          Skip Transition
+        </button>
+
+        <button
+          type="button"
+          className="btn-tertiary"
+          onClick={handleSaveAndClose}
+        >
           Save & Close
         </button>
       </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../../styles/activityForm.css";
 
 interface ActivityFormProps {
@@ -7,6 +7,7 @@ interface ActivityFormProps {
   onSubmit: (activityData: any) => void;
   onClose: () => void;
   onCancelAndDeleteSession: (sessionId: string) => void;
+  defaultSportType?: "Swim" | "Bike" | "Run" | "";
 }
 
 const ActivityForm: React.FC<ActivityFormProps> = ({
@@ -15,9 +16,10 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
   onSubmit,
   onClose,
   onCancelAndDeleteSession,
+  defaultSportType = "",
 }) => {
   const [activity, setActivity] = useState({
-    sportType: sessionType !== "Multi-Sport" ? sessionType : "",
+    sportType: sessionType !== "Multi-Sport" ? sessionType : (defaultSportType || ""),
     hours: "",
     minutes: "",
     seconds: "",
@@ -29,13 +31,17 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
     power: "",
   });
 
+  useEffect(() => {
+    if (sessionType === "Multi-Sport") {
+      setActivity((a) => ({ ...a, sportType: defaultSportType || "" }));
+    }
+  }, [defaultSportType, sessionType]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setActivity({ ...activity, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const submitActivity = (shouldCloseAfter: boolean) => {
     const totalSeconds =
       (parseInt(activity.hours) || 0) * 3600 +
       (parseInt(activity.minutes) || 0) * 60 +
@@ -59,7 +65,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
 
     if (sessionType !== "Multi-Sport") {
       setActivity({
-        sportType: sessionType !== "Multi-Sport" ? sessionType : "",
+        sportType: sessionType !== "Multi-Sport" ? sessionType : (defaultSportType || ""),
         hours: "",
         minutes: "",
         seconds: "",
@@ -71,12 +77,24 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
         power: "",
       });
       onClose();
+      return;
+    }
+
+    if (shouldCloseAfter) {
+      onClose();
     }
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitActivity(false);
+  };
+
+  const isMulti = sessionType === "Multi-Sport";
+
   return (
     <form className="activity-form" onSubmit={handleSubmit}>
-      {sessionType === "Multi-Sport" && (
+      {isMulti && (
         <div className="field activity-type">
           <label htmlFor="sportType" className="activity-type-label">Activity Type</label>
           <select
@@ -200,7 +218,10 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
       </div>
 
       <div className="form-buttons">
-        <button type="submit" className="btn-primary">Submit Activity</button>
+        <button type="submit" className="btn-primary">
+          {isMulti ? "Add & Next" : "Submit Activity"}
+        </button>
+
         <button
           type="button"
           className="btn-secondary"
@@ -208,6 +229,15 @@ const ActivityForm: React.FC<ActivityFormProps> = ({
         >
           Cancel
         </button>
+        {isMulti && (
+          <button
+            type="button"
+            className="btn-tertiary"
+            onClick={() => submitActivity(true)}
+          >
+            Submit & Close
+          </button>
+        )}
       </div>
     </form>
   );

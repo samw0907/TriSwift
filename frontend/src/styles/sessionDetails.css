@@ -1,6 +1,7 @@
+/* src/styles/sessionDetails.css */
 .session-details {
   margin-top: 8px;
-  padding-top: 8px;
+  padding: 8px 12px 0; /* side padding helps small screens */
   border-top: 1px solid #3a3f47;
   color: #dddddd;
   font-size: 1rem;
@@ -8,6 +9,7 @@
   border: none;
   border-radius: 0;
   box-shadow: none;
+  overflow-x: hidden; /* prevent horizontal scroll on small screens */
 }
 
 .details-header {
@@ -23,25 +25,28 @@
   font-size: 1.2rem;
 }
 
+/* ===== Desktop: Stats (left) + Weather (right) ===== */
 .details-columns {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr; /* keep original two-column layout */
   gap: 0 40px;
   margin-bottom: 15px;
 }
 
+/* Make each column a small grid so buttons can sit inline
+   with the bottom of the metric list (not on their own row) */
 .details-columns .left-column,
 .details-columns .right-column {
-  display: flex;
-  flex-direction: column;
+  display: grid;                          /* was flex */
+  grid-template-columns: 1fr auto;        /* metrics | actions */
+  align-items: end;                        /* align actions with last metric row */
+  row-gap: 6px;
+  column-gap: 16px;
 }
 
-.details-columns .right-column {
-  display: flex;
-  flex-direction: column;
-}
-
+/* Headings span across both grid columns in each section */
 .details-columns .column-heading {
+  grid-column: 1 / -1;
   color: var(--primary-color);
   font-size: 1.2rem;
   font-weight: bold;
@@ -49,43 +54,55 @@
   text-align: left;
 }
 
+/* Metric list sits in the first grid column */
+.metric-list {
+  grid-column: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Aligned label/value metrics (always 2 columns per row) */
+.metric-row {
+  display: grid;
+  grid-template-columns: minmax(110px, 220px) 1fr; /* label | value */
+  align-items: baseline;
+  column-gap: 12px;
+}
+
+.metric-label {
+  justify-self: start;
+  text-align: left;
+  color: #cfd3da;
+  opacity: 0.95;
+}
+
+.metric-value {
+  justify-self: start;
+  text-align: left;
+  font-weight: 600;
+  color: #ffffff;
+  /* Allow wrapping so long values never push off-screen */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Fallback for any remaining paragraphs */
 .details-columns p {
-  margin: 10px 0;
+  margin: 8px 0;
   color: #dddddd;
   font-size: 1rem;
 }
 
-.details-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.activity-item,
-.transition-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 10px 0;
-  border-bottom: 1px solid #3a3f47;
-}
-
-.activity-item:last-child,
-.transition-item:last-child {
-  border-bottom: none;
-}
-
-.activity-info,
-.transition-info {
-  flex: 1;
-}
-
-/* ✅ Remove the wrapper, integrate into right-column */
+/* Actions: inline on DESKTOP (same baseline as last metric row) */
 .details-actions {
+  grid-column: 2;          /* sit in the actions column of the section */
+  justify-self: end;       /* right edge of the column */
+  align-self: end;         /* align to bottom of the metric list */
   display: flex;
-  justify-content: flex-end;
   gap: 8px;
-  margin-top: auto; /* ✅ Pushes buttons to bottom of the right-column */
+  margin-top: 0;           /* no forced new row */
 }
 
 .icon-btn {
@@ -120,6 +137,25 @@
   background: var(--danger-color);
 }
 
+.activity-item,
+.transition-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid #3a3f47;
+}
+
+.activity-item:last-child,
+.transition-item:last-child {
+  border-bottom: none;
+}
+
+.activity-info,
+.transition-info {
+  flex: 1;
+}
+
 .multi-row {
   position: relative;
   padding: 10px 0;
@@ -132,4 +168,59 @@
 
 .edit-form-container {
   margin-top: 10px;
+}
+
+/* ============================= */
+/*      RESPONSIVE BEHAVIOR      */
+/* ============================= */
+
+/* Tablet & down: stack sections (Weather ABOVE Stats),
+   keep metrics as two columns (label + value),
+   and put the buttons BELOW their section content for clarity */
+@media (max-width: 900px) {
+  .details-columns {
+    display: flex;
+    flex-direction: column;
+    gap: 12px 0;
+  }
+
+  /* Weather above Stats */
+  .details-columns .right-column {
+    order: -1;
+  }
+  .details-columns .left-column {
+    order: 0;
+  }
+
+  /* In stacked layout, revert columns to simple flow and put
+     actions below the metric list, right-aligned */
+  .details-columns .left-column,
+  .details-columns .right-column {
+    display: block; /* disable the internal grid for stacked layout */
+  }
+
+  .metric-list {
+    margin-bottom: 6px;
+  }
+
+  .details-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 6px;
+  }
+}
+
+/* Phones: tighten label column but keep TWO columns for metrics */
+@media (max-width: 560px) {
+  .metric-row {
+    grid-template-columns: minmax(96px, 180px) 1fr;
+  }
+}
+
+/* Very small phones: slightly smaller label column */
+@media (max-width: 380px) {
+  .metric-row {
+    grid-template-columns: minmax(88px, 160px) 1fr;
+  }
 }

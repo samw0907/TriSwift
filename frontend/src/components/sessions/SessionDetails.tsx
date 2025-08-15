@@ -1,3 +1,4 @@
+// src/components/sessions/SessionDetails.tsx
 import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { formatDuration } from "../../utils/format";
@@ -74,6 +75,29 @@ const calculatePace = (activity: Activity): string | null => {
   return null;
 };
 
+/** Minimal helper to align label/value in two columns */
+const MetricRow: React.FC<{
+  label: string;
+  value?: number | string;
+  unit?: string;
+}> = ({ label, value, unit }) => {
+  if (
+    value === undefined ||
+    (typeof value === "string" && value.trim().length === 0)
+  ) {
+    return null;
+  }
+  return (
+    <div className="metric-row">
+      <span className="metric-label">{label}</span>
+      <span className="metric-value">
+        {value}
+        {unit ? ` ${unit}` : ""}
+      </span>
+    </div>
+  );
+};
+
 const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) => {
   const [editingActivityId, setEditingActivityId] = useState<string | null>(null);
   const [editingTransitionId, setEditingTransitionId] = useState<string | null>(null);
@@ -124,26 +148,17 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
             <div className="left-column">
               <h3 className="column-heading">Stats</h3>
               {firstActivity && (
-                <>
-                  {calculatePace(firstActivity) && (
-                    <p>Pace: {calculatePace(firstActivity)}</p>
-                  )}
-                  {firstActivity.heartRateMin !== undefined && (
-                    <p>HR Min: {firstActivity.heartRateMin} bpm</p>
-                  )}
-                  {firstActivity.heartRateMax !== undefined && (
-                    <p>HR Max: {firstActivity.heartRateMax} bpm</p>
-                  )}
-                  {firstActivity.heartRateAvg !== undefined && (
-                    <p>Avg HR: {firstActivity.heartRateAvg} bpm</p>
-                  )}
-                  {firstActivity.cadence !== undefined && (
-                    <p>Cadence: {firstActivity.cadence} rpm</p>
-                  )}
-                  {firstActivity.power !== undefined && (
-                    <p>Power: {firstActivity.power} watts</p>
-                  )}
-                </>
+                <div className="metric-list">
+                  <MetricRow
+                    label="Pace"
+                    value={calculatePace(firstActivity) || undefined}
+                  />
+                  <MetricRow label="HR Min" value={firstActivity.heartRateMin} unit="bpm" />
+                  <MetricRow label="HR Max" value={firstActivity.heartRateMax} unit="bpm" />
+                  <MetricRow label="Avg HR" value={firstActivity.heartRateAvg} unit="bpm" />
+                  <MetricRow label="Cadence" value={firstActivity.cadence} unit="rpm" />
+                  <MetricRow label="Power" value={firstActivity.power} unit="watts" />
+                </div>
               )}
             </div>
             <div className="right-column">
@@ -152,21 +167,23 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
                 session.weatherWindSpeed) && (
                 <>
                   <h3 className="column-heading">Weather</h3>
-                  {session.weatherTemp !== null &&
-                    session.weatherTemp !== undefined && (
-                      <p>Temp: {session.weatherTemp}°C</p>
-                    )}
-                  {session.weatherHumidity !== null &&
-                    session.weatherHumidity !== undefined && (
-                      <p>Humidity: {session.weatherHumidity}%</p>
-                    )}
-                  {session.weatherWindSpeed !== null &&
-                    session.weatherWindSpeed !== undefined && (
-                      <p>Wind: {session.weatherWindSpeed} m/s</p>
-                    )}
+                  <div className="metric-list">
+                    {session.weatherTemp !== null &&
+                      session.weatherTemp !== undefined && (
+                        <MetricRow label="Temp" value={session.weatherTemp} unit="°C" />
+                      )}
+                    {session.weatherHumidity !== null &&
+                      session.weatherHumidity !== undefined && (
+                        <MetricRow label="Humidity" value={session.weatherHumidity} unit="%" />
+                      )}
+                    {session.weatherWindSpeed !== null &&
+                      session.weatherWindSpeed !== undefined && (
+                        <MetricRow label="Wind" value={session.weatherWindSpeed} unit="m/s" />
+                      )}
+                  </div>
                 </>
               )}
-              {editingActivityId !== firstActivity.id && (
+              {firstActivity && editingActivityId !== firstActivity.id && (
                 <div className="details-actions">
                   <button
                     className="icon-btn edit-btn"
@@ -222,29 +239,48 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
                       : `Transition: ${item.previousSport} → ${item.nextSport}`}
                   </h3>
                   {"sportType" in item ? (
-                    <>
-                      {calculatePace(item) && <p>Pace: {calculatePace(item)}</p>}
-                      {item.heartRateMin !== undefined && (
-                        <p>HR Min: {item.heartRateMin} bpm</p>
-                      )}
-                      {item.heartRateMax !== undefined && (
-                        <p>HR Max: {item.heartRateMax} bpm</p>
-                      )}
-                      {item.heartRateAvg !== undefined && (
-                        <p>Avg HR: {item.heartRateAvg} bpm</p>
-                      )}
-                      {item.cadence !== undefined && (
-                        <p>Cadence: {item.cadence} rpm</p>
-                      )}
-                      {item.power !== undefined && (
-                        <p>Power: {item.power} watts</p>
-                      )}
-                    </>
+                    <div className="metric-list">
+                      <MetricRow
+                        label="Pace"
+                        value={calculatePace(item) || undefined}
+                      />
+                      <MetricRow
+                        label="HR Min"
+                        value={item.heartRateMin}
+                        unit="bpm"
+                      />
+                      <MetricRow
+                        label="HR Max"
+                        value={item.heartRateMax}
+                        unit="bpm"
+                      />
+                      <MetricRow
+                        label="Avg HR"
+                        value={item.heartRateAvg}
+                        unit="bpm"
+                      />
+                      <MetricRow
+                        label="Cadence"
+                        value={item.cadence}
+                        unit="rpm"
+                      />
+                      <MetricRow
+                        label="Power"
+                        value={item.power}
+                        unit="watts"
+                      />
+                    </div>
                   ) : (
-                    <>
-                      <p>Time: {formatMMSS(item.transitionTime)}</p>
-                      {item.comments && <p>Notes: {item.comments}</p>}
-                    </>
+                    <div className="metric-list">
+                      <MetricRow
+                        label="Time"
+                        value={formatMMSS(item.transitionTime)}
+                      />
+                      <MetricRow
+                        label="Notes"
+                        value={item.comments}
+                      />
+                    </div>
                   )}
                 </div>
                 <div className="right-column">
@@ -254,18 +290,20 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
                       session.weatherWindSpeed) && (
                       <>
                         <h3 className="column-heading">Weather</h3>
-                        {session.weatherTemp !== null &&
-                          session.weatherTemp !== undefined && (
-                            <p>Temp: {session.weatherTemp}°C</p>
-                          )}
-                        {session.weatherHumidity !== null &&
-                          session.weatherHumidity !== undefined && (
-                            <p>Humidity: {session.weatherHumidity}%</p>
-                          )}
-                        {session.weatherWindSpeed !== null &&
-                          session.weatherWindSpeed !== undefined && (
-                            <p>Wind: {session.weatherWindSpeed} m/s</p>
-                          )}
+                        <div className="metric-list">
+                          {session.weatherTemp !== null &&
+                            session.weatherTemp !== undefined && (
+                              <MetricRow label="Temp" value={session.weatherTemp} unit="°C" />
+                            )}
+                          {session.weatherHumidity !== null &&
+                            session.weatherHumidity !== undefined && (
+                              <MetricRow label="Humidity" value={session.weatherHumidity} unit="%" />
+                            )}
+                          {session.weatherWindSpeed !== null &&
+                            session.weatherWindSpeed !== undefined && (
+                              <MetricRow label="Wind" value={session.weatherWindSpeed} unit="m/s" />
+                            )}
+                        </div>
                       </>
                     )}
                   {!isEditingThisActivity && !isEditingThisTransition && (

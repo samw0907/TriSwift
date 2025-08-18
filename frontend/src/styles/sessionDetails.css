@@ -1,7 +1,6 @@
-/* src/styles/sessionDetails.css */
 .session-details {
   margin-top: 8px;
-  padding: 8px 12px 0; /* side padding helps small screens */
+  padding: 8px 12px 0;
   border-top: 1px solid #3a3f47;
   color: #dddddd;
   font-size: 1rem;
@@ -9,7 +8,7 @@
   border: none;
   border-radius: 0;
   box-shadow: none;
-  overflow-x: hidden; /* prevent horizontal scroll on small screens */
+  overflow-x: hidden;
 }
 
 .details-header {
@@ -25,26 +24,22 @@
   font-size: 1.2rem;
 }
 
-/* ===== Desktop: Stats (left) + Weather (right) ===== */
 .details-columns {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* keep original two-column layout */
-  gap: 0 40px;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 24px;
   margin-bottom: 15px;
 }
 
-/* Make each column a small grid so buttons can sit inline
-   with the bottom of the metric list (not on their own row) */
 .details-columns .left-column,
 .details-columns .right-column {
-  display: grid;                          /* was flex */
-  grid-template-columns: 1fr auto;        /* metrics | actions */
-  align-items: end;                        /* align actions with last metric row */
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
   row-gap: 6px;
-  column-gap: 16px;
+  column-gap: 12px;
 }
 
-/* Headings span across both grid columns in each section */
 .details-columns .column-heading {
   grid-column: 1 / -1;
   color: var(--primary-color);
@@ -54,20 +49,18 @@
   text-align: left;
 }
 
-/* Metric list sits in the first grid column */
 .metric-list {
   grid-column: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
-/* Aligned label/value metrics (always 2 columns per row) */
 .metric-row {
   display: grid;
-  grid-template-columns: minmax(110px, 220px) 1fr; /* label | value */
+  grid-template-columns: minmax(90px, 180px) 1fr;
   align-items: baseline;
-  column-gap: 12px;
+  column-gap: 8px;
 }
 
 .metric-label {
@@ -82,27 +75,29 @@
   text-align: left;
   font-weight: 600;
   color: #ffffff;
-  /* Allow wrapping so long values never push off-screen */
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 
-/* Fallback for any remaining paragraphs */
+.section-spacer .metric-label {
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
 .details-columns p {
   margin: 8px 0;
   color: #dddddd;
   font-size: 1rem;
 }
 
-/* Actions: inline on DESKTOP (same baseline as last metric row) */
 .details-actions {
-  grid-column: 2;          /* sit in the actions column of the section */
-  justify-self: end;       /* right edge of the column */
-  align-self: end;         /* align to bottom of the metric list */
+  grid-column: 2;
+  justify-self: end;
+  align-self: end;
   display: flex;
   gap: 8px;
-  margin-top: 0;           /* no forced new row */
+  margin-top: 0;
 }
 
 .icon-btn {
@@ -170,13 +165,14 @@
   margin-top: 10px;
 }
 
-/* ============================= */
-/*      RESPONSIVE BEHAVIOR      */
-/* ============================= */
+.session-card.expanded .session-top-row {
+  display: none;
+}
 
-/* Tablet & down: stack sections (Weather ABOVE Stats),
-   keep metrics as two columns (label + value),
-   and put the buttons BELOW their section content for clarity */
+.session-card.details-open .session-top-row {
+  display: none;
+}
+
 @media (max-width: 900px) {
   .details-columns {
     display: flex;
@@ -184,7 +180,6 @@
     gap: 12px 0;
   }
 
-  /* Weather above Stats */
   .details-columns .right-column {
     order: -1;
   }
@@ -192,15 +187,18 @@
     order: 0;
   }
 
-  /* In stacked layout, revert columns to simple flow and put
-     actions below the metric list, right-aligned */
   .details-columns .left-column,
   .details-columns .right-column {
-    display: block; /* disable the internal grid for stacked layout */
+    display: block;
   }
 
   .metric-list {
     margin-bottom: 6px;
+  }
+
+  .metric-row {
+    grid-template-columns: minmax(84px, 160px) 1fr;
+    column-gap: 8px;
   }
 
   .details-actions {
@@ -211,16 +209,14 @@
   }
 }
 
-/* Phones: tighten label column but keep TWO columns for metrics */
 @media (max-width: 560px) {
   .metric-row {
-    grid-template-columns: minmax(96px, 180px) 1fr;
+    grid-template-columns: minmax(78px, 150px) 1fr;
   }
 }
 
-/* Very small phones: slightly smaller label column */
 @media (max-width: 380px) {
   .metric-row {
-    grid-template-columns: minmax(88px, 160px) 1fr;
+    grid-template-columns: minmax(72px, 140px) 1fr;
   }
 }

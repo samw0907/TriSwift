@@ -1,13 +1,6 @@
 // src/components/sessions/SessionDetails.tsx
-import React, { useEffect, useRef, useState } from "react";
-import { useMutation } from "@apollo/client";
+import React, { useEffect, useRef } from "react";
 import { formatDuration } from "../../utils/format";
-import EditActivityForm from "./EditActivityForm";
-import EditTransitionForm from "./EditTransitionForm";
-import {
-  DELETE_ACTIVITY_MUTATION,
-  DELETE_TRANSITION_MUTATION,
-} from "../../graphql/mutations";
 import "../../styles/sessionDetails.css";
 
 interface Activity {
@@ -16,20 +9,20 @@ interface Activity {
   duration: number;
   distance: number;
   created_at: string;
-  heartRateMin?: number;
-  heartRateMax?: number;
-  heartRateAvg?: number;
-  cadence?: number;
-  power?: number;
+  heartRateMin?: number | null;
+  heartRateMax?: number | null;
+  heartRateAvg?: number | null;
+  cadence?: number | null;
+  power?: number | null;
 }
 
-interface Transition {
+interface SessionTransition {
   id: string;
   previousSport: string;
   nextSport: string;
   transitionTime: number;
   created_at: string;
-  comments?: string;
+  comments?: string | null;
 }
 
 interface Session {
@@ -40,12 +33,14 @@ interface Session {
   weatherHumidity?: number | null;
   weatherWindSpeed?: number | null;
   activities: Activity[];
-  transitions: Transition[];
+  transitions: SessionTransition[];
 }
 
 interface SessionDetailsProps {
   session: Session;
   onUpdate: () => void;
+  onEditSession: () => void;
+  onDeleteSession: () => void;
 }
 
 const formatMMSS = (seconds: number): string => {
@@ -112,13 +107,19 @@ const MetricRow: React.FC<{
   );
 };
 
-const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) => {
-  const [editingActivityId, setEditingActivityId] = useState<string | null>(null);
-  const [editingTransitionId, setEditingTransitionId] = useState<string | null>(null);
-  const rootRef = useRef<HTMLDivElement | null>(null);
+const hasStatsValues = (a?: Activity | null) => {
+  if (!a) return false;
+  const vals = [a.heartRateMin, a.heartRateMax, a.heartRateAvg, a.cadence, a.power];
+  return vals.some((v) => v !== undefined && v !== null);
+};
 
-  const [deleteActivity] = useMutation(DELETE_ACTIVITY_MUTATION);
-  const [deleteTransition] = useMutation(DELETE_TRANSITION_MUTATION);
+const SessionDetails: React.FC<SessionDetailsProps> = ({
+  session,
+  onUpdate,
+  onEditSession,
+  onDeleteSession,
+}) => {
+  const rootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const el = rootRef.current;
@@ -129,23 +130,7 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
     };
   }, []);
 
-  const handleDeleteActivity = async (activityId: string) => {
-    if (!window.confirm("Are you sure you want to delete this activity?")) return;
-    try {
-      await deleteActivity({ variables: { id: activityId } });
-      onUpdate();
-    } catch {}
-  };
-
-  const handleDeleteTransition = async (transitionId: string) => {
-    if (!window.confirm("Are you sure you want to delete this transition?")) return;
-    try {
-      await deleteTransition({ variables: { id: transitionId } });
-      onUpdate();
-    } catch {}
-  };
-
-  const orderedItems: (Activity | Transition)[] = [
+  const orderedItems: (Activity | SessionTransition)[] = [
     ...(session.activities ?? []),
     ...(session.transitions ?? []),
   ].sort(
@@ -176,17 +161,6 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
       : session.weatherWindSpeed !== null && session.weatherWindSpeed !== undefined
       ? true
       : false;
-
-  const hasStatsForActivity = (a?: Activity | null) => {
-    if (!a) return false;
-    return (
-      a.heartRateMin !== undefined ||
-      a.heartRateMax !== undefined ||
-      a.heartRateAvg !== undefined ||
-      a.cadence !== undefined ||
-      a.power !== undefined
-    );
-  };
 
   return (
     <div className="session-details" ref={rootRef}>
@@ -220,10 +194,21 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
                   </div>
                 </>
               )}
+              <div
+                className="details-actions session-actions"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button className="icon-btn edit-btn" title="Edit Session" onClick={onEditSession}>
+                  ✏️
+                </button>
+                <button className="icon-btn delete-btn" title="Delete Session" onClick={onDeleteSession}>
+                  🗑
+                </button>
+              </div>
             </div>
           </div>
 
-          {hasStatsForActivity(firstActivity) && (
+          {hasStatsValues(firstActivity) && (
             <div className="details-columns">
               <div className="left-column">
                 <h3 className="column-heading">Stats</h3>
@@ -235,40 +220,6 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
                   <MetricRow label="Power" value={firstActivity.power} unit="watts" />
                 </div>
               </div>
-              <div className="right-column">
-                {editingActivityId !== firstActivity.id && (
-                  <div className="details-actions">
-                    <button
-                      className="icon-btn edit-btn"
-                      title="Edit Activity"
-                      onClick={() =>
-                        setEditingActivityId(
-                          editingActivityId === firstActivity.id ? null : firstActivity.id
-                        )
-                      }
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      className="icon-btn delete-btn"
-                      title="Delete Activity"
-                      onClick={() => handleDeleteActivity(firstActivity.id)}
-                    >
-                      🗑
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {editingActivityId === firstActivity.id && (
-            <div className="edit-form-container">
-              <EditActivityForm
-                activity={firstActivity}
-                onClose={() => setEditingActivityId(null)}
-                onUpdate={onUpdate}
-              />
             </div>
           )}
         </>
@@ -303,130 +254,66 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({ session, onUpdate }) =>
                   </div>
                 </>
               )}
+              <div
+                className="details-actions session-actions"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button className="icon-btn edit-btn" title="Edit Session" onClick={onEditSession}>
+                  ✏️
+                </button>
+                <button className="icon-btn delete-btn" title="Delete Session" onClick={onDeleteSession}>
+                  🗑
+                </button>
+              </div>
             </div>
           </div>
 
           {orderedItems.map((item) => {
             const isActivity = "sportType" in item;
-            const isEditingThisActivity = isActivity && editingActivityId === item.id;
-            const isEditingThisTransition = !isActivity && editingTransitionId === item.id;
-
             return (
               <div key={item.id} className="multi-row">
                 <div className="details-columns">
                   <div className="left-column">
                     <h3 className="column-heading">
                       {isActivity
-                        ? item.sportType
-                        : `Transition: ${item.previousSport} → ${item.nextSport}`}
+                        ? (item as Activity).sportType
+                        : `Transition: ${(item as SessionTransition).previousSport} → ${(item as SessionTransition).nextSport}`}
                     </h3>
                     {isActivity ? (
                       <div className="metric-list">
                         <MetricRow
                           label="Distance"
-                          value={item.distance > 0 ? item.distance.toFixed(2) : undefined}
+                          value={(item as Activity).distance > 0 ? (item as Activity).distance.toFixed(2) : undefined}
                           unit="km"
                         />
                         <MetricRow
                           label="Duration"
-                          value={item.duration > 0 ? formatDuration(item.duration) : undefined}
+                          value={(item as Activity).duration > 0 ? formatDuration((item as Activity).duration) : undefined}
                         />
-                        <MetricRow label="Pace" value={calculatePace(item) || undefined} />
-                        {(item.heartRateMax !== undefined ||
-                          item.heartRateMin !== undefined ||
-                          item.heartRateAvg !== undefined ||
-                          item.cadence !== undefined ||
-                          item.power !== undefined) && (
+                        <MetricRow label="Pace" value={calculatePace(item as Activity) || undefined} />
+                        {hasStatsValues(item as Activity) && (
                           <>
                             <div className="metric-row section-spacer">
                               <span className="metric-label">Stats</span>
                               <span className="metric-value"></span>
                             </div>
-                            <MetricRow label="HR Max" value={item.heartRateMax} unit="bpm" />
-                            <MetricRow label="HR Min" value={item.heartRateMin} unit="bpm" />
-                            <MetricRow label="HR Average" value={item.heartRateAvg} unit="bpm" />
-                            <MetricRow label="Cadence" value={item.cadence} unit="rpm" />
-                            <MetricRow label="Power" value={item.power} unit="watts" />
+                            <MetricRow label="HR Max" value={(item as Activity).heartRateMax} unit="bpm" />
+                            <MetricRow label="HR Min" value={(item as Activity).heartRateMin} unit="bpm" />
+                            <MetricRow label="HR Average" value={(item as Activity).heartRateAvg} unit="bpm" />
+                            <MetricRow label="Cadence" value={(item as Activity).cadence} unit="rpm" />
+                            <MetricRow label="Power" value={(item as Activity).power} unit="watts" />
                           </>
                         )}
                       </div>
                     ) : (
                       <div className="metric-list">
-                        <MetricRow label="Time" value={formatMMSS(item.transitionTime)} />
-                        <MetricRow label="Notes" value={item.comments} />
+                        <MetricRow label="Time" value={formatMMSS((item as SessionTransition).transitionTime)} />
+                        <MetricRow label="Notes" value={(item as SessionTransition).comments ?? undefined} />
                       </div>
                     )}
                   </div>
-                  <div className="right-column">
-                    {!isEditingThisActivity && !isEditingThisTransition && (
-                      <div className="details-actions">
-                        {isActivity ? (
-                          <>
-                            <button
-                              className="icon-btn edit-btn"
-                              title="Edit Activity"
-                              onClick={() =>
-                                setEditingActivityId(
-                                  editingActivityId === item.id ? null : item.id
-                                )
-                              }
-                            >
-                              ✏️
-                            </button>
-                            <button
-                              className="icon-btn delete-btn"
-                              title="Delete Activity"
-                              onClick={() => handleDeleteActivity(item.id)}
-                            >
-                              🗑
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button
-                              className="icon-btn edit-btn"
-                              title="Edit Transition"
-                              onClick={() =>
-                                setEditingTransitionId(
-                                  editingTransitionId === item.id ? null : item.id
-                                )
-                              }
-                            >
-                              ✏️
-                            </button>
-                            <button
-                              className="icon-btn delete-btn"
-                              title="Delete Transition"
-                              onClick={() => handleDeleteTransition(item.id)}
-                            >
-                              🗑
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  <div className="right-column" />
                 </div>
-
-                {isEditingThisActivity && (
-                  <div className="edit-form-container">
-                    <EditActivityForm
-                      activity={item}
-                      onClose={() => setEditingActivityId(null)}
-                      onUpdate={onUpdate}
-                    />
-                  </div>
-                )}
-
-                {isEditingThisTransition && (
-                  <div className="edit-form-container">
-                    <EditTransitionForm
-                      transition={item}
-                      onClose={() => setEditingTransitionId(null)}
-                      onUpdate={onUpdate}
-                    />
-                  </div>
-                )}
               </div>
             );
           })}

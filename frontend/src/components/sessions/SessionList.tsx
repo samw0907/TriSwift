@@ -1,6 +1,7 @@
+// src/components/sessions/SessionList.tsx
 import React, { useState, useEffect, useRef } from "react";
 import SessionDetails from "./SessionDetails";
-import EditSessionForm from "./EditSessionForm";
+import EditWholeSession from "./EditWholeSession";
 import "../../styles/sessionList.css";
 
 interface Activity {
@@ -49,7 +50,7 @@ const SessionList: React.FC<SessionListProps> = ({
   const openDatePicker = (el: HTMLInputElement | null) => {
     if (!el) return;
     el.focus();
-    // @ts-ignore progressive enhancement
+    // @ts-ignore
     if (el.showPicker) el.showPicker();
   };
 
@@ -120,7 +121,7 @@ const SessionList: React.FC<SessionListProps> = ({
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
-       const year = String(date.getFullYear()).slice(-2);
+    const year = String(date.getFullYear()).slice(-2);
     return `${day}/${month}/${year}`;
   };
 
@@ -235,43 +236,23 @@ const SessionList: React.FC<SessionListProps> = ({
                     : `${calculateTotalDistance(session).toFixed(2)} km`}
                 </p>
               </div>
-              <div
-                className="session-actions icon-actions"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button
-                  className="icon-btn edit-btn"
-                  title="Edit Session"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setEditingSessionId(session.id);
-                  }}
-                >
-                  ✏️
-                </button>
-                <button
-                  className="icon-btn delete-btn"
-                  title="Delete Session"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(session.id);
-                  }}
-                >
-                  🗑
-                </button>
-              </div>
+
               {editingSessionId === session.id && (
                 <div onClick={(e) => e.stopPropagation()}>
-                  <EditSessionForm
+                  <EditWholeSession
                     session={session}
                     onClose={() => setEditingSessionId(null)}
                     onUpdate={onUpdate}
                   />
                 </div>
               )}
-              <div onClick={(e) => e.stopPropagation()}>
-                <SessionDetails session={session} onUpdate={onUpdate} />
-              </div>
+
+              <SessionDetails
+                session={session}
+                onUpdate={onUpdate}
+                onEditSession={() => setEditingSessionId(session.id)}
+                onDeleteSession={() => onDelete(session.id)}
+              />
             </div>
           </div>
         );
@@ -329,7 +310,6 @@ const SessionList: React.FC<SessionListProps> = ({
         <div className="right-controls">
           {showFilters ? (
             <>
-              {/* Swapped order: Clear first, then Hide */}
               <button className="btn-clear-filters" onClick={clearFilters}>
                 Clear Filters
               </button>
@@ -420,7 +400,6 @@ const SessionList: React.FC<SessionListProps> = ({
             </div>
           </div>
 
-          {/* Row 3: Min, Max, Unit on same row */}
           <div className="filter-row">
             <div className="filter-group trio-row">
               <div className="trio-item">
@@ -518,43 +497,22 @@ const SessionList: React.FC<SessionListProps> = ({
 
                 {expandedSessionId === session.id && (
                   <>
-                    <div
-                      className="session-actions icon-actions"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <button
-                        className="icon-btn edit-btn"
-                        title="Edit Session"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingSessionId(session.id);
-                        }}
-                      >
-                        ✏️
-                      </button>
-                      <button
-                        className="icon-btn delete-btn"
-                        title="Delete Session"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDelete(session.id);
-                        }}
-                      >
-                        🗑
-                      </button>
-                    </div>
                     {editingSessionId === session.id && (
                       <div onClick={(e) => e.stopPropagation()}>
-                        <EditSessionForm
+                        <EditWholeSession
                           session={session}
                           onClose={() => setEditingSessionId(null)}
                           onUpdate={onUpdate}
                         />
                       </div>
                     )}
-                    <div onClick={(e) => e.stopPropagation()}>
-                      <SessionDetails session={session} onUpdate={onUpdate} />
-                    </div>
+
+                    <SessionDetails
+                      session={session}
+                      onUpdate={onUpdate}
+                      onEditSession={() => setEditingSessionId(session.id)}
+                      onDeleteSession={() => onDelete(session.id)}
+                    />
                   </>
                 )}
               </li>

@@ -1,3 +1,4 @@
+/* src/styles/sessionDetails.css */
 .session-details {
   margin-top: 8px;
   padding: 8px 12px 0;
@@ -38,6 +39,10 @@
   align-items: end;
   row-gap: 6px;
   column-gap: 12px;
+}
+
+.details-columns .right-column {
+  position: relative;
 }
 
 .details-columns .column-heading {
@@ -98,6 +103,14 @@
   display: flex;
   gap: 8px;
   margin-top: 0;
+}
+
+.session-actions {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: 8px;
 }
 
 .icon-btn {
@@ -182,6 +195,7 @@
 
   .details-columns .right-column {
     order: -1;
+    position: static;
   }
   .details-columns .left-column {
     order: 0;
@@ -203,7 +217,15 @@
 
   .details-actions {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .session-actions {
+    position: static;
+    display: flex;
+    justify-content: center;
     gap: 8px;
     margin-top: 6px;
   }

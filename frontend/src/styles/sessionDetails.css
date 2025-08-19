@@ -1,7 +1,7 @@
 /* src/styles/sessionDetails.css */
 .session-details {
   margin-top: 8px;
-  padding: 8px 12px 0;
+  padding: 8px 12px 12px;
   border-top: 1px solid #3a3f47;
   color: #dddddd;
   font-size: 1rem;
@@ -10,13 +10,7 @@
   border-radius: 0;
   box-shadow: none;
   overflow-x: hidden;
-}
-
-.details-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 10px;
+  position: relative;
 }
 
 .session-details h3 {
@@ -41,13 +35,8 @@
   column-gap: 12px;
 }
 
-.details-columns .right-column {
-  position: relative;
-}
-
 .details-columns .column-heading {
   grid-column: 1 / -1;
-  color: var(--primary-color);
   font-size: 1.2rem;
   font-weight: bold;
   margin-bottom: 6px;
@@ -58,7 +47,7 @@
   grid-column: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .metric-row {
@@ -80,26 +69,77 @@
   text-align: left;
   font-weight: 600;
   color: #ffffff;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.section-spacer .metric-label {
+.multi-divider {
+  height: 2px;
+  background: #fb8122;
+  margin: 12px 0 14px;
+  border-radius: 2px;
+}
+
+.multi-row {
+  position: relative;
+  padding: 10px 0;
+}
+
+.multi-row + .multi-row {
+  border-top: 1px solid #4fa3e3;
+}
+
+.activity-head-grid {
+  display: grid;
+  grid-template-columns: minmax(100px, 160px) 1fr minmax(100px, 160px) 1fr;
+  column-gap: 16px;
+  align-items: end;
+}
+
+.col-head {
+  font-size: 1.2rem;
+  font-weight: bold;
   color: var(--primary-color);
-  font-weight: 700;
+  margin: 0 0 10px 0;
 }
 
-.details-columns p {
-  margin: 8px 0;
-  color: #dddddd;
-  font-size: 1rem;
+.col-head.left {
+  grid-column: 1 / 3;
+}
+
+.col-head.right {
+  grid-column: 3 / 5;
+  justify-self: start;
+}
+
+.activity-table {
+  display: grid;
+  gap: 8px 0;
+  margin-top: 4px;
+}
+
+.activity-row-grid {
+  display: grid;
+  grid-template-columns: minmax(100px, 160px) 1fr minmax(100px, 160px) 1fr;
+  column-gap: 16px;
+  align-items: baseline;
+}
+
+.activity-row-grid .cell.label {
+  color: #cfd3da;
+  font-weight: 600;
+}
+
+.activity-row-grid .cell.value {
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .details-actions {
-  grid-column: 2;
-  justify-self: end;
-  align-self: end;
   display: flex;
   gap: 8px;
   margin-top: 0;
@@ -107,10 +147,11 @@
 
 .session-actions {
   position: absolute;
-  right: 0;
-  bottom: 0;
+  top: 8px;
+  right: 12px;
   display: flex;
   gap: 8px;
+  z-index: 2;
 }
 
 .icon-btn {
@@ -145,39 +186,6 @@
   background: var(--danger-color);
 }
 
-.activity-item,
-.transition-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 10px 0;
-  border-bottom: 1px solid #3a3f47;
-}
-
-.activity-item:last-child,
-.transition-item:last-child {
-  border-bottom: none;
-}
-
-.activity-info,
-.transition-info {
-  flex: 1;
-}
-
-.multi-row {
-  position: relative;
-  padding: 10px 0;
-  border-bottom: 1px solid #4fa3e3;
-}
-
-.multi-row:last-child {
-  border-bottom: none;
-}
-
-.edit-form-container {
-  margin-top: 10px;
-}
-
 .session-card.expanded .session-top-row {
   display: none;
 }
@@ -191,14 +199,6 @@
     display: flex;
     flex-direction: column;
     gap: 12px 0;
-  }
-
-  .details-columns .right-column {
-    order: -1;
-    position: static;
-  }
-  .details-columns .left-column {
-    order: 0;
   }
 
   .details-columns .left-column,
@@ -215,19 +215,28 @@
     column-gap: 8px;
   }
 
-  .details-actions {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 6px;
+  .activity-head-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .col-head.right {
+    justify-self: start;
+    margin-top: 8px;
+  }
+
+  .activity-row-grid {
+    grid-template-columns: minmax(100px, 160px) 1fr;
+    row-gap: 4px;
+  }
+
+  .activity-row-grid .cell.label:nth-child(3),
+  .activity-row-grid .cell.value:nth-child(4) {
+    grid-column: span 2;
   }
 
   .session-actions {
-    position: static;
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 6px;
+    top: 8px;
+    right: 8px;
   }
 }
 

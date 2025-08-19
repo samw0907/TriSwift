@@ -194,17 +194,6 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({
                   </div>
                 </>
               )}
-              <div
-                className="details-actions session-actions"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button className="icon-btn edit-btn" title="Edit Session" onClick={onEditSession}>
-                  ✏️
-                </button>
-                <button className="icon-btn delete-btn" title="Delete Session" onClick={onDeleteSession}>
-                  🗑
-                </button>
-              </div>
             </div>
           </div>
 
@@ -254,71 +243,91 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({
                   </div>
                 </>
               )}
-              <div
-                className="details-actions session-actions"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button className="icon-btn edit-btn" title="Edit Session" onClick={onEditSession}>
-                  ✏️
-                </button>
-                <button className="icon-btn delete-btn" title="Delete Session" onClick={onDeleteSession}>
-                  🗑
-                </button>
-              </div>
             </div>
           </div>
 
+          <div className="multi-divider"></div>
+
           {orderedItems.map((item) => {
             const isActivity = "sportType" in item;
-            return (
-              <div key={item.id} className="multi-row">
-                <div className="details-columns">
-                  <div className="left-column">
-                    <h3 className="column-heading">
-                      {isActivity
-                        ? (item as Activity).sportType
-                        : `Transition: ${(item as SessionTransition).previousSport} → ${(item as SessionTransition).nextSport}`}
-                    </h3>
-                    {isActivity ? (
-                      <div className="metric-list">
-                        <MetricRow
-                          label="Distance"
-                          value={(item as Activity).distance > 0 ? (item as Activity).distance.toFixed(2) : undefined}
-                          unit="km"
-                        />
-                        <MetricRow
-                          label="Duration"
-                          value={(item as Activity).duration > 0 ? formatDuration((item as Activity).duration) : undefined}
-                        />
-                        <MetricRow label="Pace" value={calculatePace(item as Activity) || undefined} />
-                        {hasStatsValues(item as Activity) && (
-                          <>
-                            <div className="metric-row section-spacer">
-                              <span className="metric-label">Stats</span>
-                              <span className="metric-value"></span>
-                            </div>
-                            <MetricRow label="HR Max" value={(item as Activity).heartRateMax} unit="bpm" />
-                            <MetricRow label="HR Min" value={(item as Activity).heartRateMin} unit="bpm" />
-                            <MetricRow label="HR Average" value={(item as Activity).heartRateAvg} unit="bpm" />
-                            <MetricRow label="Cadence" value={(item as Activity).cadence} unit="rpm" />
-                            <MetricRow label="Power" value={(item as Activity).power} unit="watts" />
-                          </>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="metric-list">
-                        <MetricRow label="Time" value={formatMMSS((item as SessionTransition).transitionTime)} />
-                        <MetricRow label="Notes" value={(item as SessionTransition).comments ?? undefined} />
-                      </div>
-                    )}
+            if (isActivity) {
+              const a = item as Activity;
+
+              const leftCol: { label: string; value: string }[] = [];
+              const rightCol: { label: string; value: string }[] = [];
+
+              if (a.distance > 0) leftCol.push({ label: "Distance", value: `${a.distance.toFixed(2)} km` });
+              if (a.duration > 0) leftCol.push({ label: "Duration", value: `${formatDuration(a.duration)}` });
+              const pace = calculatePace(a);
+              if (pace) leftCol.push({ label: "Pace", value: pace });
+
+              if (a.heartRateMax !== null && a.heartRateMax !== undefined)
+                rightCol.push({ label: "HR Max", value: `${a.heartRateMax} bpm` });
+              if (a.heartRateMin !== null && a.heartRateMin !== undefined)
+                rightCol.push({ label: "HR Min", value: `${a.heartRateMin} bpm` });
+              if (a.heartRateAvg !== null && a.heartRateAvg !== undefined)
+                rightCol.push({ label: "HR Average", value: `${a.heartRateAvg} bpm` });
+              if (a.cadence !== null && a.cadence !== undefined)
+                rightCol.push({ label: "Cadence", value: `${a.cadence} rpm` });
+              if (a.power !== null && a.power !== undefined)
+                rightCol.push({ label: "Power", value: `${a.power} watts` });
+
+              const maxRows = Math.max(leftCol.length, rightCol.length);
+
+              return (
+                <div key={a.id} className="multi-row">
+                  <div className="activity-head-grid">
+                    <h3 className="col-head left">{a.sportType}</h3>
+                    <h3 className="col-head right">Stats</h3>
                   </div>
-                  <div className="right-column" />
+
+                  <div className="activity-table">
+                    {Array.from({ length: maxRows }).map((_, i) => {
+                      const L = leftCol[i];
+                      const R = rightCol[i];
+                      return (
+                        <div className="activity-row-grid" key={i}>
+                          <span className="cell label">{L ? L.label : ""}</span>
+                          <span className="cell value">{L ? L.value : ""}</span>
+                          <span className="cell label">{R ? R.label : ""}</span>
+                          <span className="cell value">{R ? R.value : ""}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            );
+              );
+            } else {
+              const t = item as SessionTransition;
+              return (
+                <div key={t.id} className="multi-row">
+                  <div className="details-columns">
+                    <div className="left-column">
+                      <h3 className="column-heading">
+                        Transition: {t.previousSport} → {t.nextSport}
+                      </h3>
+                      <div className="metric-list">
+                        <MetricRow label="Time" value={formatMMSS(t.transitionTime)} />
+                        <MetricRow label="Notes" value={t.comments ?? undefined} />
+                      </div>
+                    </div>
+                    <div className="right-column"></div>
+                  </div>
+                </div>
+              );
+            }
           })}
         </>
       )}
+
+      <div className="details-actions session-actions" onClick={(e) => e.stopPropagation()}>
+        <button className="icon-btn edit-btn" title="Edit Session" onClick={onEditSession}>
+          ✏️
+        </button>
+        <button className="icon-btn delete-btn" title="Delete Session" onClick={onDeleteSession}>
+          🗑
+        </button>
+      </div>
     </div>
   );
 };

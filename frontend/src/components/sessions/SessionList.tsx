@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+// src/components/sessions/SessionList.tsx
+import React, { useState, useEffect, useRef } from "react";
 import SessionDetails from "./SessionDetails";
-import EditSessionForm from "./EditSessionForm";
+import EditWholeSession from "./EditWholeSession";
 import "../../styles/sessionList.css";
 
 interface Activity {
@@ -43,6 +44,16 @@ const SessionList: React.FC<SessionListProps> = ({
   const [gridView, setGridView] = useState(() => window.innerWidth >= 768);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
+  const fromRef = useRef<HTMLInputElement>(null);
+  const toRef = useRef<HTMLInputElement>(null);
+
+  const openDatePicker = (el: HTMLInputElement | null) => {
+    if (!el) return;
+    el.focus();
+    // @ts-ignore
+    if (el.showPicker) el.showPicker();
+  };
+
   useEffect(() => {
     const handleResize = () => {
       const isNowMobile = window.innerWidth < 768;
@@ -56,9 +67,7 @@ const SessionList: React.FC<SessionListProps> = ({
 
   const toggleFilter = (filter: string) => {
     setSelectedFilters((prev) =>
-      prev.includes(filter)
-        ? prev.filter((f) => f !== filter)
-        : [...prev, filter]
+      prev.includes(filter) ? prev.filter((f) => f !== filter) : [...prev, filter]
     );
   };
 
@@ -162,14 +171,11 @@ const SessionList: React.FC<SessionListProps> = ({
           ? parseFloat(maxDistance) / (distanceUnit === "m" ? 1000 : 1)
           : null;
 
-      const minPass =
-        minDistanceKm !== null ? sessionDistance >= minDistanceKm : true;
-      const maxPass =
-        maxDistanceKm !== null ? sessionDistance <= maxDistanceKm : true;
+      const minPass = minDistanceKm !== null ? sessionDistance >= minDistanceKm : true;
+      const maxPass = maxDistanceKm !== null ? sessionDistance <= maxDistanceKm : true;
 
       const typeFilterPass =
-        selectedFilters.length === 0 ||
-        selectedFilters.includes(session.sessionType);
+        selectedFilters.length === 0 || selectedFilters.includes(session.sessionType);
 
       const fromPass = fromDate ? sessionDate >= new Date(fromDate) : true;
       const toPass = toDate ? sessionDate <= new Date(toDate) : true;
@@ -217,7 +223,12 @@ const SessionList: React.FC<SessionListProps> = ({
                 <h3>{session.sessionType}</h3>
                 <p className="session-date">{formatDate(session.date)}</p>
                 <p className="session-stats">
-                  {formatTotalTime(calculateTotalTime(session))}
+                  {formatTotalTime(
+                    (session.activities || []).reduce(
+                      (acc: number, activity: any) => acc + activity.duration,
+                      0
+                    )
+                  )}
                 </p>
                 <p className="session-stats">
                   {session.sessionType === "Swim"
@@ -225,43 +236,23 @@ const SessionList: React.FC<SessionListProps> = ({
                     : `${calculateTotalDistance(session).toFixed(2)} km`}
                 </p>
               </div>
-              <div
-                className="session-actions icon-actions"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button
-                  className="icon-btn edit-btn"
-                  title="Edit Session"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setEditingSessionId(session.id);
-                  }}
-                >
-                  ✏️
-                </button>
-                <button
-                  className="icon-btn delete-btn"
-                  title="Delete Session"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(session.id);
-                  }}
-                >
-                  🗑
-                </button>
-              </div>
+
               {editingSessionId === session.id && (
                 <div onClick={(e) => e.stopPropagation()}>
-                  <EditSessionForm
+                  <EditWholeSession
                     session={session}
                     onClose={() => setEditingSessionId(null)}
                     onUpdate={onUpdate}
                   />
                 </div>
               )}
-              <div onClick={(e) => e.stopPropagation()}>
-                <SessionDetails session={session} onUpdate={onUpdate} />
-              </div>
+
+              <SessionDetails
+                session={session}
+                onUpdate={onUpdate}
+                onEditSession={() => setEditingSessionId(session.id)}
+                onDeleteSession={() => onDelete(session.id)}
+              />
             </div>
           </div>
         );
@@ -287,7 +278,12 @@ const SessionList: React.FC<SessionListProps> = ({
                   {formatDate(session.date)}
                 </p>
                 <p className={`session-stats ${gridView ? "small-text" : ""}`}>
-                  {formatTotalTime(calculateTotalTime(session))}
+                  {formatTotalTime(
+                    (session.activities || []).reduce(
+                      (acc: number, activity: any) => acc + activity.duration,
+                      0
+                    )
+                  )}
                 </p>
                 <p className={`session-stats ${gridView ? "small-text" : ""}`}>
                   {session.sessionType === "Swim"
@@ -304,9 +300,7 @@ const SessionList: React.FC<SessionListProps> = ({
 
   return (
     <div className={`session-list-container ${gridView ? "grid-view" : ""}`}>
-
       <div className="filter-controls-wrapper">
-        
         <div className="left-controls">
           <button className="btn-primary add-session-btn" onClick={onAddSession}>
             Add Session
@@ -314,15 +308,24 @@ const SessionList: React.FC<SessionListProps> = ({
         </div>
 
         <div className="right-controls">
-          <button
-            className="btn-filter-toggle"
-            onClick={() => setShowFilters((prev) => !prev)}
-          >
-            {showFilters ? "Hide Filters" : "Show Filters"}
-          </button>
-          {showFilters && (
-            <button className="btn-clear-filters" onClick={clearFilters}>
-              Clear Filters
+          {showFilters ? (
+            <>
+              <button className="btn-clear-filters" onClick={clearFilters}>
+                Clear Filters
+              </button>
+              <button
+                className="btn-filter-toggle"
+                onClick={() => setShowFilters(false)}
+              >
+                Hide Filters
+              </button>
+            </>
+          ) : (
+            <button
+              className="btn-filter-toggle"
+              onClick={() => setShowFilters(true)}
+            >
+              Show Filters
             </button>
           )}
           {!isMobile && (
@@ -338,72 +341,115 @@ const SessionList: React.FC<SessionListProps> = ({
 
       {showFilters && (
         <div className="filter-options">
-          <div className="filter-group">
-            <label>Session Types:</label>
-            {["Swim", "Bike", "Run", "Multi-Sport"].map((type) => (
-              <label key={type}>
+          <div className="filter-row">
+            <div className="filter-group inline">
+              <span className="group-label">Session Types:</span>
+              {["Swim", "Bike", "Run", "Multi-Sport"].map((type) => (
+                <label className="chk" key={type}>
+                  <input
+                    type="checkbox"
+                    checked={selectedFilters.includes(type)}
+                    onChange={() => toggleFilter(type)}
+                  />
+                  <span>{type}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="filter-row">
+            <div className="filter-group dates">
+              <span className="group-label">Dates:</span>
+              <div className="date-fields">
+                <div
+                  className="date-field"
+                  tabIndex={0}
+                  onClick={() => openDatePicker(fromRef.current)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") openDatePicker(fromRef.current);
+                  }}
+                >
+                  <span className="date-caption">From</span>
+                  <input
+                    ref={fromRef}
+                    type="date"
+                    className="date-input"
+                    value={fromDate}
+                    onChange={(e) => setFromDate(e.target.value)}
+                  />
+                </div>
+
+                <div
+                  className="date-field"
+                  tabIndex={0}
+                  onClick={() => openDatePicker(toRef.current)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") openDatePicker(toRef.current);
+                  }}
+                >
+                  <span className="date-caption">To</span>
+                  <input
+                    ref={toRef}
+                    type="date"
+                    className="date-input"
+                    value={toDate}
+                    onChange={(e) => setToDate(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="filter-row">
+            <div className="filter-group trio-row">
+              <div className="trio-item">
+                <label>Min Distance:</label>
                 <input
-                  type="checkbox"
-                  checked={selectedFilters.includes(type)}
-                  onChange={() => toggleFilter(type)}
+                  type="number"
+                  value={minDistance}
+                  onChange={(e) => setMinDistance(e.target.value)}
                 />
-                {type}
-              </label>
-            ))}
+              </div>
+
+              <div className="trio-item">
+                <label>Max Distance:</label>
+                <input
+                  type="number"
+                  value={maxDistance}
+                  onChange={(e) => setMaxDistance(e.target.value)}
+                />
+              </div>
+
+              <div className="trio-item">
+                <label>Unit:</label>
+                <select
+                  value={distanceUnit}
+                  onChange={(e) => setDistanceUnit(e.target.value as "m" | "km")}
+                >
+                  <option value="km">km</option>
+                  <option value="m">m</option>
+                </select>
+              </div>
+            </div>
           </div>
 
-          <div className="filter-group">
-            <label>From Date:</label>
-            <input
-              type="date"
-              value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
-            />
-            <label>To Date:</label>
-            <input
-              type="date"
-              value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
-            />
-          </div>
-
-          <div className="filter-group">
-            <label>Min Distance:</label>
-            <input
-              type="number"
-              value={minDistance}
-              onChange={(e) => setMinDistance(e.target.value)}
-            />
-            <label>Max Distance:</label>
-            <input
-              type="number"
-              value={maxDistance}
-              onChange={(e) => setMaxDistance(e.target.value)}
-            />
-            <select
-              value={distanceUnit}
-              onChange={(e) => setDistanceUnit(e.target.value as "m" | "km")}
-            >
-              <option value="km">km</option>
-              <option value="m">m</option>
-            </select>
-          </div>
-
-          <div className="filter-group">
-            <label>Sort By:</label>
-            <select
-              value={sortOrder}
-              onChange={(e) =>
-                setSortOrder(
-                  e.target.value as "asc" | "desc" | "date-desc" | "date-asc"
-                )
-              }
-            >
-              <option value="date-desc">Date (Newest)</option>
-              <option value="date-asc">Date (Oldest)</option>
-              <option value="desc">Distance (Longest)</option>
-              <option value="asc">Distance (Shortest)</option>
-            </select>
+          <div className="filter-row">
+            <div className="filter-group">
+              <label>Sort By:</label>
+              <select
+                value={sortOrder}
+                onChange={(e) =>
+                  setSortOrder(
+                    e.target.value as "asc" | "desc" | "date-desc" | "date-asc"
+                  )
+                }
+              >
+                <option value="date-desc">Date (Newest)</option>
+                <option value="date-asc">Date (Oldest)</option>
+                <option value="desc">Distance (Longest)</option>
+                <option value="asc">Distance (Shortest)</option>
+              </select>
+            </div>
           </div>
         </div>
       )}
@@ -451,43 +497,22 @@ const SessionList: React.FC<SessionListProps> = ({
 
                 {expandedSessionId === session.id && (
                   <>
-                    <div
-                      className="session-actions icon-actions"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <button
-                        className="icon-btn edit-btn"
-                        title="Edit Session"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingSessionId(session.id);
-                        }}
-                      >
-                        ✏️
-                      </button>
-                      <button
-                        className="icon-btn delete-btn"
-                        title="Delete Session"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDelete(session.id);
-                        }}
-                      >
-                        🗑
-                      </button>
-                    </div>
                     {editingSessionId === session.id && (
                       <div onClick={(e) => e.stopPropagation()}>
-                        <EditSessionForm
+                        <EditWholeSession
                           session={session}
                           onClose={() => setEditingSessionId(null)}
                           onUpdate={onUpdate}
                         />
                       </div>
                     )}
-                    <div onClick={(e) => e.stopPropagation()}>
-                      <SessionDetails session={session} onUpdate={onUpdate} />
-                    </div>
+
+                    <SessionDetails
+                      session={session}
+                      onUpdate={onUpdate}
+                      onEditSession={() => setEditingSessionId(session.id)}
+                      onDeleteSession={() => onDelete(session.id)}
+                    />
                   </>
                 )}
               </li>

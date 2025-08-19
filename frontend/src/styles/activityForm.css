@@ -1,5 +1,5 @@
 .activity-form {
-  max-width: 600px;
+  max-width: 720px;
   margin: 20px auto;
   padding: 20px;
   background: #2a2f36;
@@ -8,20 +8,16 @@
   box-shadow: var(--box-shadow);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   font-family: "Josefin Sans", sans-serif;
   color: #ffffff;
-}
-
-.activity-form h3 {
-  margin: 0 0 10px 0;
-  color: var(--primary-color);
 }
 
 .activity-form label {
   font-weight: 600;
   color: #cccccc;
   text-align: left;
+  margin-bottom: 6px;
 }
 
 .activity-form input,
@@ -41,15 +37,55 @@
   outline: none;
 }
 
+.duration-distance {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.duration-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
 .duration-inputs {
   display: flex;
-  gap: 10px;
-  justify-content: space-between;
+  gap: 8px;
 }
 
 .duration-inputs input {
-  width: 30%;
+  flex: 1 1 auto;
+  max-width: 80px;
   text-align: center;
+}
+
+.distance-input {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 6px;
+}
+
+.cadence-power {
+  flex: 1;
+}
+
+.cadence-power .group {
+  flex: 1;
 }
 
 .form-buttons {
@@ -73,10 +109,9 @@
   background: var(--primary-dark);
 }
 
-/* ✅ Blue Cancel Button for strong visibility */
 .activity-form .btn-secondary {
-  background: #4fa3e3 !important; /* Bright blue */
-  color: #ffffff !important;      /* White text */
+  background: #4fa3e3 !important;
+  color: #ffffff !important;
   padding: 10px 15px;
   border: none;
   border-radius: var(--border-radius);
@@ -85,32 +120,37 @@
 }
 
 .activity-form .btn-secondary:hover {
-  background: #2c82c9 !important; /* Darker blue on hover */
+  background: #2c82c9 !important;
 }
 
-.edit-activity-form {
-  background: #1f252c;
-  border: 1px solid #3a3f47;
+.activity-type-select {
+  width: 256px !important;
+  min-width: 256px !important;
+  max-width: 256px !important;
+  flex: 0 0 256px;
+  text-align: center;
 }
 
-@media (max-width: 600px) {
-  .activity-form {
-    padding: 15px;
-  }
+.activity-type-label {
+  margin-bottom: 6px;
+  text-align: left;
+  display: block;
+}
 
-  .duration-inputs {
+.activity-type-select {
+  width: 100%;
+  min-width: 200px;
+  max-width: 360px;
+}
+
+@media (max-width: 640px) {
+  .duration-distance,
+  .row {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .duration-inputs input {
-    width: 100%;
-  }
-
-  .form-buttons {
-    flex-direction: column;
-  }
-
-  .form-buttons button {
-    width: 100%;
+    max-width: none;
   }
 }

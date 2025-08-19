@@ -1,6 +1,7 @@
+/* src/styles/sessionDetails.css */
 .session-details {
   margin-top: 8px;
-  padding-top: 8px;
+  padding: 8px 12px 12px;
   border-top: 1px solid #3a3f47;
   color: #dddddd;
   font-size: 1rem;
@@ -8,13 +9,8 @@
   border: none;
   border-radius: 0;
   box-shadow: none;
-}
-
-.details-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 10px;
+  overflow-x: hidden;
+  position: relative;
 }
 
 .session-details h3 {
@@ -26,66 +22,136 @@
 .details-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0 40px;
+  gap: 0 24px;
   margin-bottom: 15px;
 }
 
 .details-columns .left-column,
 .details-columns .right-column {
-  display: flex;
-  flex-direction: column;
-}
-
-.details-columns .right-column {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  row-gap: 6px;
+  column-gap: 12px;
 }
 
 .details-columns .column-heading {
-  color: var(--primary-color);
+  grid-column: 1 / -1;
   font-size: 1.2rem;
   font-weight: bold;
   margin-bottom: 6px;
   text-align: left;
 }
 
-.details-columns p {
-  margin: 10px 0;
-  color: #dddddd;
-  font-size: 1rem;
-}
-
-.details-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.activity-item,
-.transition-item {
+.metric-list {
+  grid-column: 1;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metric-row {
+  display: grid;
+  grid-template-columns: minmax(90px, 180px) 1fr;
+  align-items: baseline;
+  column-gap: 8px;
+}
+
+.metric-label {
+  justify-self: start;
+  text-align: left;
+  color: #cfd3da;
+  opacity: 0.95;
+}
+
+.metric-value {
+  justify-self: start;
+  text-align: left;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.multi-divider {
+  height: 2px;
+  background: #fb8122;
+  margin: 12px 0 14px;
+  border-radius: 2px;
+}
+
+.multi-row {
+  position: relative;
   padding: 10px 0;
-  border-bottom: 1px solid #3a3f47;
 }
 
-.activity-item:last-child,
-.transition-item:last-child {
-  border-bottom: none;
+.multi-row + .multi-row {
+  border-top: 1px solid #4fa3e3;
 }
 
-.activity-info,
-.transition-info {
-  flex: 1;
+.activity-head-grid {
+  display: grid;
+  grid-template-columns: minmax(100px, 160px) 1fr minmax(100px, 160px) 1fr;
+  column-gap: 16px;
+  align-items: end;
 }
 
-/* ✅ Remove the wrapper, integrate into right-column */
+.col-head {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin: 0 0 10px 0;
+}
+
+.col-head.left {
+  grid-column: 1 / 3;
+}
+
+.col-head.right {
+  grid-column: 3 / 5;
+  justify-self: start;
+}
+
+.activity-table {
+  display: grid;
+  gap: 8px 0;
+  margin-top: 4px;
+}
+
+.activity-row-grid {
+  display: grid;
+  grid-template-columns: minmax(100px, 160px) 1fr minmax(100px, 160px) 1fr;
+  column-gap: 16px;
+  align-items: baseline;
+}
+
+.activity-row-grid .cell.label {
+  color: #cfd3da;
+  font-weight: 600;
+}
+
+.activity-row-grid .cell.value {
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .details-actions {
   display: flex;
-  justify-content: flex-end;
   gap: 8px;
-  margin-top: auto; /* ✅ Pushes buttons to bottom of the right-column */
+  margin-top: 0;
+}
+
+.session-actions {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  z-index: 2;
 }
 
 .icon-btn {
@@ -120,16 +186,68 @@
   background: var(--danger-color);
 }
 
-.multi-row {
-  position: relative;
-  padding: 10px 0;
-  border-bottom: 1px solid #4fa3e3;
+.session-card.expanded .session-top-row {
+  display: none;
 }
 
-.multi-row:last-child {
-  border-bottom: none;
+.session-card.details-open .session-top-row {
+  display: none;
 }
 
-.edit-form-container {
-  margin-top: 10px;
+@media (max-width: 900px) {
+  .details-columns {
+    display: flex;
+    flex-direction: column;
+    gap: 12px 0;
+  }
+
+  .details-columns .left-column,
+  .details-columns .right-column {
+    display: block;
+  }
+
+  .metric-list {
+    margin-bottom: 6px;
+  }
+
+  .metric-row {
+    grid-template-columns: minmax(84px, 160px) 1fr;
+    column-gap: 8px;
+  }
+
+  .activity-head-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .col-head.right {
+    justify-self: start;
+    margin-top: 8px;
+  }
+
+  .activity-row-grid {
+    grid-template-columns: minmax(100px, 160px) 1fr;
+    row-gap: 4px;
+  }
+
+  .activity-row-grid .cell.label:nth-child(3),
+  .activity-row-grid .cell.value:nth-child(4) {
+    grid-column: span 2;
+  }
+
+  .session-actions {
+    top: 8px;
+    right: 8px;
+  }
+}
+
+@media (max-width: 560px) {
+  .metric-row {
+    grid-template-columns: minmax(78px, 150px) 1fr;
+  }
+}
+
+@media (max-width: 380px) {
+  .metric-row {
+    grid-template-columns: minmax(72px, 140px) 1fr;
+  }
 }

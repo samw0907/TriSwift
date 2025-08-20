@@ -75,6 +75,8 @@
   color: #e1e2e2;
   width: 25%;
   word-wrap: break-word;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .records-table th {
@@ -99,10 +101,19 @@
   }
 
   .records-container {
-    padding: 15px;
+    padding: 12px;
   }
 
   .records-table {
-    font-size: 14px;
+    font-size: 12px;
+  }
+
+  .records-table th,
+  .records-table td {
+    padding: 8px;
+  }
+
+  .sport-buttons {
+    gap: 8px;
   }
 }

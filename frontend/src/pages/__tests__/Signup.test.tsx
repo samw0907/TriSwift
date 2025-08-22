@@ -53,11 +53,11 @@ const renderWithMock = (mocks: any) => {
 test("renders signup form", () => {
   renderWithMock([]);
 
-  expect(screen.getByRole("heading", {name: /signup/i})).toBeInTheDocument();
+  expect(screen.getByRole("heading", {name: /Sign Up/i})).toBeInTheDocument();
   expect(screen.getByPlaceholderText(/Name/i)).toBeInTheDocument();
   expect(screen.getByPlaceholderText(/Email/i)).toBeInTheDocument();
   expect(screen.getByPlaceholderText(/Password/i)).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: /Signup/i })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /Sign Up/i })).toBeInTheDocument();
 });
 
 test("updates input fields", () => {
@@ -92,7 +92,7 @@ test("successful signup redirects to login page", async () => {
     target: { value: "password123" },
   });
 
-  fireEvent.click(screen.getByRole("button", { name: /Signup/i }));
+  fireEvent.click(screen.getByRole("button", { name: /Sign Up/i }));
 
   await waitFor(() => {
     expect(mockNavigate).toHaveBeenCalledWith("/login");
@@ -112,7 +112,7 @@ test("displays error message on duplicate email", async () => {
     target: { value: "password123" },
   });
 
-  fireEvent.click(screen.getByRole("button", { name: /Signup/i }));
+  fireEvent.click(screen.getByRole("button", { name: /Sign Up/i }));
 
   await waitFor(() => {
     expect(

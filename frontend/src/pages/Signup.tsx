@@ -74,7 +74,7 @@ const Signup: React.FC = () => {
           />
           <div className="button-row">
             <button type="submit" disabled={loading}>
-              {loading ? "Signing up..." : "Signup"}
+              {loading ? "Signing up..." : "Sign Up"}
             </button>
             <Link to="/" className="btn-secondary button-link">Back</Link>
           </div>

@@ -80,7 +80,7 @@ test("renders the dashboard title", async () => {
   renderWithMock([mockSessions]);
 
   await waitFor(() => {
-    expect(screen.getByText(/Session Dashboard/i)).toBeInTheDocument();
+    expect(screen.getByText(/Session Summary/i)).toBeInTheDocument();
   });
 });
 
@@ -107,7 +107,7 @@ test("renders session list", async () => {
   renderWithMock([mockSessions]);
 
   await waitFor(() => {
-    expect(screen.getByText(/Past Sessions/i)).toBeInTheDocument();
+    expect(screen.getByText(/All Sessions/i)).toBeInTheDocument();
     expect(screen.getByText(/Run/i)).toBeInTheDocument();
   });
 });
@@ -130,14 +130,25 @@ test("allows deleting a session", async () => {
   renderWithMock([mockSessions, deleteMock, emptySessionsAfterDelete]);
 
   await waitFor(() => {
-    expect(screen.getByText(/Past Sessions/i)).toBeInTheDocument();
+    expect(screen.getByText(/All Sessions/i)).toBeInTheDocument();
     expect(screen.getByText(/Run/i)).toBeInTheDocument();
   });
+  fireEvent.click(screen.getByText(/Run/i));
 
-  const deleteButton = screen.getByRole("button", { name: /delete/i });
+  let deleteButton: HTMLElement | null = null;
+  try {
+    deleteButton = await screen.findByRole("button", { name: /delete/i });
+  } catch (_) {}
+  if (!deleteButton) {
+    try {
+      deleteButton = await screen.findByLabelText(/delete/i);
+    } catch (_) {}
+  }
+  if (!deleteButton) {
+    deleteButton = screen.getByTitle(/delete/i);
+  }
   expect(deleteButton).toBeInTheDocument();
-  fireEvent.click(deleteButton);
-
+  fireEvent.click(deleteButton!);
   await waitFor(() => {
     expect(screen.queryByText(/Run/i)).not.toBeInTheDocument();
   }, { timeout: 3000 });

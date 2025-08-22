@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 import { MockedProvider } from "@apollo/client/testing";
 import SessionList from "../SessionList";
@@ -39,7 +39,12 @@ describe("SessionList Component", () => {
   test("renders session list with sessions", () => {
     render(
       <MockedProvider>
-        <SessionList sessions={mockSessions} onDelete={mockDelete} onUpdate={mockUpdate} />
+        <SessionList
+          sessions={mockSessions}
+          onDelete={mockDelete}
+          onUpdate={mockUpdate}
+          onAddSession={() => {}}
+        />
       </MockedProvider>
     );
 
@@ -47,80 +52,132 @@ describe("SessionList Component", () => {
     expect(screen.getByText("Bike")).toBeInTheDocument();
   });
 
-  test("shows 'No sessions available' when empty", () => {
+  test("shows an empty grid (no cards) when list is empty", () => {
     render(
       <MockedProvider>
-        <SessionList sessions={[]} onDelete={mockDelete} onUpdate={mockUpdate} />
+        <SessionList
+          sessions={[]}
+          onDelete={mockDelete}
+          onUpdate={mockUpdate}
+          onAddSession={() => {}}
+        />
       </MockedProvider>
     );
 
-    expect(screen.getAllByText(/No sessions available/i).length).toBeGreaterThan(0);
+    expect(screen.queryAllByRole("heading", { level: 3 })).toHaveLength(0);
   });
 
-  test("toggles session details when 'Show Details' is clicked", () => {
-    render(
+  test("expands and collapses a session card by clicking the card", () => {
+    const { container } = render(
       <MockedProvider>
-        <SessionList sessions={mockSessions} onDelete={mockDelete} onUpdate={mockUpdate} />
+        <SessionList
+          sessions={mockSessions}
+          onDelete={mockDelete}
+          onUpdate={mockUpdate}
+          onAddSession={() => {}}
+        />
       </MockedProvider>
     );
 
-    const detailsButtons = screen.getAllByText("Show Details");
-    fireEvent.click(detailsButtons[0]);
+    fireEvent.click(screen.getByText("Run"));
+    expect(container.querySelector(".expanded-card")).toBeTruthy();
 
-    expect(screen.getByText("Hide Details")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByText("Hide Details"));
-    expect(screen.getAllByText("Show Details").length).toBeGreaterThan(0);
+    const expandedCard = container.querySelector(".expanded-card") as HTMLElement;
+    fireEvent.click(expandedCard);
+    expect(container.querySelector(".expanded-card")).toBeFalsy();
   });
 
-  test("calls onDelete when delete button is clicked", () => {
-    render(
+  test("calls onDelete when delete icon is clicked (after expanding)", async () => {
+    const { container } = render(
       <MockedProvider>
-        <SessionList sessions={mockSessions} onDelete={mockDelete} onUpdate={mockUpdate} />
+        <SessionList
+          sessions={mockSessions}
+          onDelete={mockDelete}
+          onUpdate={mockUpdate}
+          onAddSession={() => {}}
+        />
       </MockedProvider>
     );
 
-    fireEvent.click(screen.getAllByText("Delete")[0]);
-    expect(mockDelete).toHaveBeenCalledWith("1");
+    fireEvent.click(screen.getByText("Run"));
+
+    const expanded = container.querySelector(".expanded-card") as HTMLElement;
+    expect(expanded).toBeTruthy();
+
+    const delBtn = within(expanded).getByTitle(/Delete Session/i);
+    fireEvent.click(delBtn);
+
+    await waitFor(() => expect(mockDelete).toHaveBeenCalledWith("1"));
   });
 
-  test("opens the edit session form when edit button is clicked", async () => {
-    render(
+  test("opens the edit session form when pencil icon is clicked (after expanding)", async () => {
+    const { container } = render(
       <MockedProvider mocks={[mockUpdateSession]} addTypename={false}>
-        <SessionList sessions={mockSessions} onDelete={mockDelete} onUpdate={mockUpdate} />
+        <SessionList
+          sessions={mockSessions}
+          onDelete={mockDelete}
+          onUpdate={mockUpdate}
+          onAddSession={() => {}}
+        />
       </MockedProvider>
     );
 
-    fireEvent.click(screen.getAllByText("Edit")[0]);
-    expect(await screen.findByText(/Edit Session/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Run"));
+
+    const expanded = container.querySelector(".expanded-card") as HTMLElement;
+    expect(expanded).toBeTruthy();
+
+    const editBtn = within(expanded).getByTitle(/Edit Session/i);
+    fireEvent.click(editBtn);
+
+    await waitFor(() => {
+      expect(expanded.querySelector("input, select, textarea")).toBeTruthy();
+    });
   });
 
   test("filters sessions based on session type", () => {
     render(
       <MockedProvider>
-        <SessionList sessions={mockSessions} onDelete={mockDelete} onUpdate={mockUpdate} />
+        <SessionList
+          sessions={mockSessions}
+          onDelete={mockDelete}
+          onUpdate={mockUpdate}
+          onAddSession={() => {}}
+        />
       </MockedProvider>
     );
 
     fireEvent.click(screen.getByText("Show Filters"));
-    fireEvent.click(screen.getByLabelText("Run"));
+    fireEvent.click(screen.getByRole("checkbox", { name: "Run" }));
 
     const sessionTitles = screen.getAllByRole("heading", { level: 3 });
     expect(sessionTitles).toHaveLength(1);
     expect(sessionTitles[0]).toHaveTextContent("Run");
   });
 
-  test("sorts sessions by most recent date", () => {
+  test("sorts sessions by date via the select input", () => {
     render(
       <MockedProvider>
-        <SessionList sessions={mockSessions} onDelete={mockDelete} onUpdate={mockUpdate} />
+        <SessionList
+          sessions={mockSessions}
+          onDelete={mockDelete}
+          onUpdate={mockUpdate}
+          onAddSession={() => {}}
+        />
       </MockedProvider>
     );
 
     fireEvent.click(screen.getByText("Show Filters"));
-    fireEvent.click(screen.getByText("Most Recent"));
 
-    const sessionTitles = screen.getAllByRole("heading", { level: 3 });
+    const sortSelect = screen.getByDisplayValue("Date (Newest)") as HTMLSelectElement;
+
+    fireEvent.change(sortSelect, { target: { value: "date-asc" } });
+    let sessionTitles = screen.getAllByRole("heading", { level: 3 });
+    expect(sessionTitles[0]).toHaveTextContent("Bike");
+    expect(sessionTitles[1]).toHaveTextContent("Run");
+
+    fireEvent.change(sortSelect, { target: { value: "date-desc" } });
+    sessionTitles = screen.getAllByRole("heading", { level: 3 });
     expect(sessionTitles[0]).toHaveTextContent("Run");
     expect(sessionTitles[1]).toHaveTextContent("Bike");
   });

@@ -1,4 +1,3 @@
-// src/components/sessions/SessionDetails.tsx
 import React, { useEffect, useRef } from "react";
 import { formatDuration } from "../../utils/format";
 import "../../styles/sessionDetails.css";

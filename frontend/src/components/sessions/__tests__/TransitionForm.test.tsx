@@ -1,17 +1,19 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
+import { vi } from "vitest";
 import TransitionForm from "../TransitionForm";
 
 describe("TransitionForm Component", () => {
   const mockOnSubmit = vi.fn();
-  const mockOnCancel = vi.fn();
+  const mockOnClose = vi.fn();
+  const mockOnSkip = vi.fn();
   
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   test("renders the form correctly", () => {
-    render(<TransitionForm sessionId="123" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+    render(<TransitionForm sessionId="123" onSubmit={mockOnSubmit} onClose={mockOnClose}  onSkipToNextActivity={mockOnSkip} />);
 
     expect(screen.getByLabelText(/Previous Sport:/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Next Sport:/i)).toBeInTheDocument();
@@ -19,12 +21,13 @@ describe("TransitionForm Component", () => {
     expect(screen.getByPlaceholderText("Minutes")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Seconds")).toBeInTheDocument();
     expect(screen.getByLabelText(/Comments:/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Submit Transition/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Add & Next/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Skip Transition/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Save & Close/i })).toBeInTheDocument();
   });
 
   test("updates input fields correctly", () => {
-    render(<TransitionForm sessionId="123" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+    render(<TransitionForm sessionId="123" onSubmit={mockOnSubmit} onClose={mockOnClose} onSkipToNextActivity={mockOnSkip}/>);
 
     fireEvent.change(screen.getByLabelText(/Previous Sport:/i), { target: { value: "Swim" } });
     fireEvent.change(screen.getByLabelText(/Next Sport:/i), { target: { value: "Bike" } });
@@ -39,15 +42,15 @@ describe("TransitionForm Component", () => {
     expect(screen.getByLabelText(/Comments:/i)).toHaveValue("Quick change");
   });
 
-  test("submits the form with correct data", () => {
-    render(<TransitionForm sessionId="123" onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+  test("submits with correct data via 'Add & Next' (does not close)", () => {
+    render(<TransitionForm sessionId="123" onSubmit={mockOnSubmit} onClose={mockOnClose} onSkipToNextActivity={mockOnSkip} />);
 
     fireEvent.change(screen.getByLabelText(/Previous Sport:/i), { target: { value: "Run" } });
     fireEvent.change(screen.getByLabelText(/Next Sport:/i), { target: { value: "Bike" } });
     fireEvent.change(screen.getByPlaceholderText("Minutes"), { target: { value: "1" } });
     fireEvent.change(screen.getByPlaceholderText("Seconds"), { target: { value: "15" } });
     fireEvent.change(screen.getByLabelText(/Comments:/i), { target: { value: "Fast transition" } });
-    fireEvent.click(screen.getByRole("button", { name: /Submit Transition/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Add & Next/i }));
 
     expect(mockOnSubmit).toHaveBeenCalledWith({
       previousSport: "Run",
@@ -57,11 +60,54 @@ describe("TransitionForm Component", () => {
     });
   });
 
-  test("triggers onCancel when Cancel is clicked", () => {
-    render(<TransitionForm sessionId="123" onSubmit={mockOnSubmit} onClose={mockOnCancel} />);
+    test("'Save & Close' submits and calls onClose", () => {
+    render(
+      <TransitionForm
+        sessionId="123"
+        onSubmit={mockOnSubmit}
+        onClose={mockOnClose}
+        onSkipToNextActivity={mockOnSkip}
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText(/Previous Sport:/i), { target: { value: "Swim" } });
+    fireEvent.change(screen.getByLabelText(/Next Sport:/i), { target: { value: "Run" } });
+    fireEvent.change(screen.getByPlaceholderText("Minutes"), { target: { value: "0" } });
+    fireEvent.change(screen.getByPlaceholderText("Seconds"), { target: { value: "45" } });
+    fireEvent.change(screen.getByLabelText(/Comments:/i), { target: { value: "T1" } });
 
     fireEvent.click(screen.getByRole("button", { name: /Save & Close/i }));
 
-    expect(mockOnCancel).toHaveBeenCalled();
+    expect(mockOnSubmit).toHaveBeenCalledWith({
+      previousSport: "Swim",
+      nextSport: "Run",
+      transitionTime: 45,
+      comments: "T1",
+    });
+    expect(mockOnClose).toHaveBeenCalled();
+  });
+
+  test("'Skip Transition' calls onSkipToNextActivity without submitting", () => {
+    render(
+      <TransitionForm
+        sessionId="123"
+        onSubmit={mockOnSubmit}
+        onClose={mockOnClose}
+        onSkipToNextActivity={mockOnSkip}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Skip Transition/i }));
+
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+    expect(mockOnSkip).toHaveBeenCalled();
+  });
+
+  test("triggers onCancel when Cancel is clicked", () => {
+    render(<TransitionForm sessionId="123" onSubmit={mockOnSubmit} onClose={mockOnClose} onSkipToNextActivity={mockOnSkip} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Save & Close/i }));
+
+    expect(mockOnClose).toHaveBeenCalled();
   });
 });

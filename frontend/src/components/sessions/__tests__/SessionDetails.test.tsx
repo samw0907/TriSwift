@@ -1,21 +1,17 @@
 import React from "react";
-import { render, screen, fireEvent, within , waitFor} from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { vi } from "vitest";
 import { MockedProvider } from "@apollo/client/testing";
 import SessionDetails from "../SessionDetails";
-import { formatDuration } from "../../../utils/format";
-import { getNextActivity } from "../../../utils/sessionHelpers";
-import { UPDATE_SESSION_ACTIVITY, DELETE_ACTIVITY_MUTATION, DELETE_TRANSITION_MUTATION } from "../../../graphql/mutations";
 
 vi.mock("../../../utils/format", () => ({
-  formatDuration: vi.fn((duration) => `${duration} sec`),
+  formatDuration: vi.fn((duration: number) => `${duration} sec`),
 }));
 
-vi.mock("../../../utils/sessionHelpers", () => ({
-  getNextActivity: vi.fn(() => ({ transition: null, nextActivity: null })),
-}));
-
-const mockSession = {
+const baseSession = {
+  id: "s1",
+  sessionType: "Run",
+  date: "2024-03-01",
   weatherTemp: 22,
   weatherHumidity: 50,
   weatherWindSpeed: 5,
@@ -25,6 +21,7 @@ const mockSession = {
       sportType: "Run",
       duration: 1800,
       distance: 5,
+      created_at: "2024-03-01T10:00:00Z",
       heartRateMin: 100,
       heartRateMax: 170,
       heartRateAvg: 140,
@@ -32,101 +29,92 @@ const mockSession = {
       power: 200,
     },
   ],
-  transitions: [
-    {
-      id: "t1",
-      previousSport: "Swim",
-      nextSport: "Bike",
-      transitionTime: 120,
-      comments: "Quick change",
-    },
-  ],
+  transitions: [],
 };
 
-const mockUpdate = vi.fn();
+const renderWith = (session = baseSession, mocks: any[] = []) => {
+  const onUpdate = vi.fn();
+  const onEditSession = vi.fn();
+  const onDeleteSession = vi.fn();
 
-const mockUpdateActivity = {
-  request: {
-    query: UPDATE_SESSION_ACTIVITY,
-    variables: { id: "a1", duration: 1900 },
-  },
-  result: {
-    data: {
-      updateActivity: {
-        id: "a1",
-        duration: 1900,
-      },
-    },
-  },
+  render(
+    <MockedProvider mocks={mocks} addTypename={false}>
+      <SessionDetails
+        session={session as any}
+        onUpdate={onUpdate}
+        onEditSession={onEditSession}
+        onDeleteSession={onDeleteSession}
+      />
+    </MockedProvider>
+  );
+
+  return { onUpdate, onEditSession, onDeleteSession };
 };
 
-const mockDeleteActivity = {
-  request: { query: DELETE_ACTIVITY_MUTATION, variables: { id: "a1" } },
-  result: { data: { deleteActivity: { id: "a1" } } },
-};
-
-const mockDeleteTransition = {
-  request: { query: DELETE_TRANSITION_MUTATION, variables: { id: "t1" } },
-  result: { data: { deleteTransition: { id: "t1" } } },
-};
-
-describe("SessionDetails Component", () => {
-  const renderWithMocks = (mocks = [], sessionData = mockSession) =>
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <SessionDetails session={sessionData} onUpdate={mockUpdate} />
-      </MockedProvider>
-    );
-
+describe("SessionDetails", () => {
   test("renders weather details if available", () => {
-    renderWithMocks();
+    renderWith();
 
-    expect(screen.getByText("Temp - 22°C")).toBeInTheDocument();
-    expect(screen.getByText("Humidity - 50%")).toBeInTheDocument();
-    expect(screen.getByText("Wind Speed - 5m/s")).toBeInTheDocument();
+    expect(screen.getByText(/Weather/i)).toBeInTheDocument();
+    expect(screen.getByText(/Temp/i)).toBeInTheDocument();
+    expect(screen.getByText("22 °C")).toBeInTheDocument();
+    expect(screen.getByText(/Humidity/i)).toBeInTheDocument();
+    expect(screen.getByText("50 %")).toBeInTheDocument();
+    expect(screen.getByText(/Wind/i)).toBeInTheDocument();
+    expect(screen.getByText("5 m/s")).toBeInTheDocument();
   });
 
-  test("renders activity details", () => {
-    renderWithMocks();
+  test("renders single-activity details and stats", () => {
+    renderWith();
 
     expect(screen.getByText("Run")).toBeInTheDocument();
-    expect(screen.getByText("Distance: 5.00 km")).toBeInTheDocument();
-    expect(screen.getByText("Duration: 1800 sec")).toBeInTheDocument();
-    expect(screen.getByText("HR Min: 100 bpm")).toBeInTheDocument();
-    expect(screen.getByText("HR Max: 170 bpm")).toBeInTheDocument();
-    expect(screen.getByText("Avg HR: 140 bpm")).toBeInTheDocument();
-    expect(screen.getByText("Cadence: 85 rpm")).toBeInTheDocument();
-    expect(screen.getByText("Power: 200 watts")).toBeInTheDocument();
-  });
-  
-  
-  test("shows and hides edit form when clicking edit button", async () => {
-    renderWithMocks([mockUpdateActivity]);
+    expect(screen.getByText("Distance")).toBeInTheDocument();
+    expect(screen.getByText("5.00 km")).toBeInTheDocument();
+    expect(screen.getByText("Time")).toBeInTheDocument();
+    expect(screen.getByText("1800 sec")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText("Edit Activity"));
+    expect(screen.getByText("Stats")).toBeInTheDocument();
+    expect(screen.getByText("HR Max")).toBeInTheDocument();
+    expect(screen.getByText("170 bpm")).toBeInTheDocument();
+    expect(screen.getByText("HR Min")).toBeInTheDocument();
+    expect(screen.getByText("100 bpm")).toBeInTheDocument();
+    expect(screen.getByText("HR Average")).toBeInTheDocument();
+    expect(screen.getByText("140 bpm")).toBeInTheDocument();
+    expect(screen.getByText("Cadence")).toBeInTheDocument();
+    expect(screen.getByText("85 rpm")).toBeInTheDocument();
+    expect(screen.getByText("Power")).toBeInTheDocument();
+    expect(screen.getByText("200 watts")).toBeInTheDocument();
 
-    const editForm = screen.getByRole("form");
-    expect(editForm).toBeInTheDocument();
-
-    const cancelButtons = within(editForm).getAllByText("Cancel");
-    expect(cancelButtons.length).toBeGreaterThan(0);
-
-    fireEvent.click(cancelButtons[0]);
-
-    expect(screen.getByText("Edit Activity")).toBeInTheDocument();
+    expect(screen.getByText("Pace")).toBeInTheDocument();
+    expect(screen.getByText(/6:00 \/ km/)).toBeInTheDocument();
   });
 
-  test("does not display weather details when null", async () => {
-    renderWithMocks([], {
-      ...mockSession,
+  test("fires edit and delete callbacks via icon buttons", () => {
+    const { onEditSession, onDeleteSession } = renderWith();
+
+    const editBtn = screen.getByTitle(/Edit Session/i);
+    const deleteBtn = screen.getByTitle(/Delete Session/i);
+
+    editBtn.click();
+    deleteBtn.click();
+
+    expect(onEditSession).toHaveBeenCalledTimes(1);
+    expect(onDeleteSession).toHaveBeenCalledTimes(1);
+  });
+
+  test("does not render weather block when all weather values are null", () => {
+    const sessionNoWeather = {
+      ...baseSession,
       weatherTemp: null,
       weatherHumidity: null,
       weatherWindSpeed: null,
-    });
-  
-    expect(screen.queryByText(/Temp -/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Humidity -/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Wind Speed -/)).not.toBeInTheDocument();
+    };
+
+    renderWith(sessionNoWeather);
+
+    expect(screen.queryByText(/Weather/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Temp/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Humidity/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Wind/i)).not.toBeInTheDocument();
   });
-  
 });

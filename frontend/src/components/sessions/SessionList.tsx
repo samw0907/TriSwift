@@ -1,4 +1,3 @@
-// src/components/sessions/SessionList.tsx
 import React, { useState, useEffect, useRef } from "react";
 import SessionDetails from "./SessionDetails";
 import EditWholeSession from "./EditWholeSession";

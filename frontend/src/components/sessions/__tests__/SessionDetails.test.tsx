@@ -71,7 +71,7 @@ describe("SessionDetails", () => {
     expect(screen.getByText("Distance")).toBeInTheDocument();
     expect(screen.getByText("5.00 km")).toBeInTheDocument();
     expect(screen.getByText("Time")).toBeInTheDocument();
-    expect(screen.getByText("1800 sec")).toBeInTheDocument();
+    expect(screen.getByText("00:30:00")).toBeInTheDocument();
 
     expect(screen.getByText("Stats")).toBeInTheDocument();
     expect(screen.getByText("HR Max")).toBeInTheDocument();

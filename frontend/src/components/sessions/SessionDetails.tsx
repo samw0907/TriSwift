@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import { formatDuration } from "../../utils/format";
 import "../../styles/sessionDetails.css";
 
 interface Activity {
@@ -41,6 +40,13 @@ interface SessionDetailsProps {
   onEditSession: () => void;
   onDeleteSession: () => void;
 }
+
+const formatHHMMSS = (totalSeconds: number): string => {
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+};
 
 const formatMMSS = (seconds: number): string => {
   const m = Math.floor(seconds / 60);
@@ -172,7 +178,7 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({
                 <MetricRow label="Date" value={formatDateShort(session.date)} />
                 <MetricRow
                   label="Time"
-                  value={totalDuration > 0 ? formatDuration(totalDuration) : undefined}
+                  value={totalDuration > 0 ? formatHHMMSS(totalDuration) : undefined}
                 />
                 <MetricRow
                   label="Distance"
@@ -222,7 +228,7 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({
                 <MetricRow label="Date" value={formatDateShort(session.date)} />
                 <MetricRow
                   label="Time"
-                  value={totalDuration > 0 ? formatDuration(totalDuration) : undefined}
+                  value={totalDuration > 0 ? formatHHMMSS(totalDuration) : undefined}
                 />
                 <MetricRow
                   label="Distance"
@@ -256,7 +262,7 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({
               const rightCol: { label: string; value: string }[] = [];
 
               if (a.distance > 0) leftCol.push({ label: "Distance", value: `${a.distance.toFixed(2)} km` });
-              if (a.duration > 0) leftCol.push({ label: "Duration", value: `${formatDuration(a.duration)}` });
+              if (a.duration > 0) leftCol.push({ label: "Duration", value: `${formatHHMMSS(a.duration)}` });
               const pace = calculatePace(a);
               if (pace) leftCol.push({ label: "Pace", value: pace });
 

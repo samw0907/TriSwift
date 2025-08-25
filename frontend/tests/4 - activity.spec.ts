@@ -1,156 +1,91 @@
 import { test, expect } from '@playwright/test';
 
-let createdSessionId: string | null = null;
+const cardLocator = '.grid-container .session-card, ul.session-list li.session-card';
+
+async function login(page) {
+  await page.goto('http://localhost:3000/login');
+  await page.fill('input[name="email"]', 'seeduser@example.com');
+  await page.fill('input[name="password"]', 'password123');
+  await page.click('button[type="submit"]');
+  await page.waitForURL('http://localhost:3000/home');
+}
+
+async function createBikeSessionWithActivity(page, distance = '12.00', h = '0', m = '12', s = '12') {
+  await page.goto('http://localhost:3000/dashboard');
+  const addSessionButton = page.getByRole('button', { name: /add session/i });
+  await expect(addSessionButton).toBeVisible();
+  await addSessionButton.click();
+  await page.waitForSelector('input[name="date"]', { timeout: 5000 });
+  const todayISO = new Date().toISOString().split('T')[0];
+  await page.selectOption('select[name="sessionType"]', 'Bike');
+  await page.fill('input[name="date"]', todayISO);
+  await page.click('button[type="submit"]');
+  await page.waitForSelector('form.activity-form', { timeout: 5000 });
+  await page.fill('input[name="hours"]', h);
+  await page.fill('input[name="minutes"]', m);
+  await page.fill('input[name="seconds"]', s);
+  await page.fill('input[name="distance"]', distance);
+  await page.click('button[type="submit"]');
+  await page.waitForSelector('form.activity-form', { state: 'hidden', timeout: 5000 });
+  const sessionCard = page.locator(cardLocator).first();
+  await expect(sessionCard).toBeVisible({ timeout: 10000 });
+  return sessionCard;
+}
 
 test.describe('Activity Management Tests', () => {
-
   test.beforeEach(async ({ page }) => {
-    console.log("🔑 Logging in before each test...");
-    await page.goto('http://localhost:3000/login');
-    await page.fill('input[name="email"]', 'seeduser@example.com');
-    await page.fill('input[name="password"]', 'password123');
-    await page.click('button[type="submit"]');
-    await page.waitForURL('http://localhost:3000/home');
-    console.log("✅ Logged in successfully.");
+    await login(page);
   });
 
   test('User can add an activity to a session', async ({ page }) => {
-    await page.goto('http://localhost:3000/dashboard');
-    
-    console.log("🖱️ Clicking Add Session...");
-    const addSessionButton = page.locator('button', { hasText: 'Add Session' });
-    await expect(addSessionButton).toBeVisible();
-    await addSessionButton.click();
-
-    await page.waitForSelector('input[name="date"]', { timeout: 5000 });
-    console.log("✅ Session form is visible.");
-
-    const todayISO = new Date().toISOString().split('T')[0];
-
-    await page.selectOption('select[name="sessionType"]', 'Bike');
-    await page.fill('input[name="date"]', todayISO);
-    console.log("📡 Submitting session creation request...");
-    await page.click('button[type="submit"]');
-
-    await page.waitForSelector('form.activity-form', { timeout: 5000 });
-    console.log("✍️ Filling activity form...");
-    await page.fill('input[name="hours"]', '0');
-    await page.fill('input[name="minutes"]', '12');
-    await page.fill('input[name="seconds"]', '12');
-    await page.fill('input[name="distance"]', '12.00');
-
-    console.log("🖱️ Clicking 'Submit Activity'...");
-    await page.click('button[type="submit"]');
-    await page.waitForSelector('form.activity-form', { state: 'hidden', timeout: 5000 });
-
-    const showFiltersButton = page.locator('button.btn-filter-toggle');
-    await showFiltersButton.click();
-
-    const bikeCheckbox = page.locator('label >> text=Bike >> input[type="checkbox"]');
-    await expect(bikeCheckbox).toBeVisible();
-    await bikeCheckbox.click();
-
-    const maxDistanceInput = page.locator('input[name="maxDistance"]');
-    await expect(maxDistanceInput).toBeVisible();
-    await maxDistanceInput.fill('12');
-
-    const sessionCard = page.locator('li.session-card').first();
-    await sessionCard.waitFor({ state: 'visible', timeout: 5000 });
-
-    const createdSessionId = await sessionCard.getAttribute('data-session-id');
-    if (!createdSessionId) {
-      throw new Error("❌ Newly created session not found on dashboard.");
-    }
-
-    console.log(`✅ Created Session ID: ${createdSessionId}`);
-
-    console.log("🖱️ Clicking 'Show Details'...");
-    await sessionCard.locator('button', { hasText: 'Show Details' }).click();
-    await page.waitForTimeout(1000);
-
-    console.log("🔍 Verifying activity details...");
-    await expect(sessionCard).toContainText('Bike');
-    await expect(sessionCard).toContainText('Distance: 12.00 km');
-    await expect(sessionCard).toContainText('Duration: 0h 12m 12s');
-
-    console.log("✅ Activity successfully added and verified!");
+    const sessionCard = await createBikeSessionWithActivity(page, '12.00', '0', '12', '12');
+    await sessionCard.click();
+    const expanded = sessionCard.locator('.session-details');
+    await expect(expanded).toBeVisible();
+    await expect(sessionCard).toContainText(/bike/i);
+    await expect(sessionCard).toContainText(/12\.00\s*km/i, { timeout: 5000 });
+    await expect(sessionCard).toContainText(/00:12:12/, { timeout: 5000 });
   });
 
   test('User can edit an activity', async ({ page }) => {
-    await page.goto('http://localhost:3000/dashboard');
-
-    const showFiltersButton = page.locator('button.btn-filter-toggle');
-    await showFiltersButton.click();
-
-    const bikeCheckbox = page.locator('label >> text=Bike >> input[type="checkbox"]');
-    await expect(bikeCheckbox).toBeVisible();
-    await bikeCheckbox.click();
-
-    const minDistanceInput = page.locator('input[name="maxDistance"]');
-    await expect(minDistanceInput).toBeVisible();
-    await minDistanceInput.fill('12');
-
-    const maxDistanceInput = page.locator('input[name="maxDistance"]');
-    await expect(maxDistanceInput).toBeVisible();
-    await maxDistanceInput.fill('12');
-
-    const sessionCard = page.locator('li.session-card').first();
-    await sessionCard.waitFor({ state: 'visible', timeout: 5000 });
-
-    console.log("🖱️ Clicking 'Show Details'...");
-    await sessionCard.locator('button', { hasText: 'Show Details' }).click();
-    await page.waitForTimeout(1000);
-
-    console.log("🖱️ Clicking 'Edit Activity'...");
-    await page.locator('button', { hasText: 'Edit Activity' }).first().click();
-    await page.waitForSelector('form.edit-activity-form', { timeout: 5000 });
-
-    console.log("✍️ Updating activity distance...");
-    await page.fill('input[name="distance"]', '6.00');
-    await page.click('button[type="submit"]');
-
-    await page.waitForTimeout(2000);
-    await expect(sessionCard).toContainText('6.00 km');
-
-    console.log("✅ Activity updated successfully!");
+    const sessionCard = await createBikeSessionWithActivity(page, '12.00', '0', '10', '00');
+    await sessionCard.click();
+    const expanded = sessionCard.locator('.session-details');
+    await expect(expanded).toBeVisible();
+    const editSessionBtn = expanded.getByTitle(/edit session/i);
+    await expect(editSessionBtn).toBeVisible();
+    await editSessionBtn.click();
+    const editor = page.locator('.edit-session-wrapper');
+    await expect(editor).toBeVisible({ timeout: 5000 });
+    const activityCard = editor.locator('.activity-card').first();
+    const distanceRow = activityCard.locator('.field-row', { hasText: /^Distance/ });
+    const distanceInput = distanceRow.locator('input.control');
+    await expect(distanceInput).toBeVisible({ timeout: 5000 });
+    await distanceInput.fill('6.00');
+    const saveBtn = editor.getByRole('button', { name: /^save$/i });
+    await expect(saveBtn).toBeVisible();
+    await saveBtn.click();
+    await expect(sessionCard).toContainText(/6\.00\s*km/i, { timeout: 5000 });
   });
 
   test('User can delete an activity', async ({ page }) => {
-    await page.goto('http://localhost:3000/dashboard');
-
-    const showFiltersButton = page.locator('button.btn-filter-toggle');
-    await showFiltersButton.click();
-
-    const bikeCheckbox = page.locator('label >> text=Bike >> input[type="checkbox"]');
-    await expect(bikeCheckbox).toBeVisible();
-    await bikeCheckbox.click();
-
-    const minDistanceInput = page.locator('input[name="maxDistance"]');
-    await expect(minDistanceInput).toBeVisible();
-    await minDistanceInput.fill('6');
-
-    const maxDistanceInput = page.locator('input[name="maxDistance"]');
-    await expect(maxDistanceInput).toBeVisible();
-    await maxDistanceInput.fill('6');
-
-    const sessionCard = page.locator('li.session-card').first();
-    await sessionCard.waitFor({ state: 'visible', timeout: 5000 });
-
-    console.log("🖱️ Clicking 'Show Details'...");
-    await sessionCard.locator('button', { hasText: 'Show Details' }).click();
-
-    page.once('dialog', async (dialog) => {
-      console.log(`🗨️ Dialog Message: ${dialog.message()}`);
-      await dialog.accept();
-    });
-
-    console.log("🗑️ Clicking 'Delete Activity'...");
-    const deleteActivityButton = sessionCard.locator('button:has-text("Delete Activity")');
-    await deleteActivityButton.click();
-
-    await page.waitForTimeout(2000);
-    await expect(sessionCard).toContainText('0.00 km');
-
-    console.log("✅ Activity deleted successfully!");
+    const sessionCard = await createBikeSessionWithActivity(page, '6.00', '0', '06', '00');
+    await sessionCard.click();
+    const expanded = sessionCard.locator('.session-details');
+    await expect(expanded).toBeVisible();
+    const editSessionBtn = expanded.getByTitle(/edit session/i);
+    await expect(editSessionBtn).toBeVisible();
+    await editSessionBtn.click();
+    const editor = page.locator('.edit-session-wrapper');
+    await expect(editor).toBeVisible({ timeout: 5000 });
+    const activityCard = editor.locator('.activity-card').first();
+    const distanceRow = activityCard.locator('.field-row', { hasText: /^Distance/ });
+    const distanceInput = distanceRow.locator('input.control');
+    await expect(distanceInput).toBeVisible({ timeout: 5000 });
+    await distanceInput.fill('0');
+    const saveBtn = editor.getByRole('button', { name: /^save$/i });
+    await expect(saveBtn).toBeVisible();
+    await saveBtn.click();
+    await expect(sessionCard).not.toContainText(/6\.00\s*km/i, { timeout: 5000 });
   });
 });

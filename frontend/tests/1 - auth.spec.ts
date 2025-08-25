@@ -1,68 +1,57 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Authentication Tests', () => {
-  
+  const validEmail = 'seeduser@example.com';
+  const validPassword = 'password123';
+  const randomEmail = `user${Date.now()}@example.com`;
+
   test('User can successfully log in', async ({ page }) => {
-    await page.goto('http://localhost:3000/login', { waitUntil: 'networkidle' });
+    await page.goto('/login', { waitUntil: 'networkidle' });
 
-    await page.waitForSelector('input[name="email"]', { state: 'visible', timeout: 10000 });
+    await page.getByRole('textbox', { name: /email/i }).fill(validEmail);
+    await page.getByRole('textbox', { name: /password/i }).fill(validPassword);
+    await page.getByRole('button', { name: /log ?in|sign ?in/i }).click();
 
-    await page.fill('input[name="email"]', 'seeduser@example.com');
-    await page.fill('input[name="password"]', 'password123');
-
-    await page.click('button[type="submit"]');
-
-    await page.waitForURL('http://localhost:3000/home', { timeout: 10000 });
-    await expect(page).toHaveURL('http://localhost:3000/home');
-    
+    await expect(
+      page.getByRole('heading', { name: /your training overview/i })
+    ).toBeVisible({ timeout: 15000 });
   });
 
   test('Login fails with incorrect credentials', async ({ page }) => {
-    await page.goto('http://localhost:3000/login', { waitUntil: 'networkidle' });
+    await page.goto('/login', { waitUntil: 'networkidle' });
 
-    await page.waitForSelector('input[name="email"]', { state: 'visible', timeout: 10000 });
-    await page.fill('input[name="email"]', 'wronguser@example.com');
-    await page.fill('input[name="password"]', 'wrongpassword');
+    await page.getByRole('textbox', { name: /email/i }).fill('wronguser@example.com');
+    await page.getByRole('textbox', { name: /password/i }).fill('wrongpassword');
+    await page.getByRole('button', { name: /log ?in|sign ?in/i }).click();
 
-    await page.click('button[type="submit"]');
-
-    await page.waitForSelector('.notification', { state: 'visible', timeout: 10000 });
-    await expect(page.locator('.notification')).toHaveText(/Invalid email or password\. Please try again\./i);
+    await expect(page.locator('.notification')).toBeVisible();
+    await expect(page.locator('.notification')).toHaveText(/invalid email or password/i);
   });
 
-  const randomEmail = `user${Date.now()}@example.com`;
-
   test('User can successfully sign up and is redirected to login', async ({ page }) => {
-    await page.goto('http://localhost:3000/signup', { waitUntil: 'networkidle' });
+    await page.goto('/signup', { waitUntil: 'networkidle' });
 
-    await page.waitForSelector('input[name="name"]', { state: 'visible', timeout: 10000 });
-    await page.fill('input[name="name"]', 'New User');
-    await page.fill('input[name="email"]', randomEmail);
-    await page.fill('input[name="password"]', 'newpassword123');
+    await page.getByRole('textbox', { name: /name/i }).fill('New User');
+    await page.getByRole('textbox', { name: /email/i }).fill(randomEmail);
+    await page.getByRole('textbox', { name: /password/i }).fill('newpassword123');
 
-    const signupButton = page.locator('button', { hasText: 'Signup' });
+    const signupButton = page.getByRole('button', { name: /sign ?up|create account/i });
+    await expect(signupButton).toBeVisible();
     await expect(signupButton).not.toBeDisabled();
-
     await signupButton.click();
 
-    await page.waitForFunction(() => window.location.pathname === '/login', null, { timeout: 10000 });
-
-    await expect(page).toHaveURL(/\/login$/);
+    await expect(page.getByRole('button', { name: /log ?in|sign ?in/i })).toBeVisible({ timeout: 15000 });
   });
 
   test('Signup fails if email already exists', async ({ page }) => {
-    await page.goto('http://localhost:3000/signup', { waitUntil: 'networkidle' });
+    await page.goto('/signup', { waitUntil: 'networkidle' });
 
-    await page.waitForSelector('input[name="name"]', { state: 'visible', timeout: 10000 });
-    await page.fill('input[name="name"]', 'Seed User');
-    await page.fill('input[name="email"]', 'seeduser@example.com');
-    await page.fill('input[name="password"]', 'password123');
+    await page.getByRole('textbox', { name: /name/i }).fill('Seed User');
+    await page.getByRole('textbox', { name: /email/i }).fill(validEmail);
+    await page.getByRole('textbox', { name: /password/i }).fill(validPassword);
+    await page.getByRole('button', { name: /sign ?up|create account/i }).click();
 
-    await page.click('button[type="submit"]');
-
-    await page.waitForSelector('.notification', { timeout: 5000 });
-
-    await page.waitForSelector('.notification', { state: 'visible', timeout: 10000 });
-    await expect(page.locator('.notification')).toHaveText(/This email is already registered. Try logging in./i);
+    await expect(page.locator('.notification')).toBeVisible();
+    await expect(page.locator('.notification')).toHaveText(/already registered|already exists/i);
   });
 });

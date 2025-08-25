@@ -1,102 +1,117 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Session Management Tests', () => {
-  let createdSessionId: string | null = null;
+  let createdType = 'Run';
+  let createdDateISO = '';
+  let createdDateDisplay = '';
+  const createdDistance = '12.34';
+  const createdDuration = { hrs: '0', mins: '10', secs: '30' };
+
+  const formatDDMMYY = (isoDate: string) => {
+    const d = new Date(isoDate);
+    return new Intl.DateTimeFormat('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit',
+    }).format(d);
+  };
 
   test.beforeEach(async ({ page }) => {
-    console.log("🔑 Logging in before each test...");
     await page.goto('http://localhost:3000/login');
     await page.fill('input[name="email"]', 'seeduser@example.com');
     await page.fill('input[name="password"]', 'password123');
     await page.click('button[type="submit"]');
-    await page.waitForURL('http://localhost:3000/home', { timeout: 10000 });
 
-    const token = await page.evaluate(() => localStorage.getItem('token'));
-    if (!token) {
-      throw new Error("❌ No token found in localStorage after login.");
-    }
-    console.log("✅ Logged in successfully with token.");
+    await expect(page.getByRole('heading', { name: /your training overview/i }))
+      .toBeVisible({ timeout: 15000 });
   });
 
-  test('User can create a new session', async ({ page }) => {
+  test('User can create a new session (with activity)', async ({ page }) => {
     await page.goto('http://localhost:3000/dashboard');
-  
-    const addSessionButton = page.locator('button', { hasText: 'Add Session' });
-    await expect(addSessionButton).toBeVisible();
-  
-    console.log("🖱️ Clicking Add Session...");
-    await addSessionButton.click();
-    await page.waitForSelector('input[name="date"]', { timeout: 5000 });
-  
-    const todayFormatted = new Date().toISOString().split('T')[0];
-    await page.selectOption('select[name="sessionType"]', 'Run');
-    await page.fill('input[name="date"]', todayFormatted);
-    await page.click('button[type="submit"]');
-    console.log("📡 Submitted new session");
 
-    const showFiltersButton = page.locator('button.btn-filter-toggle');
-    await showFiltersButton.click();
+    const cards = page.locator('.grid-container .session-card');
+    const beforeCount = await cards.count();
 
-    const runCheckbox = page.locator('label >> text=Run >> input[type="checkbox"]');
-    await expect(runCheckbox).toBeVisible();
-    await runCheckbox.click();
+    await page.getByRole('button', { name: /add session/i }).click();
 
+    createdDateISO = new Date().toISOString().split('T')[0];
+    createdDateDisplay = formatDDMMYY(createdDateISO);
 
-    const maxDistanceInput = page.locator('input[name="maxDistance"]');
-    await expect(maxDistanceInput).toBeVisible();
-    await maxDistanceInput.fill('0');
+    await page.selectOption('select[name="sessionType"]', createdType);
+    await page.fill('input[name="date"]', createdDateISO);
+    await page.getByRole('button', { name: /next/i }).click();
 
-    await page.click('button[type="submit"]');
+    await page.getByPlaceholder('Hrs').fill(createdDuration.hrs);
+    await page.getByPlaceholder('Mins').fill(createdDuration.mins);
+    await page.getByPlaceholder('Secs').fill(createdDuration.secs);
+    await page.locator('input#distance, input[name="distance"]').fill(createdDistance);
 
-    const sessionCard = page.locator('li.session-card').first();
-    await sessionCard.waitFor({ state: 'visible', timeout: 5000 });
+    await page.getByRole('button', { name: /submit activity|submit & close|add & next/i }).click();
 
-    createdSessionId = await sessionCard.getAttribute('data-session-id');
-    if (!createdSessionId) {
-      throw new Error("❌ Could not find created session ID.");
-    }
-  
-    console.log(`✅ Session created successfully: ID = ${createdSessionId}`);
+    await expect(cards).toHaveCount(beforeCount + 1, { timeout: 10000 });
+
+    const createdCard = page
+      .locator('.session-card')
+      .filter({ has: page.locator('.session-top-row h3', { hasText: createdType }) })
+      .filter({ has: page.locator('.session-date', { hasText: createdDateDisplay }) })
+      .filter({ has: page.locator('.session-stats', { hasText: new RegExp(`^${createdDistance}\\s*km$`, 'i') }) });
+
+    await expect(createdCard).toBeVisible();
+    await expect(createdCard.locator('.session-top-row .session-stats')).toContainText(['00:10:30', /12\.34\s*km/i]);
+
   });
 
-  test('User can edit an existing session', async ({ page }) => {
-    if (!createdSessionId) throw new Error("❌ No session ID from creation test.");
+  test('User can edit the created session', async ({ page }) => {
+    if (!createdDateISO) throw new Error('No previously created session; run create test first.');
 
     await page.goto('http://localhost:3000/dashboard');
 
-    const sessionCard = page.locator(`li.session-card[data-session-id="${createdSessionId}"]`);
-    await expect(sessionCard).toBeVisible();
+    const targetCard = page
+      .locator('.session-card')
+      .filter({ has: page.locator('.session-top-row h3', { hasText: createdType }) })
+      .filter({ has: page.locator('.session-date', { hasText: createdDateDisplay }) })
+      .filter({ has: page.locator('.session-stats', { hasText: new RegExp(`^${createdDistance}\\s*km$`, 'i') }) });
 
-    console.log("🖱️ Editing session...");
-    await sessionCard.locator('button', { hasText: 'Edit' }).click();
+    await expect(targetCard).toBeVisible();
 
-    const editForm = page.locator('.session-edit-form');
-    await expect(editForm).toBeVisible({ timeout: 5000 });
+    await targetCard.click();
+    const expanded = targetCard.locator('.session-details');
+    await expect(expanded).toBeVisible();
 
-    await editForm.locator('input[name="weatherTemp"]').fill('25');
-    await editForm.locator('button[type="submit"]').click();
+    await expanded.getByTitle(/edit session/i).click();
 
-    await sessionCard.locator('button', { hasText: 'Show Details' }).click();
-    await expect(sessionCard).toContainText('Temp - 25°C');
+    const editor = page.locator('.edit-session-wrapper');
+    await expect(editor).toBeVisible();
 
-    console.log("✅ Session updated successfully.");
+    const tempRow = editor.locator('.field-row', { hasText: 'Temp (°C)' }).first();
+    await tempRow.locator('input[type="number"]').fill('25');
+
+    await editor.getByRole('button', { name: /^save$/i }).click();
+
+    await expect(expanded.getByText(/weather/i)).toBeVisible();
+    await expect(expanded.getByText(/25\s*°c/i)).toBeVisible();
   });
 
-  test('User can delete a session', async ({ page }) => {
-    if (!createdSessionId) throw new Error("❌ No session ID from creation test.");
+test('User can delete the created session', async ({ page }) => {
+  if (!createdDateISO) throw new Error('No previously created session; run create test first.');
 
-    await page.goto('http://localhost:3000/dashboard');
+  await page.goto('http://localhost:3000/dashboard');
 
-    const sessionCard = page.locator(`li.session-card[data-session-id="${createdSessionId}"]`);
-    await expect(sessionCard).toBeVisible();
+  const targetCard = page
+    .locator('.session-card')
+    .filter({ has: page.locator('.session-top-row h3', { hasText: createdType }) })
+    .filter({ has: page.locator('.session-date', { hasText: createdDateDisplay }) })
+    .filter({ has: page.locator('.session-stats', { hasText: new RegExp(`^${createdDistance}\\s*km$`, 'i') }) });
 
-    console.log("🗑️ Deleting session...");
-    page.once('dialog', dialog => dialog.accept());
+  await expect(targetCard).toBeVisible();
 
-    await sessionCard.locator('button.btn-danger').click();
+  await targetCard.click();
+  const expanded = targetCard.locator('.session-details');
+  await expect(expanded).toBeVisible();
 
-    await expect(sessionCard).not.toBeVisible({ timeout: 5000 });
+  page.once('dialog', (dialog) => dialog.accept());
+  await expanded.getByTitle(/delete session/i).click();
 
-    console.log("✅ Session deleted successfully.");
-  });
+  await expect(targetCard).toHaveCount(0, { timeout: 10000 });
+});
 });

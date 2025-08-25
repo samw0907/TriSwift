@@ -65,6 +65,7 @@
     "@types/react-dom": "^19.0.4",
     "@types/semver": "^7.5.8",
     "jsdom": "^26.0.0",
+    "pg": "^8.16.3",
     "vite": "^6.2.1",
     "vitest": "^3.0.8",
     "wait-on": "^8.0.3"

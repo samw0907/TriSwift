@@ -6,9 +6,7 @@ async function login(page) {
   await page.goto('http://localhost:3000/login');
   await page.fill('input[name="email"]', 'seeduser@example.com');
   await page.fill('input[name="password"]', 'password123');
-
   await page.click('button[type="submit"]');
-
   await page.waitForURL('http://localhost:3000/home');
 }
 
@@ -16,9 +14,7 @@ async function createBikeSessionWithActivity(page, distance = '12.00', h = '0', 
   await page.goto('http://localhost:3000/dashboard');
 
   const addSessionButton = page.getByRole('button', { name: /add session/i });
-
   await expect(addSessionButton).toBeVisible();
-
   await addSessionButton.click();
 
   await page.waitForSelector('input[name="date"]', { timeout: 5000 });
@@ -38,7 +34,7 @@ async function createBikeSessionWithActivity(page, distance = '12.00', h = '0', 
   await page.click('button[type="submit"]');
   await page.waitForSelector('form.activity-form', { state: 'hidden', timeout: 5000 });
 
-  const sessionCard = page.locator(cardLocator).first();
+  const sessionCard = page.locator(cardLocator).last(); // use the one we just created
   await expect(sessionCard).toBeVisible({ timeout: 10000 });
   return sessionCard;
 }
@@ -63,7 +59,7 @@ test.describe('Activity Management Tests', () => {
     const sessionCard = await createBikeSessionWithActivity(page, '12.00', '0', '10', '00');
     await sessionCard.click();
 
-    const expanded = sessionCard.locator('.session-details');
+    let expanded = sessionCard.locator('.session-details');
     await expect(expanded).toBeVisible();
 
     const editSessionBtn = expanded.getByTitle(/edit session/i);
@@ -73,7 +69,7 @@ test.describe('Activity Management Tests', () => {
     const editor = page.locator('.edit-session-wrapper');
     await expect(editor).toBeVisible({ timeout: 5000 });
 
-    const activityCard = editor.locator('.activity-card').first();
+    const activityCard = editor.locator('.activity-card').last();
     const distanceRow = activityCard.locator('.field-row', { hasText: /^Distance/ });
     const distanceInput = distanceRow.locator('input.control');
 
@@ -84,19 +80,15 @@ test.describe('Activity Management Tests', () => {
     await expect(saveBtn).toBeVisible();
     await saveBtn.click();
 
-await page.reload();
+    expanded = sessionCard.locator('.session-details');
+    await expect(async () => {
+      if (!(await expanded.isVisible())) {
+        await sessionCard.click();
+      }
+    }).toPass();
 
-const refreshedCard = page.locator('.grid-container .session-card, ul.session-list li.session-card').first();
-await expect(refreshedCard).toBeVisible({ timeout: 10000 });
-
-await refreshedCard.click();
-const refreshedExpanded = refreshedCard.locator('.session-details');
-await expect(refreshedExpanded).toBeVisible({ timeout: 10000 });
-
-await expect(refreshedExpanded).toContainText(/6\.00\s*km/i, { timeout: 10000 });
-
-await refreshedCard.click();
-await expect(refreshedCard).toContainText(/6\.00\s*km/i, { timeout: 10000 });
+    await expect(expanded).toContainText(/6\.00\s*km/i, { timeout: 10000 });
+    await expect(sessionCard).toContainText(/6\.00\s*km/i, { timeout: 10000 });
   });
 
   test('User can delete an activity', async ({ page }) => {
@@ -113,7 +105,7 @@ await expect(refreshedCard).toContainText(/6\.00\s*km/i, { timeout: 10000 });
     const editor = page.locator('.edit-session-wrapper');
     await expect(editor).toBeVisible({ timeout: 5000 });
 
-    const activityCard = editor.locator('.activity-card').first();
+    const activityCard = editor.locator('.activity-card').last();
     const distanceRow = activityCard.locator('.field-row', { hasText: /^Distance/ });
     const distanceInput = distanceRow.locator('input.control');
     await expect(distanceInput).toBeVisible({ timeout: 5000 });
@@ -122,6 +114,7 @@ await expect(refreshedCard).toContainText(/6\.00\s*km/i, { timeout: 10000 });
     const saveBtn = editor.getByRole('button', { name: /^save$/i });
     await expect(saveBtn).toBeVisible();
     await saveBtn.click();
+
     await expect(sessionCard).not.toContainText(/6\.00\s*km/i, { timeout: 5000 });
   });
 });

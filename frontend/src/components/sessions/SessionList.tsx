@@ -49,7 +49,6 @@ const SessionList: React.FC<SessionListProps> = ({
   const openDatePicker = (el: HTMLInputElement | null) => {
     if (!el) return;
     el.focus();
-    // @ts-ignore
     if (el.showPicker) el.showPicker();
   };
 
@@ -156,6 +155,17 @@ const SessionList: React.FC<SessionListProps> = ({
     return "#e1e2e2";
   };
 
+  const formatDistanceDisplay = (totalKm: number, sessionType: string) => {
+    const overTen = totalKm >= 10;
+    if (sessionType === "Swim") {
+      if (!overTen) {
+        return `${Math.round(totalKm * 1000)} m`;
+      }
+      return `${totalKm.toFixed(1)} km`;
+    }
+    return overTen ? `${totalKm.toFixed(1)} km` : `${totalKm.toFixed(2)} km`;
+  };
+
   const filteredSessions = sessions
     .filter((session) => {
       const sessionDate = new Date(session.date);
@@ -230,9 +240,7 @@ const SessionList: React.FC<SessionListProps> = ({
                   )}
                 </p>
                 <p className="session-stats">
-                  {session.sessionType === "Swim"
-                    ? `${(calculateTotalDistance(session) * 1000).toFixed(0)} m`
-                    : `${calculateTotalDistance(session).toFixed(2)} km`}
+                   {formatDistanceDisplay(calculateTotalDistance(session), session.sessionType)}
                 </p>
               </div>
 
@@ -285,9 +293,7 @@ const SessionList: React.FC<SessionListProps> = ({
                   )}
                 </p>
                 <p className={`session-stats ${gridView ? "small-text" : ""}`}>
-                  {session.sessionType === "Swim"
-                    ? `${(calculateTotalDistance(session) * 1000).toFixed(0)} m`
-                    : `${calculateTotalDistance(session).toFixed(2)} km`}
+                  {formatDistanceDisplay(calculateTotalDistance(session), session.sessionType)}
                 </p>
               </div>
             </div>
@@ -483,9 +489,7 @@ const SessionList: React.FC<SessionListProps> = ({
                   <p className="session-date">{formatDate(session.date)}</p>
                   <p className="session-stats">{formatTotalTime(totalTime)}</p>
                   <p className="session-stats">
-                    {session.sessionType === "Swim"
-                      ? `${(totalDistance * 1000).toFixed(0)} m`
-                      : `${totalDistance.toFixed(2)} km`}
+                    {formatDistanceDisplay(totalDistance, session.sessionType)}
                   </p>
                   {pace ? (
                     <p className="session-stats">{pace}</p>

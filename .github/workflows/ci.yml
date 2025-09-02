@@ -70,13 +70,13 @@ jobs:
           npm start & 
           npx wait-on http://localhost:3000
 
-    #  - name: 🧪 Run frontend tests (Vitest)
-    #    working-directory: frontend
-    #    run: npm run test
+      - name: 🧪 Run frontend tests (Vitest)
+        working-directory: frontend
+        run: npm run test
 
-    #  - name: 🧪 Run Playwright E2E tests
-    #    working-directory: frontend
-    #    run: npm run test:e2e
+      - name: 🧪 Run Playwright E2E tests
+        working-directory: frontend
+        run: npm run test:e2e
 
   deploy:
     runs-on: ubuntu-latest

@@ -83,12 +83,20 @@ test.describe('Activity Management Tests', () => {
     const saveBtn = editor.getByRole('button', { name: /^save$/i });
     await expect(saveBtn).toBeVisible();
     await saveBtn.click();
-    await page.reload();
-    
-    await expect(expanded).toContainText(/6\.00\s*km/i, { timeout: 10000 });
 
-    await sessionCard.click();
-    await expect(sessionCard).toContainText(/6\.00\s*km/i, { timeout: 10000 });
+await page.reload();
+
+const refreshedCard = page.locator('.grid-container .session-card, ul.session-list li.session-card').first();
+await expect(refreshedCard).toBeVisible({ timeout: 10000 });
+
+await refreshedCard.click();
+const refreshedExpanded = refreshedCard.locator('.session-details');
+await expect(refreshedExpanded).toBeVisible({ timeout: 10000 });
+
+await expect(refreshedExpanded).toContainText(/6\.00\s*km/i, { timeout: 10000 });
+
+await refreshedCard.click();
+await expect(refreshedCard).toContainText(/6\.00\s*km/i, { timeout: 10000 });
   });
 
   test('User can delete an activity', async ({ page }) => {

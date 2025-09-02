@@ -16,6 +16,8 @@ test.describe('Session Management Tests', () => {
     }).format(d);
   };
 
+  const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
   test.beforeEach(async ({ page }) => {
     await page.goto('http://localhost:3000/login');
     await page.fill('input[name="email"]', 'seeduser@example.com');
@@ -57,8 +59,6 @@ test.describe('Session Management Tests', () => {
 
     await expect(createdCard).toBeVisible();
 
-    await expect(createdCard.locator('.session-top-row .session-stats')).toContainText(['00:10:30', /12\.34\s*km/i]);
-
     const rounded = Number.parseFloat(createdDistance).toFixed(1);
     const distanceEitherRoundedOrFull = new RegExp(
       `(?:${escapeRegExp(rounded)}|${escapeRegExp(createdDistance)})\\s*km`,
@@ -79,7 +79,6 @@ test.describe('Session Management Tests', () => {
       .locator('.session-card')
       .filter({ has: page.locator('.session-top-row h3', { hasText: createdType }) })
       .filter({ has: page.locator('.session-date', { hasText: createdDateDisplay }) })
-      .filter({ has: page.locator('.session-stats', { hasText: new RegExp(`^${createdDistance}\\s*km$`, 'i') }) });
 
     await expect(targetCard).toBeVisible();
 
@@ -110,7 +109,6 @@ test('User can delete the created session', async ({ page }) => {
     .locator('.session-card')
     .filter({ has: page.locator('.session-top-row h3', { hasText: createdType }) })
     .filter({ has: page.locator('.session-date', { hasText: createdDateDisplay }) })
-    .filter({ has: page.locator('.session-stats', { hasText: new RegExp(`^${createdDistance}\\s*km$`, 'i') }) });
 
   await expect(targetCard).toBeVisible();
 

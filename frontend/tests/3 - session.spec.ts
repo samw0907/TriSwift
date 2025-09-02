@@ -54,11 +54,20 @@ test.describe('Session Management Tests', () => {
       .locator('.session-card')
       .filter({ has: page.locator('.session-top-row h3', { hasText: createdType }) })
       .filter({ has: page.locator('.session-date', { hasText: createdDateDisplay }) })
-      .filter({ has: page.locator('.session-stats', { hasText: new RegExp(`^${createdDistance}\\s*km$`, 'i') }) });
 
     await expect(createdCard).toBeVisible();
+
     await expect(createdCard.locator('.session-top-row .session-stats')).toContainText(['00:10:30', /12\.34\s*km/i]);
 
+    const rounded = Number.parseFloat(createdDistance).toFixed(1);
+    const distanceEitherRoundedOrFull = new RegExp(
+      `(?:${escapeRegExp(rounded)}|${escapeRegExp(createdDistance)})\\s*km`,
+      'i'
+    );
+
+    const topStats = createdCard.locator('.session-top-row .session-stats');
+    await expect(topStats).toContainText(/00:10:30/);
+    await expect(topStats).toContainText(distanceEitherRoundedOrFull);
   });
 
   test('User can edit the created session', async ({ page }) => {

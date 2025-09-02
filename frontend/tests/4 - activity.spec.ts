@@ -83,9 +83,9 @@ test.describe('Activity Management Tests', () => {
     const saveBtn = editor.getByRole('button', { name: /^save$/i });
     await expect(saveBtn).toBeVisible();
     await saveBtn.click();
-
+    await page.reload();
+    
     await expect(expanded).toContainText(/6\.00\s*km/i, { timeout: 10000 });
-
 
     await sessionCard.click();
     await expect(sessionCard).toContainText(/6\.00\s*km/i, { timeout: 10000 });

@@ -56,7 +56,7 @@ async function createBikeSessionWithActivity(page, distance = '12.00', h = '0', 
   const sessionCard = page
     .locator(cardLocator)
     .filter({ has: page.locator('.session-top-row h3', { hasText: 'Bike' }) })
-    .filter({ has: page.locator('.session-date', { hasText: todayDisplay }) });
+    .filter({ has: page.locator('.session-date', { hasText: todayDisplay }) }).first();
 
   await expect(sessionCard).toBeVisible({ timeout: 10000 });
   return sessionCard;

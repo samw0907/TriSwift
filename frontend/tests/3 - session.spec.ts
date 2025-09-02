@@ -55,7 +55,7 @@ test.describe('Session Management Tests', () => {
     const createdCard = page
       .locator('.session-card')
       .filter({ has: page.locator('.session-top-row h3', { hasText: createdType }) })
-      .filter({ has: page.locator('.session-date', { hasText: createdDateDisplay }) })
+      .filter({ has: page.locator('.session-date', { hasText: createdDateDisplay }) }).first();
 
     await expect(createdCard).toBeVisible();
 
@@ -78,7 +78,7 @@ test.describe('Session Management Tests', () => {
     const targetCard = page
       .locator('.session-card')
       .filter({ has: page.locator('.session-top-row h3', { hasText: createdType }) })
-      .filter({ has: page.locator('.session-date', { hasText: createdDateDisplay }) })
+      .filter({ has: page.locator('.session-date', { hasText: createdDateDisplay }) }).first();
 
     await expect(targetCard).toBeVisible();
 
@@ -108,7 +108,7 @@ test('User can delete the created session', async ({ page }) => {
   const targetCard = page
     .locator('.session-card')
     .filter({ has: page.locator('.session-top-row h3', { hasText: createdType }) })
-    .filter({ has: page.locator('.session-date', { hasText: createdDateDisplay }) })
+    .filter({ has: page.locator('.session-date', { hasText: createdDateDisplay }) }).first();
 
   await expect(targetCard).toBeVisible();
 

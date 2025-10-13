@@ -1,80 +1,84 @@
-# TriSwift - Triathlon Activity Tracking Tool
+# 🏊‍♂️ TriSwift – Triathlon Activity Tracking Tool
 
-**Live App**:` https://triswift-frontend.fly.dev/ `
+**Live App:** [https://triswift-frontend.fly.dev](https://triswift-frontend.fly.dev)  
+**GitHub:** [samw0907/TriSwift](https://github.com/samw0907/TriSwift)
 
-TriSwift is a full-stack fitness tracking app designed specifically with traithletes in mind. It enables users to log and track swimming, cycling, and running workouts, either individually or as part of a triathlon, including transition times between activities. The app provides running totals, automated personal records and target pace calculator functions.
+---
 
-------------------------------
-### Features & Guide ###
+## Overview
 
-# User Authentication
-- Sign up, log in, and access protected routes using JWT-based authentication.
-- New users can sign up via the `/signup` page with name, email, and password.
-- Returning users log in on the `/login` page. A valid token is stored locally to keep them logged in (1-hour expiry).
-- Logging out clears the token and redirects to the login screen.
+**TriSwift** is a full-stack activity tracking app built specifically for **triathletes**.  
+It enables users to log **swim, bike, and run** workouts — individually or as part of a **multi-sport triathlon** — including **transition times** between disciplines.
 
-# Landing Page
-- Displayed at any of the routes when not logged in, displays links for `/login` or `/signup` and explains the features.
+TriSwift automatically calculates **personal records**, provides a **target pace calculator**, and visualizes **training totals** across multiple timeframes.
 
-# Session & Activity Logging
-- Log swim, bike, or run activities — individually or as multi-sport triathlon sessions.
-- Navigate to `/dashboard` to view past sessions.
-- Click `Add Session` to log a new workout.
-- Choose a session type (Run, Swim, Bike, or Multi-Sport), date, and opitonally add weather details.
-- Click `Next` to move to Activity Form.
+---
 
-- For Run, Swim or Bike Session types, enter a time and distance, and optionally heart rate and other metrics.
-- Click `Submit Activity` to save the activity to the session.
+## Core Features
 
-- For Multisport Session types, select and an activity type, enter a time, and optionally heart rate and other metrics
-- Click `Submit Activity` to save the activity and move to the transition form.
-- Enter Previous and Next sports, and enter a transtion time, and optioanlly comments.
-- Click `Submit Transition` to save the transition and move to the next activity form.
-- Continue this for as many activities/transtions as desired and when finished click `Save & Close`.
+- **Secure Authentication** – Sign up, log in, and access protected routes via JWT-based authentication.  
+- **Multi-Sport Session Logging** – Record swim, bike, run, and transition segments within one session.  
+- **Session Dashboard** – Filter and sort past workouts by sport, distance, or date.  
+- **Personal Records** – Automatically updated best times per distance and discipline.  
+- **Totals Graphs** – Interactive distance and duration charts for progress tracking.  
+- **Pace Calculator** – Calculate required pace or speed to hit race goals.  
 
-- Sessions are displayed as cards that can be expanded with `Show Details`, edited, or deleted.
-- Clicking `Show Details` also brings up the acitivty detials, allowing editing and deleting of activities
+---
 
-# Session Filters & Sorting
-- Use the `Show Filters` button on the dashboard to narrow down sessions by sport type, date, and distance range.
-- Sorting can also be applied based on date (asc, desc) or distance (asc, desc).
+## Tech Stack
 
-# Home
-- Navigate to `/home` to view.
-- Displays explanantion of features and running totals for each sport type over differnet time periods.
-- Displays a `Totals Graph` filterable by sport and time period, showing total distances acheived over time.
+**Frontend:**  
+React · TypeScript · Apollo Client · React Router · Playwright · Vitest  
 
-# Personal Records
-- Automatically calculated based on your saved activities.
-- Navigate to `/records` to view record tables
-- Filter by sport, each table showing best 3 results for a range of event distances.
-- Records are updated automatically when better results are logged, or activites are edited.
+**Backend:**  
+Node.js · Express · GraphQL (Apollo Server) · PostgreSQL · Sequelize · JWT Auth  
 
-# Pace Calculator
-- Estimate the average pace required to meet target race times.
-- Navigate to `paceCalculator` in the navbar.
-- Select a sport, select a preset race distance or enter a cusotm distace, then enter a target finish time.
-- The tool displays required pace to hit your goal (min/km Runs, min/100m Swims, km/h Bikes).
+**Infrastructure:**  
+Docker · GitHub Actions (CI/CD) · Fly.io (Frontend + Backend + PostgreSQL)
 
--------------------------------------
+---
 
-# Backend Tech Stack
--Node.js + Express – Server-side logic
--PostgreSQL – Relational database for structured workout data
--GraphQL + Apollo Server – Optimized API querying
--JWT Authentication – Secure user authentication
--Docker – Containerized backend setup
--CI/CD with GitHub Actions – Automated deployment
+## Architecture Overview
 
-# Frontend Tech Stack
--React + TypeScript – Modern UI development
--Apollo Client – GraphQL data fetching
+TriSwift follows a **modular full-stack architecture**:
+- **Backend:** Express + GraphQL API for querying sessions, activities, and user data.
+- **Frontend:** React + Apollo Client for real-time state and GraphQL data management.
+- **Database:** PostgreSQL for structured relational storage (users, sessions, activities, transitions, personal records).
+- **Authentication:** JWT tokens stored client-side with one-hour expiry.
+- **Deployment:** Containerized with Docker, deployed to Fly.io with CI/CD via GitHub Actions.
 
----------------------------------------------------
+---
 
-# Contact Details
--Email: swilliamson_0907@outlook.com
--Github: https://github.com/samw0907/TriSwift
+## Screens & Pages
 
-# Time Diary
-- Working hours diary: [`workingHoursDiary.md`](./workingHoursDiary.md)
+- `/login` – User login  
+- `/signup` – New user registration  
+- `/dashboard` – View, add, and edit sessions  
+- `/records` – Automatically calculated personal bests  
+- `/home` – Overview of totals and performance charts  
+- `/paceCalculator` – Race pace estimation tool  
+
+---
+
+## Future Enhancements
+
+- Integration with the **Strava API** for importing external activities  
+- Map-based progress visualizations  
+- Push notifications for training reminders  
+- Dark/light theme synchronization  
+
+---
+
+## About the Developer
+
+**Sam Williamson** – Full Stack Developer  
+📧 swilliamson_0907@outlook.com  
+🌐 [Portfolio](https://samwilliamson.dev) (coming soon)  
+💻 [GitHub](https://github.com/samw0907)
+
+---
+
+## Development Summary
+
+Total project time: ~175 hours (Open University Final Project)  
+Time log available in [`workingHoursDiary.md`](./workingHoursDiary.md)

@@ -48,7 +48,6 @@ PersonalRecord.belongsTo(User, {
   foreignKey: "user_id" 
 });
 
-
 SessionActivity.hasMany(PersonalRecord, { 
   foreignKey: "session_activity_id", 
   onDelete: "CASCADE",

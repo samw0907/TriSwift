@@ -49,11 +49,9 @@ const sessionResolvers = {
           const totalDistance = activities.reduce((sum, activity) => {
             const raw = typeof activity.distance === 'number' ? activity.distance : parseFloat(activity.distance);
             const distance = isNaN(raw) ? 0 : raw;
-            
-            const correctedDistance = activity.sportType === "Swim" ? distance / 1000 : distance;
-            return sum + correctedDistance;
+            return sum + distance;
           }, 0);
-            
+
           return {
             id: session.id,
             userId: session.user_id,
@@ -71,7 +69,7 @@ const sessionResolvers = {
             transitions,
           };
         });
-      },    
+      },
   
       session: async (_, { id }, { user }) => {
         if (!user) throw new Error("Authentication required.");
@@ -190,9 +188,7 @@ const sessionResolvers = {
           const totalDistance = activities.reduce((sum, activity) => {
             const raw = typeof activity.distance === 'number' ? activity.distance : parseFloat(activity.distance);
             const distance = isNaN(raw) ? 0 : raw;
-            
-            const correctedDistance = activity.sportType === "Swim" ? distance / 1000 : distance;
-            return sum + correctedDistance;
+            return sum + distance;
           }, 0);
             
           await session.update({

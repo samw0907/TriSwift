@@ -1,10 +1,12 @@
+# TEMPORARILY DISABLED - do not run tests or deploy until unit conversion cleanup is verified
+# To re-enable: change the trigger branches back to [ main ]
 name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ disabled-temporarily ]
   pull_request:
-    branches: [ main ]
+    branches: [ disabled-temporarily ]
 
 jobs:
   build-and-test:

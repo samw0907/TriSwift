@@ -32,51 +32,51 @@ jobs:
       NODE_ENV: test
 
     steps:
-      - name: ⬇️ Checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 🟢 Set up Node.js
+      - name:  Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: 📦 Install backend dependencies
+      - name:  Install backend dependencies
         working-directory: backend
         run: npm ci
 
-      - name: 📦 Install frontend dependencies
+      - name:  Install frontend dependencies
         working-directory: frontend
         run: npm ci
 
-      - name: ⬇️ Install Playwright browsers
+      - name:  Install Playwright browsers
         working-directory: frontend
         run: npx playwright install --with-deps
 
-      - name: ⚙️ Run migrations
+      - name: Run migrations
         working-directory: backend
         run: npx sequelize-cli db:migrate
 
-      - name: 🌱 Run database seeders
+      - name: Run database seeders
         working-directory: backend
         run: npx sequelize-cli db:seed:all
           
-      - name: ▶️ Start backend server
+      - name:  Start backend server
         working-directory: backend
         run: |
           npm run start:test &
           npx wait-on http://localhost:3001/
 
-      - name: ▶️ Start frontend server
+      - name:  Start frontend server
         working-directory: frontend
         run: |
           npm start & 
           npx wait-on http://localhost:3000
 
-      - name: 🧪 Run frontend tests (Vitest)
+      - name: Run frontend tests (Vitest)
         working-directory: frontend
         run: npm run test
 
-      - name: 🧪 Run Playwright E2E tests
+      - name: Run Playwright E2E tests
         working-directory: frontend
         run: npm run test:e2e
 
@@ -85,15 +85,15 @@ jobs:
     needs: build-and-test
 
     steps:
-      - name: ⬇️ Checkout code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 🛠️ Install Fly.io CLI
+      - name: Install Fly.io CLI
         run: |
           curl -L https://fly.io/install.sh | sh
           echo "$HOME/.fly/bin" >> $GITHUB_PATH
 
-      - name: 🚀 Deploy frontend to Fly.io
+      - name: Deploy frontend to Fly.io
         working-directory: frontend
         run: fly deploy --remote-only --build-arg BUILDKIT_INLINE_CACHE=0 --dockerfile Dockerfile --config fly.toml --image-label ci
         env:

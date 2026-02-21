@@ -10,7 +10,7 @@ const authMiddleware = (req, res, next) => {
 
       if (decodedToken) {
         req.user = decodedToken;
-        console.log("✅ Decoded User:", decodedToken);
+        console.log("Decoded User:", decodedToken);
       }
     } catch (error) {
       return res.status(401).json({ error: "Invalid token" });

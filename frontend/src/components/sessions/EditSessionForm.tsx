@@ -48,9 +48,9 @@ const EditSessionForm: React.FC<EditSessionFormProps> = ({ session, onClose, onU
         },
       });
 
-      console.log("✅ Session updated successfully");
+      console.log("Session updated successfully");
     } catch (error) {
-      console.error("❌ Error updating session:", error);
+      console.error("Error updating session:", error);
       alert("Failed to update session. Please try again.");
     }
   };

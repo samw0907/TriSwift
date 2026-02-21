@@ -118,7 +118,7 @@ const sessionResolvers = {
         if (!user) throw new Error("Authentication required.");
   
         try {
-          console.log("🔍 Creating Session:", input);
+          console.log("Creating Session:", input);
   
           const {
             sessionType,
@@ -143,7 +143,7 @@ const sessionResolvers = {
             weather_wind_speed: weatherWindSpeed ?? null,
           });
   
-          console.log("✅ Session Created:", session.toJSON());
+          console.log("Session Created:", session.toJSON());
   
           return {
             id: session.id,
@@ -160,7 +160,7 @@ const sessionResolvers = {
             updated_at: session.updated_at.toISOString(),
           };
         } catch (error) {
-          console.error("❌ Create Session Error:", error);
+          console.error("Create Session Error:", error);
           throw new Error("Failed to create session: " + error.message);
         }
       },
@@ -202,7 +202,7 @@ const sessionResolvers = {
             weather_wind_speed: input.weatherWindSpeed ?? session.weather_wind_speed,
           });
   
-          console.log("✅ Session Updated:", session.toJSON());
+          console.log("Session Updated:", session.toJSON());
   
           return {
             id: session.id,
@@ -221,7 +221,7 @@ const sessionResolvers = {
             transitions,
           };
         } catch (error) {
-          console.error("❌ Update Session Error:", error);
+          console.error("Update Session Error:", error);
           throw new Error("Failed to update session: " + error.message);
         }
       },

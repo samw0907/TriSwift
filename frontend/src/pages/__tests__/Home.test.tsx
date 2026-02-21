@@ -5,7 +5,7 @@ import Home from "../Home";
 import { GET_SESSIONS } from "../../graphql/queries";
 import { vi } from "vitest";
 
-/** 👇 Mock components that hit Canvas/WebGL so jsdom doesn't choke */
+/** Mock components that hit Canvas/WebGL so jsdom doesn't choke */
 vi.mock("../../components/TotalsGraph", () => ({
   default: () => <div data-testid="totals-graph" />,
 }));

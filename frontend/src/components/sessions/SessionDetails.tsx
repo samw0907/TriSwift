@@ -327,10 +327,10 @@ const SessionDetails: React.FC<SessionDetailsProps> = ({
 
       <div className="details-actions session-actions" onClick={(e) => e.stopPropagation()}>
         <button className="icon-btn edit-btn" title="Edit Session" onClick={onEditSession}>
-          ✏️
+          Edit
         </button>
         <button className="icon-btn delete-btn" title="Delete Session" onClick={onDeleteSession}>
-          🗑
+          Delete
         </button>
       </div>
     </div>

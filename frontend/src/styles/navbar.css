@@ -14,7 +14,7 @@
   width: 100%;
 }
 
-/* ✅ TriSwift brand always stays inline */
+/* TriSwift brand always stays inline */
 .navbar-brand {
   font-size: 26px;
   font-weight: bold;
@@ -98,7 +98,7 @@
   color: white;
 }
 
-/* ✅ Mobile styles (keep horizontal row layout) */
+/* Mobile styles (keep horizontal row layout) */
 @media (max-width: 768px) {
   .hamburger {
     display: block;

@@ -76,7 +76,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onClose, 
         },
       });
     } catch (error) {
-      console.error("❌ Error updating activity:", error);
+      console.error("Error updating activity:", error);
       alert("Failed to update activity. Please try again.");
     }
   };

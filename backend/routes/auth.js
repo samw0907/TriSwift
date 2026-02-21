@@ -52,7 +52,7 @@ router.post("/login", async (req, res) => {
     }
 
     if (!JWT_SECRET) {
-      console.error("🚨 JWT_SECRET is missing!");
+      console.error("JWT_SECRET is missing!");
       return res.status(500).json({ error: "Server configuration error" });
     }
 
@@ -80,7 +80,7 @@ router.post("/login", async (req, res) => {
       } 
     });
   } catch (error) {
-    console.error("🚨 Login Error:", error);
+    console.error("Login Error:", error);
     res.status(500).json({ error: "Login failed" });
   }
 });

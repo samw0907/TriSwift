@@ -64,7 +64,7 @@ const activityResolvers = {
                 power: power ?? null,
               });
           
-              console.log("✅ Activity Created:", activity.toJSON());
+              console.log("Activity Created:", activity.toJSON());
           
               const updatedTotalDuration = 
                 (await SessionActivity.sum("duration", { where: { session_id: sessionId } })) || 0;
@@ -81,9 +81,9 @@ const activityResolvers = {
                 total_distance: updatedTotalDistance,
               });
           
-              console.log("✅ Session Updated After Activity Addition:", session.toJSON());
+              console.log("Session Updated After Activity Addition:", session.toJSON());
       
-              console.log("🔄 Updating personal records...");
+              console.log("Updating personal records...");
               await createOrUpdatePersonalRecords(user.id, sportType, sessionId);
           
               return {
@@ -102,7 +102,7 @@ const activityResolvers = {
                 updated_at: activity.updated_at.toISOString(),
               };
             } catch (error) {
-              console.error("❌ Create Session Activity Error:", error);
+              console.error("Create Session Activity Error:", error);
               throw new Error("Failed to create session activity: " + error.message);
             }
           },    
@@ -131,7 +131,7 @@ const activityResolvers = {
               };
       
               await activity.update(updatedValues);
-              console.log("✅ Activity Updated:", activity.toJSON());
+              console.log("Activity Updated:", activity.toJSON());
           
               const session = await Session.findByPk(activity.session_id, {
                 include: [{ model: SessionActivity, as: "activities" }],
@@ -157,7 +157,7 @@ const activityResolvers = {
 
               await createOrUpdatePersonalRecords(user.id, activity.sport_type, activity.session_id);
       
-              console.log("✅ Session Updated After Activity Update:", activity.session.toJSON());
+              console.log("Session Updated After Activity Update:", activity.session.toJSON());
       
               return {
                 id: activity.id,
@@ -175,7 +175,7 @@ const activityResolvers = {
                 updated_at: activity.updated_at.toISOString(),
               };
             } catch (error) {
-              console.error("❌ Update Session Activity Error:", error);
+              console.error("Update Session Activity Error:", error);
               throw new Error("Failed to update session activity: " + error.message);
             }
           },
@@ -203,11 +203,11 @@ const activityResolvers = {
                 total_distance: updatedTotalDistance || 0,
               });
       
-              console.log("✅ Session Updated After Activity Deletion:", session.toJSON());
+              console.log("Session Updated After Activity Deletion:", session.toJSON());
       
               return { message: "Session Activity deleted successfully." };
             } catch (error) {
-              console.error("❌ Delete Session Activity Error:", error);
+              console.error("Delete Session Activity Error:", error);
               throw new Error("Failed to delete session activity: " + error.message);
             }
           },

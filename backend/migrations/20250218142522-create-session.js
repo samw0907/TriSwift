@@ -59,7 +59,7 @@ module.exports = {
       },
     });
 
-    console.log("✅ Sessions table created successfully!");
+    console.log("Sessions table created successfully!");
   },
 
   down: async (queryInterface) => {

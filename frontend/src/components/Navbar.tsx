@@ -30,7 +30,7 @@ const Navbar: React.FC = () => {
           className={`hamburger ${menuOpen ? 'active' : ''}`}
           onClick={toggleMenu}
         >
-          ☰
+          Menu
         </button>
 
         <div className={`nav-menu ${menuOpen ? 'open' : ''}`}>

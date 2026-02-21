@@ -1,7 +1,7 @@
 const { PersonalRecord, SessionActivity } = require("../models");
 
 async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
-    console.log("🔍 Checking for personal records update...");
+    console.log("Checking for personal records update...");
   
     const activities = await SessionActivity.findAll({
       where: { user_id: userId, sport_type: sportType },
@@ -9,7 +9,7 @@ async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
     });
   
     if (!activities.length) {
-      console.log("⚠️ No activities found for personal records.");
+      console.log("No activities found for personal records.");
       return;
     }
   
@@ -22,11 +22,11 @@ async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
     const distancesForSport = validDistances[sportType];
   
     if (!distancesForSport) {
-      console.log(`⚠️ No valid distances found for sport type: ${sportType}`);
+      console.log(`No valid distances found for sport type: ${sportType}`);
       return;
     }
   
-    console.log(`🏁 Found ${activities.length} activities for sport: ${sportType}`);
+    console.log(`Found ${activities.length} activities for sport: ${sportType}`);
   
     for (const dist of distancesForSport) {
       const bestAttempts = activities
@@ -34,7 +34,7 @@ async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
   
       if (!bestAttempts.length) continue;
   
-      console.log(`🎯 Checking records for ${dist} ${sportType === "Swim" ? "m" : "km"} (${bestAttempts.length} valid entries found)`);
+      console.log(`Checking records for ${dist} ${sportType === "Swim" ? "m" : "km"} (${bestAttempts.length} valid entries found)`);
   
       let existingRecords = await PersonalRecord.findAll({
         where: {
@@ -81,7 +81,7 @@ async function createOrUpdatePersonalRecords(userId, sportType, sessionId) {
       if (existingRecords.length > 3) {
         const recordsToDelete = existingRecords.slice(3);
         await PersonalRecord.destroy({ where: { id: recordsToDelete.map(r => r.id) } });
-        console.log(`🗑 Deleted excess PRs for ${dist} km ${sportType}`);
+        console.log(`Deleted excess PRs for ${dist} km ${sportType}`);
       }
   
       console.log(` Personal records updated successfully for ${dist} km ${sportType}`);

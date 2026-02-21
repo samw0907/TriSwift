@@ -49,7 +49,7 @@ const PersonalRecords: React.FC = () => {
 
   useEffect(() => {
     if (data) {
-      console.log("📊 PR Query Data:", data.personalRecords);
+      console.log("PR Query Data:", data.personalRecords);
     }
   }, [data]);
 

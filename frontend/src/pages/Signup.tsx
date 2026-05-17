@@ -2,7 +2,6 @@ import React, { useState, useCallback } from 'react';
 import { useMutation } from '@apollo/client';
 import { SIGNUP_USER } from '../graphql/mutations';
 import { useNavigate, Link } from 'react-router-dom';
-import VisitorNoticeLogin from "../components/VisitorNoticeLogin"; 
 import '../index.css';
 
 const Signup: React.FC = () => {
@@ -87,7 +86,6 @@ const Signup: React.FC = () => {
             Go to Login
           </Link>
         </div>
-      <VisitorNoticeLogin />
       </div>
     </div>
   );

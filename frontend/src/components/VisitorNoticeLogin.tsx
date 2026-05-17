@@ -1,16 +1,24 @@
 import React from "react";
 import "../styles/visitorNotice.css";
 
-const VisitorNoticeLogin: React.FC = () => {
+interface Props {
+  onGuestLogin: () => void;
+  loading: boolean;
+}
+
+const VisitorNoticeLogin: React.FC<Props> = ({ onGuestLogin, loading }) => {
   return (
     <div className="visitor-notice">
       <p>
-        <strong>Just visiting and want to see some example data? Please use:</strong>
+        <strong>Just visiting?</strong>
         <br />
-        Email: <span className="highlight">mvr@gmail.com</span>
+        Log in as a guest to explore the app with example training data.
         <br />
-        Password: <span className="highlight">ironman</span>
+        <em>Intended for visitors and recruiters.</em>
       </p>
+      <button onClick={onGuestLogin} disabled={loading}>
+        {loading ? "Logging in..." : "Login as Guest"}
+      </button>
     </div>
   );
 };

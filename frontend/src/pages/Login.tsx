@@ -47,6 +47,14 @@ const Login: React.FC = () => {
     }
   };
 
+  const handleGuestLogin = async () => {
+    try {
+      await login({ variables: { email: "mvr@gmail.com", password: "ironman" } });
+    } catch (error) {
+      console.error("Guest Login Error:", error);
+    }
+  };
+
   return (
     <div>
     <div className="auth-container">
@@ -78,7 +86,7 @@ const Login: React.FC = () => {
       </form>
       
     </div>
-    <VisitorNoticeLogin />
+    <VisitorNoticeLogin onGuestLogin={handleGuestLogin} loading={loading} />
     </div>
   );
 };

@@ -2,8 +2,6 @@ app = 'triswift-frontend'
 primary_region = 'arn'
 
 [build]
-  [build.args]
-    REACT_APP_MAPBOX_TOKEN = "pk.eyJ1Ijoic2FtdzA5MDciLCJhIjoiY21keDRzOHN1MjJzMTJpczg5ZndnM3ZvdCJ9.k9KgFQnwBlzk2GAyw6LNCA"
 
 [env]
   NODE_ENV = "production"
@@ -13,7 +11,7 @@ primary_region = 'arn'
   force_https = true
   auto_start_machines = true
   auto_stop_machines = "stop"
-  min_machines_running = 0
+  min_machines_running = 1
   processes = ['app']
 
   [http_service.concurrency]
